@@ -1,0 +1,20 @@
+%!TEX root = ../../master.tex
+\section{Setup}
+\label{sec:imp_setup}
+In this section the general set-up of the audio \gls{codec} is described. 
+
+\subsection{Configuration of AIC3204}
+In order to use the \gls{codec} it must be set up with the correct sample frequency and options. This is done by setting the registers in \autoref{tab:pll_cfg}. This sets the \gls{pll} settings to create a clock running on $\SI{44.1}{\kilo \hertz}$. This clock frequency is given to the \gls{adc} and \gls{dac} in order to keep the sample frequency at $\SI{44.1}{\kilo \hertz}$.
+
+\begin{table}[htbp]
+\centering
+\caption{\gls{pll} configuration for 44.1kHz with 12MHz clock \citep{app_guide_aic3204}.}
+\label{tab:pll_cfg}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+\hline
+\textbf{PLLP}           & \textbf{PLLR}          & \textbf{PLLJ}          & \textbf{PLLD}            & \textbf{MADC}          & \textbf{NADC}          & \textbf{AOSR}            & \textbf{MDAC}          & \textbf{NDAC}          & \textbf{DOSR}            \\ \hline
+\multicolumn{1}{|c|}{1} & \multicolumn{1}{c|}{1} & \multicolumn{1}{c|}{7} & \multicolumn{1}{c|}{560} & \multicolumn{1}{c|}{3} & \multicolumn{1}{c|}{5} & \multicolumn{1}{c|}{128} & \multicolumn{1}{c|}{3} & \multicolumn{1}{c|}{5} & \multicolumn{1}{c|}{128} \\ \hline
+\end{tabular}
+\end{table}
+
+In order to set these registers the function \texttt{AIC3204_rset} is used. This takes an address and a value to write to that 8 bit register. The code for the complete setup of the \gls{codec} is shown in \autoref{ch:code_shit_fick}.

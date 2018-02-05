@@ -1,0 +1,19 @@
+%!TEX root = ../../master.tex
+\section{RC-filter}
+To avoid high frequency noise from the \gls{dsp} a simple RC low pass filter is made. This is designed to be located at the output of the \gls{dsp}. The cut off frequency is chosen to be at \SI{50}{\kilo\hertz}. With a resistor at \SI{1}{\kilo\ohm} the capacitor is calculated using \autoref{eq:rc_cap} and resulting in a capacitor at the value seen in \autoref{eq_rc_cap_values}.
+
+\begin{equation}\label{eq:rc_cap}
+	C=\frac{1}{2\pi\cdot R \cdot f_c}
+\end{equation}
+
+\begin{equation}\label{eq_rc_cap_values}
+	\frac{1}{2\pi\cdot \SI{1}{\kilo\ohm} \cdot \SI{50}{\kilo\hertz}} = 3.3 \addunit{\si{\nano\farad}}
+\end{equation}
+
+By knowing the value of the capacitor the filter in \autoref{fig:rc_filter} is made.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.45\textwidth]{rc_filter}
+	\caption{Circuit of the RC low pass filter designed.}
+	\label{fig:rc_filter}
+\end{figure}

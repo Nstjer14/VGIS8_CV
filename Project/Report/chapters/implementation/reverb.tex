@@ -1,0 +1,135 @@
+%!TEX root = ../../master.tex
+\section{Reverb}
+\label{sec:imp_reverb}
+In this section reverb is implemented as described in \autoref{sec:design_reverb}.
+
+Before the reverb effect can be implemented memory and constants need to be initialised. This is done in \autoref{code:imp_init_reverb}. DelayBuff is the length of the two delay buffers needed when implementing reverb. One of the delay buffers are for the tapped delay-line and the other is used to delay the signal from the comb and all-pass filters to move the late reflections behind the early reflections.
+
+\texttt{\#pragma} is used to tell the compiler which data section to put the named buffer into. This is used to ensure that the buffers are in their own 64kB block to avoid addressing errors.
+
+The buffer \texttt{ap_buff} is used by the all-pass filter to remember the internal state of the filter.
+
+\texttt{comb_lat} is used to delay the direct signal from the comb filters passing through the all-pass filter. While the buffer \texttt{comb_dly} is used to keep the internal states of the 6 comb filters. 
+
+The constants \texttt{dlylinesmp} and \texttt{delaylin_gain} are used to define the delays of the taps in the delay line and the gain of the taps. \texttt{dlyz} is used to define the delays in the different comb filters.
+\begin{lstlisting}[caption={Initialisation of reverb.},language=C,label={code:imp_init_reverb},tabsize=2]
+//delay and reverb initalisation
+#define DelayBuff  30000
+
+#pragma DATA_SECTION(delay_buff, ".dlybff")
+short  delay_buff[DelayBuff] = {0};
+#pragma DATA_SECTION(delay_buff2, ".dlybff2")
+short  delay_buff2[DelayBuff] = {0};
+
+//more reverb buffers
+#define APLEN 6000
+#pragma DATA_SECTION(ap_buff, ".reverb")
+short ap_buff[APLEN] = {0};
+#pragma DATA_SECTION(comb_lat, ".reverb")
+
+short comb_lat[270] = {0};
+
+
+#pragma DATA_SECTION(comb_dly, ".reverb")
+
+short comb_dly[6][3310] = {0};
+
+//Constants for reverb
+unsigned short dlylinesmp[] = {2205, 5733, 9261, 12789, 16317, 19845};
+short delaylin_gain[] = {922, 819, 717, 614, 512, 254};
+unsigned short dlyz[] = {2205, 2470, 2646, 2822, 3043, 3308};
+\end{lstlisting}
+
+According to the block diagram in \autoref{fig:moorer_reverb_design} a delay line is needed. This is implemented in \autoref{code:imp_reverb_delayline}. This takes one of the delay buffers, which is filled as samples come in and outputs the sum of the samples at the delays defined in \texttt{dlylinesmp} multiplied with the gain defined in \texttt{delaylin_gain} and returns the added up signal. To assure that the index wraps around correctly in the ring buffer the syntax \texttt{buff[(x+dly)\%len_buff]} is used. This takes the current index and adds the delay. To assure that this does not get bigger than the size of the buffer the mathematical operator modulo is used. This gets the remainder of the integer division of two numbers making sure that the number is always less than len_buff. 
+
+
+\begin{lstlisting}[caption={Implementation of a delay line.},language=C,label={code:imp_reverb_delayline},tabsize=2]
+short delayline(short len, short x)
+{
+	long long y = (long long)delay_buff[x];
+	int i = 0;
+	for(i = 0; i < len; i++)
+	{
+		y += (((long long)delaylin_gain[i] * delay_buff[(x+(dlylinesmp[i]))%DelayBuff])>>10);
+	}
+	return (short) y;
+}
+\end{lstlisting}
+
+The six comb filters needed in the late reflections are implemented in a function shown in \autoref{code:imp_reverb_comb_filter}. This function runs trough each filter adding the latest output of the delayline with the delayed feedback from itself. This is filtered with a low pass filter to make more realistic reflections. All the outputs of the filters are added together in \texttt{y} and returned. 
+The comb filters all have decay and forward gain which determine how long it takes for the signal to die out.
+
+\begin{lstlisting}[caption={Implementation of 6 parallel comb filters.},language=C,label={code:imp_reverb_comb_filter},tabsize=2]
+short comb(unsigned short x,short delaylin)
+{
+	static unsigned  short i = 0;
+	static short xn[6][2] = {0};
+	static short yn[6] = {0};
+	static short decay = 10, ffwd = 100
+
+	short p = 0;
+	long long y = 0;
+	for(p = 0; p < 6; p++)
+	{
+		//Comb filter with feedback
+		comb_dly[p][i] = (short)(((long long)ffwd*delaylin + (long long)decay*comb_dly[p][(i+dlyz[p])%3309])>>10);
+		//low pass filter
+		xn[p][1] = xn[p][0];
+		xn[p][0] = comb_dly[p][i];
+		yn[p] = xn[p][0] + xn[p][1] - (short)(((long long)995 * yn[p])>>10);
+		comb_dly[p][i] = yn[p];
+		y += (short) comb_dly[p][i];
+	}
+	i--;
+	if(i > 3309)
+	{
+		i = 3309;
+	}
+	return (short) y;
+}
+\end{lstlisting}
+
+To get a muddier sound the all-pass filter is implemented in \autoref{code:imp_reverb_allpass}. The all-pass filter takes the current index of the delay buffer and the latest sample from the tapped delay line. This is given to the comb which returns its output. The output from the comb filters is stored in a buffer to be delayed internally in the all-pass filter. The all-pass filter has fixed values both in gain and in delay. The gain is $0.7 \cdot 2^{10}=716.8\approx 717$ and the delay is set to $\SI{6}{\milli \second} * \SI{44100}{samples \per \second} = 265 \text{ samples}$. The result from the all-pass filter is stored in \texttt{ap_buff} for later use. 
+
+\begin{lstlisting}[caption={Implementation of all-pass filter.},language=C,label={code:imp_reverb_allpass},tabsize=2]
+short allpass(unsigned short x,short delaylin)
+{
+	static short p = 0;
+	static unsigned short i = 0;
+	short g = 717;
+	short rr = 0;
+	short pp = 0;
+	short a;
+	long long b,c;
+	rr = comb(x,delaylin);
+	comb_lat[p] = rr;
+	a = (short)comb_lat[(p+265)%270];
+	b = ((long long)-g*comb_lat[p])>>10;
+	c = ((long long)g*ap_buff[(i+265)%APLEN])>>10;
+	pp = a+(short)((b+c));
+	ap_buff[i] = pp;
+	p--;
+	if(p<0)
+		p = 269;
+	i--;
+	if(i>=APLEN)
+		i = APLEN-1;
+	return (short)ap_buff[i];
+}
+\end{lstlisting}
+
+In order to tie all of the functions descriped in this section together \autoref{code:imp_reverb_reverb} is implemented.
+
+\begin{lstlisting}[caption={Function combining the reverb functions.},language=C,label={code:imp_reverb_reverb},tabsize=2]
+short reverb(unsigned short x )
+{
+	short rr;
+	short dlyline = delayline(6,x);
+	rr = allpass(x,dlyline);
+
+	delay_buff2[x] = rr;
+	return  dlyline + (delay_buff2[(x + 2000)%DelayBuff]>>2);
+}
+\end{lstlisting}
+
+The code takes the output of the delayline and feeds it to the all-pass filter function. It also sums the delayline output with the delayed output of the late reverb part of the effect, thus combining all the parts of the reverb effect into one function.

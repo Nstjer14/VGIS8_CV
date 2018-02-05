@@ -1,0 +1,130 @@
+%!TEX root = ../../master.tex
+\section{Reverb}
+\label{sec:design_reverb}
+The reverb effect is simulated in MATLAB by following the block diagram in \autoref{fig:moorer_reverb_design} and the requirements set in \autoref{sec:reqDL}. The simulation is implemented with blocks instead of being sample based.
+
+\subsection{General Algorithm}
+The structure of the reverb effect can be visualised by the block diagram in \autoref{fig:moorer_reverb_design} which can be divided into three sections, a tapped delay line, an all-pass filter and comb filters which all contribute to different parts of the reverberation effect as described in \autoref{subs:reverb_analysis}. The different parts are simulated in MATLAB and combined to give the final effect with some variable that can be adjusted by the user. The variables are the pre delay which is the time from the direct sound to the first early reflection, the reverb time which is the time from the first reflection to the last reflection, the comb decay which controls how long it takes before the late reflections from the comb filter have decayed and the delay gain which controls how loud the reflections are and therefore the reverb effect is.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/analysis/moorers_reverb.pdf}
+	\caption{Moorer’s reverberator.}
+	\label{fig:moorer_reverb_design}
+\end{figure}
+
+\subsection{Simulation}
+
+The simulation is made according to the block diagram in \autoref{fig:moorer_reverb_design}. First in the program the sample rate and the user variables are set as shown in \autoref{code:sim_reverb1}.
+
+
+\begin{lstlisting}[caption={Sample rate and user variables.},language=MATLAB,label={code:sim_reverb1},tabsize=2]
+Fs = 44100; %sample rate
+len = Fs; 
+x = 1:len;
+
+%variables that can be changed by the user
+preDelay = 50; 
+reverbTime = 30;
+combDecay = 0.01; %from 0 to 1
+delayGain = 0.9; %from 0 to 1
+\end{lstlisting}
+
+\subsubsection{Tapped Delay Line}
+
+In \autoref{code:sim_reverb_delayline} the tapped delay line is simulated which gives the early reflections as seen in \autoref{fig:reverb_impulse_response}. There are six reflections to simulate being inside a room with reflecting surfaces, ceiling, floor and four walls. In the delay line the \texttt{preDelay} can be adjusted to create a bigger delay before the first early reflection appears. The \texttt{reverbTime} can also be adjusted to make the time from the first early reflection to the last bigger, and by that make the overall reverb time bigger. The last variable in the delay line is the \texttt{delayGain} which specifies how loud the early reflections are compared to the direct signal.
+
+\begin{lstlisting}[caption={Simulation of the tapped delay line.},language=MATLAB,label={code:sim_reverb_delayline},tabsize=2]
+%delayline
+len = length(sig);
+out_dlyline = zeros(1,len);
+
+dly_ms = preDelay + reverbTime .* [0 0.2 0.4 0.6 0.8 1]; %delay in ms
+dlyline_samp = int32(dly_ms*10.^(-3)*Fs);
+dlyline_gain = delayGain .* [1 0.9 0.8 0.7 0.6 0.5];
+
+for n = 1:length(dlyline_samp)
+    for i = 1:len
+        if(i - dlyline_samp(n) > 0)
+            out_dlyline(i) = out_dlyline(i) + dlyline_gain(n) * sig(i - dlyline_samp(n));
+        end
+    end
+end
+\end{lstlisting}
+
+\subsubsection{Comb Filters}
+As with the tapped delay line there are six comb filters to simulate a room with six reflections. The purpose of the comb filters is to simulate the late reflections which is the reflections of the reflections. These reflections quickly die out as shown in \autoref{fig:reverb_impulse_response} where the comb filters are creating the main reflections in the late reflection part including some extra small reflections which follows. The delay between these small reflections is distributed over a ratio of 1:1.5 between 50 and \SI{80}{\milli\second} as seen in the variable \textit{dly_ms} in \autoref{code:sim_reverb_comb} \citep{DAFX}. The comb filter is designed as described in \autoref{subs:reverb_analysis} and as seen in \autoref{fig:comb_iir1} which means that there is an $\alpha$ and a $\beta$ value.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/design/IIR_comb.pdf}
+	\caption{IIR comb filter.}
+	\label{fig:comb_iir1}
+\end{figure}
+
+The $\beta$ value is set to $\frac{1}{6}$ because there are six comb filters, and when the $\beta$ values are added together, it should be equal to one in total. The $\alpha$ value is calculated from \autoref{eq:reverb_alpha_value} \citep{DAFX}.
+
+\begin{equation}\label{eq:reverb_alpha_value}
+ 	\alpha = 10^{-3\frac{T_d f_s}{m_i}}
+\end{equation} 
+
+\startexplain
+	\explain{$\alpha$ is the attenuation coefficient, \texttt{comb_a} in the program}{\noSIunit}
+	\explain{$T_d$ is the desired decay time, Td in the program}{\si{\milli \second}}
+	\explain{$f_s$ is the sampling rate, Fs in the program}{\si{samples}/\si{sec}}
+	\explain{$m_i$ is the delay length in samples, \texttt{comb_samp} in the program}{\si{samples}}
+\stopexplain
+
+Now that all the variables are known they are used to calculate the output of the comb filters which is done from line 13 in \autoref{code:sim_reverb_comb}. 
+
+\begin{lstlisting}[caption={Simulation of the comb filters.},language=MATLAB,label={code:sim_reverb_comb},tabsize=2]
+%comb filters
+dly_ms = [50 56 60 64 69 75];
+comb_samp = int32(dly_ms*10.^(-3)*Fs);
+comb_b = [1/6 1/6 1/6 1/6 1/6 1/6];
+Td = combDecay .* [11 15 17 20 24 26];
+comb_a = [];
+for n = 1:6
+    comb_a = [comb_a (10.^((-3*Td(n)*10^-3*Fs)/double(comb_samp(n))))];
+end
+
+comb_out = zeros(1,len);
+comb_in = [out_dlyline; out_dlyline; out_dlyline; out_dlyline; out_dlyline; out_dlyline];
+for n = 1:6
+    for i = 1:len
+        if(i- comb_samp(n) > 0)
+            comb_in(n,i) = comb_b(n) * comb_in(n,i) + comb_a(n) * comb_in(n,i - comb_samp(n));
+        else
+            comb_in(n,i) = comb_b(n) * comb_in(n,i);
+        end
+        comb_out(i) = comb_out(i) + comb_in(n, i);
+    end
+end
+\end{lstlisting}
+
+\subsubsection{All-pass Filter}
+When the summed output of the comb filters is calculated they can be used as input in the all-pass filter. The all-pass filter has the purpose of making a muddy sounding effect to the reverb effect and by that making the effect deeper. To make the desired effect, the delay of the all-pass filter must be less than \SI{50}{\milli \second} and is chosen to be \SI{6}{\milli \second} \citep{DAFX}. The output of the comb filters and the delay time is put into the differential equation as seen in \autoref{code:sim_reverb_allpass}, which is then added to the tapped delay line output and gives the final output from the reverb effect. 
+
+\begin{lstlisting}[caption={Simulation of the all-pass filter.},language=MATLAB,label={code:sim_reverb_allpass},tabsize=2]
+%allpass
+g = 0.7;
+dly_samp = int32(6*10.^(-3)*Fs);
+
+for i = 1:len
+    if(i-dly_samp>0)
+        out(i) = -g*comb_out(i) + comb_out(i-dly_samp) + g*out(i-dly_samp);
+    else
+        out(i) = -g*comb_out(i);
+    end
+end
+\end{lstlisting}
+
+The result of the simulation is shown in \autoref{fig:reverb_impulse_response} where the impulse response of the reverb effect is shown. 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.8]{reverb_freq}
+    \caption{Impulse response of reverb.}
+    \label{fig:reverb_impulse_response}
+\end{figure}
+

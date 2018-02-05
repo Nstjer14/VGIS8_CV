@@ -1,0 +1,96 @@
+	%%  A simple AAU report template.
+
+%  2014-09-13 v. 1.1.0
+%  Copyright 2010-2014 by Jesper Kjær Nielsen <jkn@es.aau.dk>
+%
+%  This is free software: you can redistribute it and/or modify
+%  it under the terms of the GNU General Public License as published by
+	%  the Free Software Foundation, either version 3 of the License, or
+%  (at your option) any later version.
+%
+%  This is distributed in the hope that it will be useful,
+%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%  GNU General Public License for more details.
+%
+%  You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
+%
+\input{setup/preamble.tex}% Package inclusion and set up of the document
+
+\input{setup/hyphenations.tex}% Hypenation setup
+
+\input{setup/macros.tex}% Macros
+
+\begin{document}
+
+\selectlanguage{english}
+
+\pagestyle{empty}
+
+
+
+%frontmatter
+% Indholdsfortegnelse over kommentarer.
+% HUSK AT SLETTE INDEN AFLEVERING! -->
+%\pagenumbering{alph}
+%\pdfbookmark[0]{Todoliste}{label:todos}
+%\listoftodos
+\cleardoublepage
+% <-- HUSK AT SLETTE INDEN AFLEVERING!
+
+ %disable headers and footers
+\pagenumbering{roman} %use roman page numbering in the frontmatter
+
+%\pdfbookmark[0]{Forside}{label:forside}%
+%\includepdf[fitpaper]{chapters/frontpage.pdf}
+\input{chapters/frontpage}
+\input{chapters/colophon}
+\input{chapters/titlepages}
+
+\cleardoublepage
+\pagestyle{fancy} % Enable headers and footers again
+\input{chapters/preface}
+%\input{chapters/laesevejledning/_laesevejledning}
+
+
+\begingroup % Let ToC start on even page.
+  \let\cleardoublepage\clearevenpage
+	\cleardoublepage
+	\iflanguage{english}{\pdfbookmark[0]{Contents}{label:contents}}{\pdfbookmark[0]{Indhold}{label:indhold}}
+ \tableofcontents
+\endgroup
+
+\cleardoublepage
+
+\printnoidxglossaries
+% Mainmatter
+\pagenumbering{arabic} % Use arabic page numbering in the mainmatter
+
+ % Include chapters
+\input{chapters/_chapters.tex}
+
+% For use if report is split up in parts
+\bookmarksetup{startatroot}% Goto root of Table of Contents
+\addtocontents{toc}{\bigskip}% Add space before next item in Table of Contents
+
+% Appearance of the bibliography
+\iflanguage{english}{%
+\bibliographystyle{setup/plainnat_en}%
+}{%
+\bibliographystyle{setup/plainnat_dk}%
+}
+\label{LastPage}
+
+
+\bibliography{bib/conference,bib/datasheets,bib/mastersthesis,bib/newsarticles,bib/phdthesis,bib/sciencearticles,bib/standards,bib/techreports,bib/websites,bib/books}
+\label{bib:mybiblio}
+
+
+
+
+%\setlength{\chapnumb}{2cm} % Ændrer længden på stregen under kapiteloverskriften så den passer til bilag
+\appendix % Start of appendix
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}} 
+
+
+\end{document}

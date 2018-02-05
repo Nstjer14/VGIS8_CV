@@ -1,0 +1,174 @@
+%!TEX root = ../../master.tex
+\section{Preamplifier and Buffer Circuit}
+\label{sec:preamp}
+
+The purpose of the \gls{preamp} is to raise the input impedance from \SI{20}{\kilo\ohm} on the \gls{adc} input to \SI{1}{\mega\ohm} which is at least a factor 10 compared to the measured output impedance from the guitar in \autoref{ch:guitar_meas} according to \autoref{req:buffer}. 
+
+The circuit consists of two non-inverting circuits created with op-amps as shown in \autoref{fig:preamp}. 
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{figures/design/preamp_newsch.pdf}
+	\caption{A circuit diagram of the \gls{preamp}.}
+	\label{fig:preamp}
+\end{figure}
+
+
+The first circuit creates a DC-offset which makes it possible to have a single supply on the \gls{opamp}. The offset makes the signal from the guitar oscillate around \SI{2.5}{\volt} because of the voltage divider consisting of two \SI{47}{\kilo\ohm} resistors. Between the two circuits is a \SI{1}{\mega\ohm} resistor which creates the input impedance as required in \autoref{req:buffer}. The second circuit has an amplification of one because the signal does not require any amplification, as shown in \autoref{ch:guitar_meas}, and therefore this circuit is only used to create a larger input impedance. At the end of the circuit there is a potentiometer which has a value of \SI{2}{\kilo\ohm} because the circuit has to have an output impedance of at least a factor 10 compared to the \SI{20}{\kilo\ohm} input impedance of the \gls{dsp}. After this a capacitor is placed to remove the DC-offset created by the first op-amp circuit.  
+
+The \gls{preamp} is simulated and measured at three different points to show the DC-offset and what the output looks like at different points in the circuit as seen at the coloured points in \autoref{fig:preamp}. The red point shows the DC-offset the blue points shows how the input oscillates around \SI{2.5}{\volt} and the green point shows the output where the signal oscillates around \SI{0}{\volt} again. The same colours are used for the graphs from the simulation shown in \autoref{fig:preamp_sim}. 
+ 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/design/preamp_sim_fontsize.eps}
+	\caption{Simulation of the \gls{preamp} at \SI{1}{\kilo\hertz}. \color{red} DC-offset\color{black}, \color{blue} input signal with DC-offset \color{black} and \color{green} output\color{black}.}
+	\label{fig:preamp_sim} 
+\end{figure}
+
+\subsection{Signal to Noise Ratio}
+The signal to noise ratio is calculated to make sure it fulfills \autoref{req:SNratio}. The \gls{preamp} is split up in two parts where the first is the offset circuit, called $G_{offset}$, and the amplifier circuit, called $G_{amp}$. Lastly the total noise from both circuits are calculated.
+
+The noise diagrams for the two circuits are shown in \autoref{fig:SN_offset} and \autoref{fig:SN_amp} where the noise voltage and the known noise parameters from the op-amp are visualised. The noise in the circuits are calculated side by side from \autoref{eq:SN_1} to \autoref{eq:noise_total}. 
+
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{.8\textwidth}
+	\centering
+	\includegraphics[scale=1]{figures/design/preamp_noise_offset.pdf}
+	\caption{Noise circuit for $G_{offset}$.}
+	\label{fig:SN_offset}
+\end{subfigure}%
+
+\begin{subfigure}{.8\textwidth}
+	\centering
+	\includegraphics[scale=1]{figures/design/preamp_noise.pdf}
+	\caption{Noise circuit for $G_{amp}$.}
+	\label{fig:SN_amp}
+\end{subfigure}
+\caption{Noise circuits for the two \gls{opamp} circuits.}
+\label{fig:op_amp_noise_2}
+\end{figure}
+
+At first the thermal noise is calculated for both circuits from the formula in \autoref{eq:SN_1}.
+
+
+\begin{equation}\label{eq:SN_1}
+	V_T = \sqrt{4 \cdot k \cdot T \cdot \left( \frac{R_S \cdot R_T }{R_S + R_T } \right) \cdot B}
+\end{equation}
+
+\startexplain
+	\explain{$V_T$ is the thermal noise}{\si{\volt}}
+	\explain{$k$ is Boltzmanns constant, $1.38 \cdot 10^{-23}$}{$\frac{\si{\volt\ampere}}{\si{\kelvin\hertz}}$}
+	\explain{$T$ is room temperature, 300}{\si{\kelvin}}
+	\explain{$R_S$ is the source impedance, $G_{offset}$ = not existing, $G_{amp}$ = 100}{\si{\kilo\ohm}}
+	\explain{$R_T$ is the impedance at the input of the amplifier, $G_{offset}$ = 23.5, $G_{amp}$ = 1000}{\si{\kilo\ohm}}
+	\explain{$B$ is the bandwidth, 19980}{\si{\hertz}}
+\stopexplain
+
+The \gls{snr} is then calculated from the formula in \autoref{eq:SN_1}, and the results are shown in \autoref{eq:thermal_offset} and \autoref{eq:thermal_amp}.
+
+\begin{align}
+	\text{For } &G_{offset}\text{: } \nonumber \\ 
+	V_T &= \sqrt{4 \cdot 1.38 \cdot 10^{-23} \frac{\si{\volt\ampere}}{\si{\kelvin\hertz}} \cdot 300 \si{\kelvin} \cdot 23.5 \cdot 10^3 \si{\ohm} \cdot 19980\si{\hertz}} \nonumber\\
+	&= 2.79 \addunit{\si{\micro\volt}} \label{eq:thermal_offset} \\
+	\text{For } &G_{amp}\text{: } \nonumber\\ 
+	V_T &= \sqrt{4 \cdot 1.38 \cdot 10^{-23}\frac{\si{\volt\ampere}}{\si{\kelvin\hertz}} \cdot 300\si{\kelvin} \cdot \left( \frac{100 \cdot10^{3}\si{\ohm} \cdot 1 \cdot 10^6\si{\ohm} }{100 \cdot10^{3}\si{\ohm} + 1 \cdot 10^6\si{\ohm}} \right) \cdot 19980\si{\hertz}} \nonumber\\
+	&= 5.48 \addunit{\si{\micro\volt}} \label{eq:thermal_amp}
+\end{align}
+
+Next the voltage in both circuits created by the equivalent input noise current is calculated from the formula in \autoref{eq:In_voltage}. The equivalent input noise current is known from the datasheet \citep{tle2072ac}.
+
+
+\begin{equation} \label{eq:In_voltage}
+	V_{In}^2 = \left( I_n \cdot \left( \frac{R_S \cdot R_T }{R_S + R_T} \right) \right)^2 \cdot B
+\end{equation}
+
+\startexplain
+	\explain{$V_{In}$ is noise created from the resistors with influence of $I_n$}{\si{\volt}}
+	\explain{$I_n$ is the equivalent input noise current from the datasheet \citep{tle2072ac}, 2.8}{$\frac {\si{\femto\ampere}}{\sqrt{\si{\hertz}}}$}
+\stopexplain
+
+The noise is then calculated for both couplings, and the result for each noise voltage is shown in \autoref{eq:In_voltage_off} and \autoref{eq:In_voltage_amp}. 
+
+\begin{align}
+	\text{For } &G_{offset}\text{: } \nonumber\\
+	&V_{In}^2 = \left( 2.8 \cdot 10^{-15}\frac {\si{\ampere}}{\sqrt{\si{\hertz}}} \cdot 23.5 \cdot 10^3\si{\ohm} \right) ^2 \cdot 19980\si{\hertz} = 86.51 \addunit{\atto\volt^2} \label{eq:In_voltage_off}\\
+	\text{For } &G_{amp}\text{: } \nonumber\\
+	&V_{In}^2 = \left( 2.8 \cdot 10^{-15}\frac {\si{\ampere}}{\sqrt{\si{\hertz}}} \cdot \left( \frac{100 \cdot10^{3}\si{\ohm} \cdot 1 \cdot 10^6 \si{\ohm}}{100 \cdot10^{3}\si{\ohm} + 1 \cdot 10^6\si{\ohm}} \right) \right) ^2 \cdot 19980\si{\hertz} \nonumber \\
+	 &= 1.29 \label{eq:In_voltage_amp} 
+	\addunit{\si{\femto\volt^2}}
+\end{align}
+
+The equivalent input noise voltage is the same in both circuits because the same op-amp is used and is calculated to the same value. The noise voltage is found in the datasheet \citep{tle2072ac}. This voltage has to be multiplied by the bandwidth to find the noise at this exact bandwidth. The noise voltage from the datasheet depends on this bandwidth, and the calculation is shown in \autoref{eq:band_volt}.
+
+\begin{equation}
+	e_{n}^2 = V_n ^2 \cdot B
+	\label{eq:band_volt}
+\end{equation}
+
+\startexplain
+	\explain{$e_n$ is the equivalent input noise voltage at the bandwidth}{\si{\volt}}
+	\explain{$V_n$ is the equivalent input noise voltage from the datasheet, 55}{$\frac{\si{\nano\volt}}{\sqrt{\si{\hertz}}}$}
+	\explain{$B$ is the bandwidth, 19980}{\si{\hertz}}
+\stopexplain
+
+The result for both circuits are calculated at the chosed bandwidth, and are shown in \autoref{eq:equivalent_voltage}.
+
+\begin{align}\label{eq:equivalent_voltage}
+	\text{For } &G_{offset} \text{ and } G_{amp}\text{: } \nonumber \\
+	&e_{n}^2 = \left( 55 \cdot 10^{-6}\frac{\si{\volt}}{\sqrt{\si{\hertz}}} \right) ^2 \cdot 19980 \si{\hertz} = 60.44
+	\addunit{\pico\volt^2}
+\end{align}
+
+From these results the total noise can now be calculated according to \autoref{eq:noise_overall}.
+\begin{align}\label{eq:noise_overall}
+	N = \sqrt{V_T^2+V_{In}^2+e_n^2}
+\end{align}
+
+\startexplain
+	\explain{$N$ is the total noise in the \gls{opamp}}{\si{\volt}}
+\stopexplain
+
+First the total noise for offset circuit is calculated, and the result is shown in \autoref{eq:noise_offset}.
+
+\begin{align}
+\text{For } &G_{offset}\text{: } \nonumber \\
+	&N_{off} = \sqrt{\left( 2.79 \cdot 10^{-6} \si{\volt} \right) ^2+ 86.51  \cdot 10^{-18}\si{\volt}^2 + 60.44 \cdot 10^{-12}\si{\volt}^2} \nonumber \\
+	& = 8.26 \label{eq:noise_offset}
+	\addunit{\si{\micro\volt}}
+\end{align}
+
+When the noise in the offset circuit is calculated, this can be included in the formula with the noise from the amplifier circuit to calculate the total noise in the \gls{preamp} as seen in \autoref{eq:noise_total}.
+
+
+\begin{align}
+	\text{For } &G_{amp}\text{ including the noise from the offset circuit ($N_{off}$): } \nonumber \\
+	N_A &= \sqrt{\left(8.26 \cdot 10^{-6}\si{\volt}\right)^2 + \left( 5.48 \cdot 10^{-6}\si{\volt} \right) ^2+ 1.29 \cdot 10^{-15}\si{\volt}^2 + 60.44 \cdot 10^{-12}\si{\volt}^2} \nonumber \\
+	&= 11.68 \label{eq:noise_total}
+	\addunit{\si{\micro\volt}}
+\end{align}
+
+
+With the noise voltage known in the circuit and the signal from the guitar measured in \autoref{ch:guitar_meas}, the \gls{snr} in the \gls{preamp} can be calculated from \autoref{eq:SN_formula} and the final result in \si{\deci\bel} is shown in \autoref{eq:SN_total}.
+
+
+\begin{equation}\label{eq:SN_formula}
+	S/N = 20 \cdot \log_{10} \left( \frac{signal_{RMS}}{N_A} \right)
+\end{equation}
+
+\startexplain
+	\explain{S/N is the \gls{snr}}{\si{\deci\bel}}
+	\explain{$signal_{RMS}$ is the RMS voltage signal from the guitar}{\si{\volt}}
+\stopexplain
+
+
+
+\begin{equation}\label{eq:SN_total}
+	S/N = 20 \cdot \log_{10} \left( \frac{0.46\si{\volt}}{11.68 \cdot 10^{-6}\si{\volt}} \right) \approx 92 
+	\addunit{\si{\deci\bel}}
+\end{equation}
+
+Because \autoref{req:SNratio} specifies that the \gls{snr} must be greater than the measured \gls{snr} of the \gls{dsp}, as seen in \autoref{cha:signal_to_noise_ratio_measurements}, the resulting calculated ratio of 92 dB is fulfilling this requirement. 
+
+The simulation and the chosen components yields a satisfying \gls{preamp} which fulfils the requirements and is used between the guitar and the \gls{dsp}.

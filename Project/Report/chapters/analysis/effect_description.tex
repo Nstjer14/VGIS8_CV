@@ -1,0 +1,82 @@
+%!TEX root = ../../master.tex
+\section{Effect Description}\label{sec:effect_descr}
+The analysis of the effects concerns several parameters of the effects and functionality of previous designs. This also includes explanations of the effect sound and what this is supposed to sound like.
+
+\subsection{Delay Based Effects}
+Delay is the act of holding a signal to be played back after a variable amount of time. 
+Different lengths of delay combined with different couplings gives different effects. Flanger, chorus, echo and reverb are all examples of delay effects. These different delay based effects are defined as having a delay range, as seen in \autoref{tab:delay_times}. This means that all the different delays in the effect are in the delay range, in order to be defined as that specific effect.
+
+\begin{table}[htbp]
+\centering
+\caption{Delay length for different kinds of effects \citep{DAFX}.}
+\label{tab:delay_times}
+\begin{tabular}{|l|l|l|}
+\hline
+\rowcolor{lightgray}
+delay type   & delay length       & Effect type          \\ \hline
+short delay  & \textless 15 ms    & flanger \\ \hline
+medium delay & 15 ms - 50 ms      & chorus \\ \hline
+long delay   & \textgreater 50 ms & echo, reverberation  \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Echo}
+The echo effect is a delay based effect. Echo gives a repeating but decaying signal. This is implemented using a feedback loop with a delay as shown on \autoref{fig:echo_block_anal}. The delay part of the echo can be implemented with cascades of sample hold circuits, also known as a bucket brigade device, where the signal is sampled and sent through the system. The delay of the signal can be varied by changing the clocking frequency or the length of the bucket brigade. The clock is used to toggle the switches so the signal can move through the circuit. The switches open in sets where every other is opened while the rest is closed. Increased frequency gives a smaller delay while a shorter switching frequency gives a longer delay. The minimum sample frequency is set by the maximum frequency of the signal since it is converting the signal to discrete time in order to delay it \citep{se_bucket_brigade}. In \autoref{fig:bucketbrigade} a simple bucket brigade is illustrated.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{block_echo}
+    \caption{Block diagram of the echo effect.}
+    \label{fig:echo_block_anal}
+\end{figure}
+
+\ctikzset{bipoles/length=1cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{bucketbrigade}
+    \caption{A simple bucket brigade \citep{se_bucket_brigade}}{
+    \label{fig:bucketbrigade}
+    }
+\end{figure}
+
+
+Another way of implementing a delay is with two or more magnetic tape recorders with a shared tape. In this case the audio is recorded onto a tape loop with a magnetic write head. Further down the tape there is located one or more read heads which play the audio. The delay can be adjusted by changing the distance between the read and write heads or by changing the speed of the tape \citep{mag_tape_delay_hist}.
+
+In order to turn these delays into a echo effect the original signal need to be added to the original signal. This can be done by using a voltage adder as shown in \autoref{fig:analog_echo}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{analog_echo}
+    \caption{Implementation of analogue echo.}
+    \label{fig:analog_echo}
+\end{figure}
+
+
+\input{chapters/analysis/flanger.tex}
+\input{chapters/analysis/reverb.tex}
+\input{chapters/analysis/chorus.tex}
+
+
+
+\subsection{Distortion and Overdrive}\label{subs:dist_overdrive}
+Distortion and overdrive are two different effects but still in the same category of amplitude effects. Overdrive is dependent of the amplitude and the amount of distortion will correspond to the amplitude of the input. Whereas distortion does not depend on the amplitude, and distort the signal to a level set by the user \citep{guitar_science2014}.
+
+When distorting a signal the waveform of the signal is changed. The distortion effect is a hard clipping of the signal and the overdrive effect is a soft clipping of the signal. This is also illustrated in \autoref{fig:clipping_waveform}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{clipping_waveform.pdf}
+    \caption{Illustration of soft and hard clipping of a signal \citep{clipping_fig}.}
+    \label{fig:clipping_waveform}
+\end{figure}
+
+A simple block diagram of a distortion effect is made. This is illustrated in \autoref{fig:dist_block}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{distortion_block}
+    \caption{A simple block diagram of a distortion effect.}
+    \label{fig:dist_block}
+\end{figure}
+
+Both distortion and overdrive have a very lose definition, which is basicly that the signal is either clipped softly or hard. Most distortion and overdrive pedals are also analogue, and usually not implemented in a digital system. Therefore measurements on an analogue distortion pedal is made, to see the output compared to the input in one version of a distortion pedal. These measurements are shown in \autoref{cha:measuring_distortion_pedal_output}. 

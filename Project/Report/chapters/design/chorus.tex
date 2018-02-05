@@ -1,0 +1,23 @@
+%!TEX root = ../../master.tex
+\section{Chorus}\label{sec:chorus_design}
+\todo[author=Jacob]{Hele chorus afsnittet skal nok fjernes}
+The chorus effect is made in regards to both the requirements and the analysis of the effect.
+
+\subsection{Simulation}
+The simulations and design of these are made with MATLAB.
+
+The chorus effect works as shown in \autoref{fig:chorus_block}. This means the effect should have several feed forwards, giving the signal a delay and configuring the amplitude of the input signal.
+
+When simulating this firstly a specific delay time is chosen. To add several delays, variations of the delay time are made by multiplying the delay with a value of $1.\text{xx}$. These delays are added to the original signal including an attenuation of the delays. 
+
+A plot of the simulation is made with a single impulse to show the delays following the original signal. The x-axis shows the number of samples while the y-axis shows the amplification of the signal. This is shown in \autoref{fig:chorus_sim_impulse}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{chorus_sim_impulse}
+	\caption{Impulse plot of simulation of the chorus effect.}
+	\label{fig:chorus_sim_impulse}
+\end{figure}
+
+This is done with a sample rate of \SI{44.1}{\kilo\hertz}. By knowing the sample rate, it is possible to set the delay in seconds. In this occasion it is set at \SI{30}{\milli\second}.
+

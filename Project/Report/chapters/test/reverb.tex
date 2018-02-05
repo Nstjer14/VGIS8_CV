@@ -1,0 +1,14 @@
+\section{Reverb}
+The reverb effect is tested both in regards to \autoref{req:DL1} and the effect description in \autoref{sec:effect_descr}.
+The complete test is shown in \autoref{reverb_meas_app}. The results of the test is shown in \autoref{fig:reverb_plot}.
+
+\begin{figure}[hbpt]
+	\centering
+	\includegraphics[width=0.8\textwidth]{reverb_plot}
+	\caption{impulse response of the reverb effect.}
+	\label{fig:reverb_plot}
+\end{figure}
+
+The plot shows the reverb effect has the characteristics described in \autoref{sec:effect_descr}. This is done by making the early reflections, which are the first delays and thereafter producing the late reflections.
+
+The tap delay is a changeable variable. According to \autoref{req:DL1} the delay must not be smaller than \SI{50}{\milli\second} which is $2205$ samples. In \autoref{fig:reverb_plot} it is shown that the first delay is no shorter than \SI{50}{\milli\second}. Therefore the reverb is successful. 

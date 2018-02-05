@@ -1,0 +1,21 @@
+\section{Choice of Audio Effects}\label{sec:choice_effects}
+After reviewing the audio effects in \autoref{sec:effect_descr}, it is chosen which audio effects it is wanted to design and implement. The chosen effects are shown in \autoref{tab:chosen_effects}.
+
+\begin{table}[httb!]
+	\centering
+	\caption{The effects chosen to design and implement.}
+	\label{tab:chosen_effects}
+	\begin{threeparttable}
+		\begin{tabularx}{\textwidth}{X X}
+			\textit{Effect name} & \textit{Effect type}\\ \toprule \rowcolor{lightGrey}
+			Echo & Long delay \\
+			Reverb & Multiple long delays \\ 
+			\rowcolor{lightGrey}
+			Flanger & Short variable delay \\
+			Equaliser & Frequency based effect \\
+		\end{tabularx}
+	\end{threeparttable}
+\end{table}
+
+These audio effects have been chosen to implement, since they are all suitable for a digital implementation, in contrast to effects such as distortion and overdrive. These two amplitude altering audio effects have been chosen not to implement, since they are more suitable for implementation in an analogue system. This is mainly because the problem which will occur, when a division is needed in the implementation, since this will take too many cycles to do. 
+The audio effects in \autoref{tab:chosen_effects}, have also been chosen due to the fact, that they are all based on different principles. Therefore it is also chosen not to design and implement chorus, because this audio effect is build on the same basic principles as the flanger effect, where the only difference is the number of delay lines.

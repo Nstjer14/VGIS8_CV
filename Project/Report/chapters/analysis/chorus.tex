@@ -1,0 +1,34 @@
+\subsection{Chorus}
+The chorus effect makes one input sound like multiple outputs. If the effect for instance is used with a singer, although only one person is singing, it will sound like multiple people singing the same tones. 
+
+Even a unison choir is not in exact unison, which means a chorus effect should modify the copies of the original input. As according to \cite{chorus_descr}, The modifications can be:
+
+\begin{itemize}
+	\item Delay
+	\item Frequency shift
+	\item Amplitude modulation
+\end{itemize}
+
+To make this effect the input is split into several combinations of a delay and another kind of effect tweaking some of the other properties of the signal. A block diagram showing this is illustrated in \autoref{fig:chorus_block}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{chorus_block}
+	\caption{Block diagram showing the chorus effect.}
+	\label{fig:chorus_block}
+\end{figure}
+
+The chorus is similar to the flanger effect, but with a larger delay, which is shown in \autoref{tab:delay_times}. Chorus gives the effect of more than one guitar playing as stated but also tweaks the sound a bit like the flanger. 
+
+The effect uses feed forward in the block diagram, which means it is suitable to use a \gls{fir} filter since the output is not in a feedback loop. This means an N order \gls{fir} can be written as:
+
+\begin{equation}
+	y[n]=b_0x[n]+b_1x[n-1]+\cdots+b_Nx[n-N]
+\end{equation}
+
+\startexplain
+	\explain{$x[n]$ is the input signal.}{\noSIunit}
+	\explain{$y[n]$ is the output signal.}{\noSIunit}
+	\explain{$N$ is the filter order.}{\noSIunit}
+	\explain{$b_i$ is the amplification of the impulse response.}{\noSIunit}
+\stopexplain

@@ -1,0 +1,36 @@
+\section{Echo}
+\label{sec:echo_imp}
+In this section the echo effect designed and simulated in \autoref{sec:echo_design} is implemented on the \gls{dsp} development board. The effect implemented is described from the block diagram seen in \autoref{fig:echo_block_imp}. 
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.8\textwidth]{block_echo}
+	\caption{Block diagram of echo effect. The $z^{-m}$ is the delay block and $\alpha$ is the gain block}
+		\label{fig:echo_block_imp}
+\end{figure}
+
+From the block diagram the difference equation seen in \autoref{eq:echo_diff_eq_imp} is derived. 
+
+\begin{equation}\label{eq:echo_diff_eq_imp}
+y[n]=x[n]+a\cdot y[n-m]
+\end{equation}
+
+To implement this equation in software the last $m$ samples must be saved. This gives an upper bound to the echo. Due to limitations on the \gls{dsp} a maximum of \SI{60}{\kilo\byte} is saved for the echo. The result of this is shown in \autoref{eq:echo_size}. 
+
+\begin{equation}\label{eq:echo_size}
+\frac{60 \si{\kilo\byte}}{2 \si{\byte} \cdot 44.1 \si{\kilo\hertz}} \approx 680
+\addunit{\milli\second}
+\end{equation}
+
+\subsection{Software}
+When implementing the echo effect, it is needed to create a buffer. The input signal is then played straight through, and then a delay line is also created. The original signal is loaded into the buffer, and then the samples are read after af fixed delay time. The implementation of the echo effect onto the \gls{dsp} can be seen in \autoref{code:echo_imp_code}.
+
+\begin{lstlisting}[caption={Implementation of the echo effect on the DSP in C.},language=C,label={code:echo_imp_code},tabsize=2]
+short echo(short * rbufstart, unsigned short x, unsigned short delay, unsigned short gain)
+{
+    rbufstart[x] = rbufstart[x] + (short)(((long long) gain*rbufstart[(x+delay)%(DelayBuff)])>>10);
+    return rbufstart[x];
+}
+\end{lstlisting}
+
+The C implementation of the echo effect works in the way, that a circular buffer is used to avoid moving \SI{60}{\kilo \byte} every sample. The circular buffer is updated in the main part of the program, and modulo is used to wrap around the edge of the circular buffer. The code returns the current sample and a sample that was held in the buffer for a fixed amount of time. The delayed sample is bit-shifted two times in order to decrease the amplitude of the delayed sample, so the echo is of lesser amplitude than the non delayed sample. In this case the delayed sample's amplitude is halfed. 

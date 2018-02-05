@@ -1,0 +1,47 @@
+%!TEX root = ../../master.tex
+\section{Echo}
+\label{sec:echo_design}
+The design of the echo block is described in this section where an algorithm is described and simulated. Afterwards this is implemented on the \gls{dsp}. This is done in regards to the analysis and the requirements regarding the echo effect.
+
+\subsection{General Algorithm}
+A block diagram for the echo effect is shown on figure \autoref{fig:echo_block}. From this it can be seen, that the signal is delayed $m$ samples, and then it is added to the original signal. 
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.8\textwidth]{block_echo}
+	\caption{Block diagram of echo effect.}{
+		\label{fig:echo_block}
+	}
+\end{figure}
+
+From the block diagram, the differential equation is found. This equation is shown in \autoref{eq:echo_diff_eq}.
+
+\begin{equation}\label{eq:echo_diff_eq}
+y[n]=x[n]+a\cdot y[n-m]
+\end{equation}
+
+\subsection{Simulation}
+Simulation of the echo effect is done in MATLAB and the code is shown in \autoref{code:simulation_matlab_echo}. This implementation is block based. It takes the current sample and adds the delayed signal. On figure \autoref{fig:echo_figure} the impulse response is shown. It is seen how the impulse is sent into the echo block where the output is shown first with zero delay and amplitude 1. The echoed signal shows up every 0.005 seconds while halfing the signal every repetition.
+
+\begin{lstlisting}[caption={Simulation of echo in MATLAB.},language=MATLAB,label={code:simulation_matlab_echo}]
+len = length(sig);
+out = zeros(1,len);
+D = round(0.005*44100);
+a = 0.5;
+for i = 1:len
+    if(i-D)>0
+        out(i) = a*out(i-D) + sig(i);
+    else
+        out(i) = sig(i);
+    end
+end
+\end{lstlisting}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{echo_figure}
+    \caption{Impulse response of echo with delay of 0.005 seconds and decay of 0.5.}
+    \label{fig:echo_figure}
+\end{figure}
+
+

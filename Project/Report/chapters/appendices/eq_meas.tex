@@ -1,0 +1,95 @@
+%!TEX root = ../../master.tex
+\chapter{Equaliser Measurements}\label{eq_meas_app}
+
+\section{Purpose}
+The equaliser is tested in regard to \autoref{req:OR1}, \autoref{req:OR2} and \autoref{req:OR3}, to see whether the gain in the equaliser is sufficient, and if it is effective in the wanted frequency band. 
+
+\section{List of Equipment}
+\begin{itemize}
+	\item{Digilent Analog Discovery 2 including BNC-adaptor board}
+	\item{TMS320C5515 eZdsp}
+\end{itemize}
+
+\section{Set-up}
+The setup for the test is shown in the block diagram in \autoref{fig:eq_test_setup}. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{figures/appendix/block_eq_test}
+	\caption{Frequency response of the band pass filter at different gain settings.}
+	\label{fig:eq_test_setup}
+\end{figure}
+
+The Analog Discovery 2 is set as the input of the \gls{dsp}, and the output from the \gls{dsp}, is then sent back to the Analog Discovery 2, where it is saved to a file and processed in MATLAB.
+
+\section{Procedure}
+A frequency sweep is used on the equaliser at different levels of gain. The frequency response is then analysed to see if it is possible to reach a gain of $\pm \SI{12}{\deci\bel}$. The frequency response is also analysed to see, if the equaliser works in the entire audible frequency band.
+ 
+\section{Results}
+The equaliser is tested at different settings for each of the filters, and the frequency responses are plotted. Each of the plots represent a sub-test, and all of the plots are compared in order to get the full picture of the test. 
+
+\paragraph{Band Pass}
+
+For testing the band pass filter, the two shelving filters are set to have a gain of \SI{0}{\deci\bel}. The gain of the band pass filter are varied in four steps, $\pm \SI{6}{\deci\bel}$ and $\pm \SI{12}{\deci\bel}$. The frequency responses are sampled from the \gls{dsp} and plotted in MATLAB. The frequency responses for all four settings are shown in \autoref{fig:bp_gains}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{figures/appendix/bandpass_gain}
+	\caption{Frequency response of the band pass filter at different gain settings.}
+	\label{fig:bp_gains}
+\end{figure}
+
+From the plot it is seen, how the band pass has a gain of approximately $\pm \SI{6}{\deci\bel}$ and $\pm \SI{12}{\deci\bel}$ in the different plots.
+
+For testing the ability of the band pass filter to change the bandwidth and the center frequency, the gain of the shelving filters are again set to \SI{0}{\deci\bel}. The bandwidth of the band pass filter is then changed for some of the plots, and for others the center frequency is changed. The gain of the band pass filter is set to a maximum of \SI{12}{\deci\bel}. The frequency responses from the different plots are shown in \autoref{fig:bw_fc}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{figures/appendix/bandpass_shift}
+	\caption{Frequency response of the band pass filter at different bandwidths and center frequencies.}
+	\label{fig:bw_fc}
+\end{figure}
+
+From \autoref{fig:bw_fc} it is seen, how a change of the bandwidth and/or center frequency of the band pass filter also results in a change in the frequency response.
+
+\paragraph{Shelving Filters}
+For testing the shelving filters, the band pass filter is set to have a gain of \SI{0}{\deci\bel}. Both the low- and high frequency shelving filters' frequency response are plotted at different gain levels. The frequency responses are shown in \autoref{fig:shelv_gain}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{figures/appendix/shelving_gain}
+	\caption{Frequency response of the low- and high frequency shelving filters at different gain settings.}
+	\label{fig:shelv_gain}
+\end{figure}
+From the plot it is seen, how the gain of the filter can be changed from $\pm \SI{12}{\deci\bel}$.
+
+\paragraph{Combined Filter}
+For testing all the filters together, a gain factor of $\pm \SI{12}{\deci\bel}$ is set for all filters. The frequency responses are shown in \autoref{fig:all_gain}.
+
+\begin{figure}[httb]
+	\centering
+	\includegraphics[scale=0.8]{figures/appendix/max_min_all}
+	\caption{Frequency response of all the filters at maximum and minimum gain.}
+	\label{fig:all_gain}
+\end{figure}
+It is seen from \autoref{fig:all_gain} how the gain of the filters, when they are all combined can vary from $\SI{-12}{\deci\bel}$ to $\SI{12}{\deci\bel}$.
+
+In order to compare the combined filter with the simulations of the filter, a frequency sweep is applied to the filter with the same settings as the filter in the  simulation in \autoref{fig:parametric_sim}. The frequency response is shown in \autoref{fig:sim_compare}.
+
+\begin{figure}[httb]
+	\centering
+	\includegraphics[scale=0.8]{figures/appendix/response_design}
+	\caption{Frequency response with the same settings as the simulations in \autoref{fig:parametric_sim}}
+	\label{fig:sim_compare}
+\end{figure}
+
+When this plot is compared to the plot in \autoref{fig:parametric_sim}, it is seen, that the two frequency responses in the two plots are very similar. The main difference is, that the implemented filter has spikes on the frequency response, which is an indication of some added noise in the filter.
+All together, it is seen, that the equaliser has the wanted gain, and that it is possible to alter the wanted parameters of the equaliser.
+
+
+
+
+
+
+
+

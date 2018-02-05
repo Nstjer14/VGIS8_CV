@@ -1,0 +1,251 @@
+%!TEX root = ../../master.tex
+
+\section{Equaliser}\label{sec:equaliser_design}
+In this section the design of the equaliser is described. This is done in regards to both the analysis and the requirements set for the equaliser.
+
+\subsection{General Algorithm}
+In this section the parametric filters for shelf, boost and cut for the equaliser are implemented in the s-domain and later transformed into the z-domain with the bilinear z-transform. This is done with the bilinear z-transform where $ 2\cdot Fs\cdot (\frac{z-1}{z+1}) \rightarrow s$.
+
+\subsubsection{Boost}
+The parametric boost filter is designed from a band pass filter with variable gain. This is added to the original signal as seen in \autoref{fig:block_para_boost} which yields the transfer function shown in \autoref{eq:da_fuck_fig}.
+
+\begin{equation}
+	H_{boost}(s)=1+H_{bp}(s)\cdot G
+	\label{eq:da_fuck_fig}
+\end{equation}
+
+\startexplain
+\explain{$H_{bp}(s)$ is the transfer function of a band pass filter}{}
+\explain{1 is the transfer function of an all-pass filter with unity gain and no phase change}{}
+\explain{G is the gain of the band pass filter}{}
+\stopexplain
+
+
+The transfer function of a band pass filter is shown in \autoref{eq:bandp_trans}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.8]{boost_parametric.pdf}
+    \caption{Block diagram of parametric boost filter.}
+    \label{fig:block_para_boost}
+\end{figure}
+
+
+\begin{equation}\label{eq:bandp_trans}
+H_{bp}(s)=\frac{\frac{\omega_0}{Q}s}{s^2+\frac{\omega_0}{Q}s+\omega_0^2}
+\end{equation}
+
+\begin{equation}\label{eq:a_gain_simp}
+A=(1+G)
+\end{equation}
+
+This is entered into the equation for the block diagram of the boost circuit.
+To shorten the equation the substitution in \autoref{eq:a_gain_simp} is used.
+
+\begin{equation}
+\begin{split}
+H_{cut} & = 1 + G\frac{\frac{\omega_0}{Q}s}{s^2+\frac{\omega_0}{Q}s+\omega_0^2}\\
+&=\frac{s^2+\frac{\omega_0}{Q} \cdot(1+G) \cdot s + \omega_0^2}{s^2+\frac{\omega_0}{Q} \cdot s + \omega_0^2} \\
+&=\frac{s^2+\frac{\omega_0}{Q} \cdot A \cdot s + \omega_0^2}{s^2+\frac{\omega_0}{Q} \cdot s + \omega_0^2}
+\end{split}
+\end{equation}
+\startexplain
+	\explain{A is the combined amplification (1+G)}{}
+	\explain{G is the gain of the filter}{}
+	\explain{$\omega_0$ is the analogue centre frequency}{\si{\radian \per \second}}
+	\explain{Q is the quality factor}{}
+\stopexplain
+
+
+In \autoref{fig:tf_visual_boost} the frequency response of the different blocks are plotted. This shows the band pass filter, the unity gain function and the sum of the two. 
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.8]{bode_bandpass_parametric.pdf}
+    \caption{Frequency response of the different blocks in boost circuit.}
+    \label{fig:tf_visual_boost}
+\end{figure}
+
+The equation is transformed with the bilinear z-transform. This is shown in \autoref{eq:z_trans_benno}. 
+\begin{equation}
+	\frac{Y(z)}{X(z)} = \frac{ ( 2 A \frac{ \omega }{ Q }  Fs + 4 Fs^2 + \omega ^ 2) + ( -8 Fs ^ 2 + 2 \omega ^ 2 ) z ^ { -1 } + (- 2 A \frac{ \omega } { Q }  Fs + 4 Fs^2 + \omega ^ {2}) z ^ { - 2 }}{( 2 \frac{ \omega }{ Q }  Fs + 4 Fs^2 + \omega ^ 2)+ (- 8 Fs ^ 2 + 2 \omega ^ 2 ) z ^ { -1 } + (- 2 \frac{ \omega } { Q }  Fs + 4 Fs^2 + \omega ^ {2}) z ^ { - 2 } }
+	\label{eq:z_trans_benno}
+\end{equation}
+
+To make the coefficients easier to calculate every coefficient is divided by Fs. This gives 
+\begin{equation}\label{eq:tf_boost_para}
+	\frac{Y(z)}{X(z)} = \frac{ ( 2 A \frac{ \omega }{ Q } + 4 Fs + \frac{\omega ^ 2}{Fs}) + ( -8 Fs + 2 \frac{\omega ^ 2}{Fs}) z ^ { -1 } + (- 2 A \frac{ \omega } { Q }  + 4 Fs + \frac{\omega ^ 2}{Fs}) z ^ { - 2 }}{( 2 \frac{ \omega }{ Q }  + 4 Fs + \frac{\omega ^ 2}{Fs})+ ( -8 Fs + 2 \frac{\omega ^ 2}{Fs}) z ^ { -1 } + ( -2 \frac{ \omega } { Q } + 4 Fs + \frac{\omega ^ 2}{Fs}) z ^ { - 2 } }
+\end{equation}
+
+%\begin{equation}
+%\begin{split}
+% Y(z)&(( 2 ( 1 + G ) \frac{ \omega }{ Q }  Fs + 4 Fs^2 + \omega ^ 2) - ( 8 Fs ^ 2 - 2 \omega ^ 2 ) z ^ { -1 } - ( 2 ( 1 + G ) \frac{ \omega } { Q }  Fs - 4 Fs - \omega ^ {2}) z ^ { - 2 })  \\
+% =X(z)&(( 2 \frac{ \omega }{ Q }  Fs + 4 Fs^2 + \omega ^ 2)- ( 8 Fs ^ 2 - 2 \omega ^ 2 ) z ^ { -1 } - ( 2 \frac{ \omega } { Q }  Fs - 4 Fs - \omega ^ {2}) z ^ { - 2 })
+%\end{split}
+%\end{equation}
+
+To implement the filter, direct form 1 is used. The equation for direct form 1 for a second order transfer function is shown on \autoref{eq:direct_form_one}. This results in the differential equation shown on \autoref{eq:diff_bp_boost}
+ 
+\begin{equation}\label{eq:direct_form_one}
+y[n]=\frac{1}{a_0}(b_0 x[n]+b_1 x[n-1]+b_2 x[n-2] - a_1 y[n-1]-a_2 y[n-2])
+\end{equation}
+\begin{equation}\label{eq:diff_bp_boost}
+\begin{split}
+ y[n] & =\frac{1}{2 \frac{ \omega }{ Q } + 4 Fs + \frac{\omega ^ 2}{Fs}}(( 2 A \frac{ \omega }{ Q } + 4 Fs + \frac{\omega ^ 2}{Fs}) x[n] + \\
+ & ( -8 Fs  + 2 \frac{\omega ^ 2}{Fs} ) x[n-1]  +(- 2 A \frac{ \omega } { Q }  + 4 Fs + \frac{\omega ^ 2}{Fs}) x[n-2] - \\ 
+ & ( -8 Fs ^ 2 + 2 \frac{\omega ^ 2}{Fs} ) y[n-1] - (- 2 \frac{ \omega } { Q } + 4 Fs + \frac{\omega ^ 2}{Fs}) y[n-2])
+\end{split}
+\end{equation}
+
+\subsubsection{Cut}
+The block diagram for the parametric cut filter is as shown in \autoref{fig:block_para_cut}.
+ 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.8]{cut_parametric.pdf}
+	\caption{Block diagram of parametric cut filter.}
+	\label{fig:block_para_cut}
+\end{figure}
+
+From the block diagram it can be seen, that the transfer function of the cut filter is equal to $ {H(z)}_{cut} = \frac{1}{{H(z)}_{boost}} $, and thus the z-transformed transfer function is as shown in \autoref{eq:tf_cut}.
+
+\begin{equation}\label{eq:tf_cut}
+	\frac{Y(z)}{X(z)} = \frac{( 2 \frac{ \omega }{ Q }  + 4 Fs + \frac{\omega ^ 2}{Fs})+ ( -8 Fs + 2 \frac{\omega ^ 2}{Fs}) z ^ { -1 } + (- 2 \frac{ \omega } { Q } + 4 Fs + \frac{\omega ^ 2}{Fs}) z ^ { - 2 } }{ ( 2 A \frac{ \omega }{ Q } + 4 Fs + \frac{\omega ^ 2}{Fs}) + ( -8 Fs + 2 \frac{\omega ^ 2}{Fs}) z ^ { -1 } + (- 2 A \frac{ \omega } { Q }  + 4 Fs + \frac{\omega ^ 2}{Fs}) z ^ { - 2 }}
+\end{equation}
+
+This gives a direct form 1 differential equation as seen in \autoref{eq:diff_cut_parametric}.
+
+\begin{equation}\label{eq:diff_cut_parametric}
+\begin{split}
+ y[n] =&\frac{1}{ 2 A \frac{ \omega }{ Q }  + 4 {Fs} +\frac{\omega ^ 2}{Fs}}((2 \frac{ \omega }{ Q }  + 4 Fs + \frac{\omega ^ 2}{Fs}) x[n] + \\
+ & (- 8 Fs + 2 \frac{\omega ^ 2}{Fs} ) x[n-1]  +(- 2 \frac{ \omega } { Q } + 4 Fs + \frac{\omega ^ 2}{Fs}) x[n-2] - \\ 
+ & ( -8 Fs + 2 \frac{\omega ^ 2}{Fs} ) y[n-1] - ( -2 A \frac{ \omega } { Q } + 4 Fs +\frac{\omega ^ 2}{Fs}) y[n-2])
+\end{split}
+\end{equation}
+
+
+\subsubsection{Shelving}
+Shelving is used in order to boost or cut the high and low frequencies of the equaliser.
+\subsubsection{Low Pass}
+
+To implement a shelf filter the block diagram on \autoref{fig:block_para_boost} is used in combination with a first order low pass filter instead of a band pass filter. This gives the boost for all lower frequencies than at the cut-off frequency. The standard equation for a first order low pass filter is entered into the transfer function for \autoref{fig:block_para_boost}. This turns into \autoref{eq:lshelf_boost}.
+
+\begin{equation}\label{eq:lshelf_boost}
+\begin{split}
+H_{lsb} & = 1 + G\frac{\omega}{s+\omega}\\
+&=\frac{s+G\omega+\omega}{s+\omega}
+\end{split}
+\end{equation}
+
+This is the result of a low pass filter added with unity gain as shown on \autoref{fig:lf_shelving}.
+ 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.8]{lp_construction.pdf}
+    \caption{The frequency response of the low frequency shelving filter.}
+    \label{fig:lf_shelving}
+\end{figure}
+
+As in the boost/cut, the transfer function of the cut shelf is equal to $ {H(z)}_{cut} = \frac{1}{{H(z)}_{boost}} $, and this the result becomes what is shown in \autoref{eq:shelf_low_s}.
+
+\begin{equation}\label{eq:shelf_low_s}
+H_{lsc}=\frac{s+\omega}{s+G\omega+\omega}
+\end{equation}
+
+Using the bilinear z-transform on \autoref{eq:lshelf_boost} this becomes what is shown in \autoref{eq:shelving_lp_ztf}.
+
+\begin{equation}\label{eq:shelving_lp_ztf}
+\frac{Y(z)}{X(z)}=\frac{(G\omega+2Fs+\omega)+(G\omega-2Fs+\omega)z^{-1}}{(2Fs+\omega)+(-2Fs+\omega)z^{-1}}
+\end{equation}
+
+This is set up on direct form 1 resulting in \autoref{eq:deq_lp_shelving}.
+\begin{equation}\label{eq:deq_lp_shelving}
+\begin{split}
+y[n]=&\frac{1}{(2Fs+\omega)}(G\omega+2Fs+\omega) x[n]+(G\omega-2Fs+\omega)x[n-1] -\\
+&(-2Fs+\omega)y[n-1])
+\end{split}
+\end{equation}
+
+\subsubsection{High Pass}
+The same procedure used for the low pass shelving filter is used to implement the high pass shelving filter. The standard equation for a second order high pass filter is entered into the transfer function of \autoref{fig:block_para_boost} resulting in \autoref{eq:shelving_hp_s}.
+
+
+\begin{equation}\label{eq:shelving_hp_s}
+\begin{split}
+	H(s)&=1+G\frac{s}{s+\omega}\\
+	&=\frac{(G+1)s+\omega}{s+\omega}
+\end{split}
+\end{equation}
+
+As with the low frequency shelving filter this equation is the sum of a high-pass filter and an all-pass filter as shown in \autoref{fig:hf_shelving}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.8]{hp_construction.pdf}
+    \caption{The frequency response of the high frequency shelving filter.}
+    \label{fig:hf_shelving}
+\end{figure}
+
+
+This is z-transformed with the bilinear z-transform and is shown in \autoref{eq:shelving_hp_z}.
+\begin{equation}\label{eq:shelving_hp_z}
+\frac{Y(z)}{X(z)}=\frac{(2GFs+2Fs+\omega)+(-2GFs-2Fs+\omega)z^{-1}}{(2Fs+\omega)+(-2Fs+\omega)z^{-1}}
+\end{equation}
+
+Using direct form 1 a transfer function is found, and is shown in \autoref{eq:diff_hp_shelf_parametric}.
+\begin{equation}\label{eq:diff_hp_shelf_parametric}
+\begin{split}
+y[n]=&\frac{1}{(2Fs+\omega)}(2GFs+2Fs+\omega) x[n]+(-2GFs-2Fs+\omega)x[n-1] -\\
+&(-2Fs+\omega)y[n-1])
+\end{split}
+\end{equation}
+
+
+
+\subsection{Simulation}
+To plot the filters, $z$ is replaced with $\text{e}^{-j\omega}$ where $\omega$ is the normalized frequency. This is done in MATLAB as shown in \autoref{code:simulation_matlab_parametric}. This takes the parameters of the filter and calculates the filter response for each frequency.
+\begin{lstlisting}[caption={Simulation of one parametric filter in MATLAB.},language=MATLAB,label={code:simulation_matlab_parametric}]
+%initialization
+Fs = 44100; %sample frequency
+xax = linspace(1./Fs*2*pi,pi,1000000); % 1 million points from 1 hz to Fs on digital frequency
+za = exp(-j.*xax); %e^(-jw)
+G = 10^(6/20.)-1; %Gain calculated from dB
+A = 1 + G;
+w = 2*pi*1600; %center frequency
+Q = 3; %Q value
+Bw = w/Q; %Bw
+out = zeros(1, length(xax));
+for i = 1:length(xax) %Loop for iterating all the frequencies.
+    z = za(i);
+    out(i) = 1/(((2*A*Bw*Fs+4*Fs^2+w^2)*z^2 + (-8*Fs^2+2*w^2)*z - 2*A*Bw*Fs+4*Fs^2+w^2) / ((2*Bw*Fs+4*Fs^2+w^2)*z^2 + (-8*Fs^2+2*w^2)*z - 2*Bw*Fs+4*Fs^2+w^2));
+end
+out = out.*out2.*out3; % all previous filter outputs are multiplied together
+\end{lstlisting}
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{Values for 3 band parametric equaliser simulation.}
+\label{tab:3_para_band_sim}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Filter type & $\omega_0$ {[}Hz{]} & Q value {[}$\cdot${]} & Gain {[}dB{]} \\ \hline
+Low shelf & 100 & . & -3 \\ \hline
+Band pass & 1600  & 3& -6 \\ \hline
+High shelf &12000 & . & 3 \\ \hline
+
+\end{tabular}
+\end{table}
+
+In \autoref{fig:parametric_sim} the frequency plot of the three filters with parameters defined in \autoref{tab:3_para_band_sim} are shown.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{simulation_parametric_eq}
+    \caption{Simulation of parametric filters with two shelving filters and a band pass filter.}{
+    \label{fig:parametric_sim}
+    }
+\end{figure}
+

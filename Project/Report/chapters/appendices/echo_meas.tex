@@ -1,0 +1,44 @@
+\chapter{Echo Audio Effect Measurements}\label{ch:echo_meas_app}
+The echo effect is tested to compare the effect to the requirements and analysis description of the effect.
+
+\section{Purpose}
+The impulse response of the echo effect is analysed according to delay and amplitude to see, if the output corresponds to \autoref{req:DL1} and \autoref{req:DL3} and if it behaves as described in \autoref{sec:effect_descr}.
+
+\section{List of Equipment}
+\begin{itemize}
+	\item Digilent Analog Discovery 2 including BNC-adaptor board
+	\item Philips PM 5715 pulse generator (AAUnr. 08644)
+	\item TMS320C5515 eZdsp
+	\item A computer
+\end{itemize}
+
+\section{Set-up}
+The pulse generator sends a single impulse into the \gls{dsp}. The output signal from the \gls{dsp} is read on the Digital Analog Discovery 2 and analysed. By using the Waveforms software set at single input, only one impulse is recorded and saved at a time.
+
+\section{Procedure}
+An impulse is sent in on the input of the \gls{dsp} and the impulse response is then plotted and analysed according to delay and amplitude.
+
+The impulse is sent with the Philips PM 5715 pulse generator. This is set to do single shot, which is controlled by the user. The duration needed is \SI{1}{\milli\second} to intercept the signal on the oscilloscope. The ramp is set at the lowest possible value of \SI{6}{\nano\second}.
+
+\section{Results}
+The echo is generated with delays of $2500, ~4410 ~\text{and} ~29\,999$ samples. The delays of $2500 ~\text{and} ~29\,999$ samples are with a decay of $500$. The delay of $4410$ samples is with decays $500$ and $900$. These four measurements are shown in \autoref{fig:echo_del4410_app} and \autoref{fig:echo_dec500_app}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figures/appendix/echo_plot_del4410}
+	\caption{The two plots show the impulse echoed with a delay of $ 4410 $ samples and decays of $ 500 $ and $ 900 $.}
+	\label{fig:echo_del4410_app}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figures/appendix/echo_plot_dec500}
+	\caption{The two plots show the impulse echoed with a delays of $ 2500 $ and $ 29\,000 $ samples and a decay of $ 500 $.}
+	\label{fig:echo_dec500_app}
+\end{figure}
+
+The delay can be varied down to 1 sample if needed, but according to \autoref{req:DL1} the delay must not go below \SI{50}{\milli\second}. This means the minimum amount of delay samples is $44100\cdot0.050=2205$. The highest delay possible is $29\,999$ as this is limited by the buffer length. This means that \autoref{req:DL1} is met.
+
+\autoref{req:DL3} requires the echo to have a variable gain of the delayed signals. This is done by adjusting the \textit{decay} factor of the effect. The lower the decay value is the faster the signal will die out. This means that \autoref{req:DL3} is also fulfilled.
+
+The figures also show how the echo effect being played, means a repetition of the original signal at a constant delay, but with a decay to the amplitude.

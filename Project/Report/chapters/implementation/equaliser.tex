@@ -1,0 +1,164 @@
+%!TEX root = ../../master.tex
+\section{Equaliser}
+\label{sec:equaliser_imp}
+In this section the equaliser designed in \autoref{sec:equaliser_design} will be implemented.
+
+\subsection{Initialisation}
+Before the filters can be implemented some memory and constants needs to be initialised. In \autoref{code:eq_init_code} Fs is declared to 44100 Hz and to ensure faster calculations the constants \texttt{ftFs} and \texttt{etFs} are declared. \texttt{ftFs} stands for four time Fs and \texttt{etFs} stands for eight times Fs. The array \texttt{fc} contains the filter coefficients for the three filters in the order [b0, b1, b2, a1, a2]. The array \texttt{fd} contains the corresponding filter data [x[n], x[n-1], x[n-2], y[n-1], y[n-2]].
+
+The arrays \texttt{dbroa} and \texttt{dbtog} are lookup tables to convert dB to the constants \texttt{A} and \texttt{G} when calculating the filter coefficients. These are calculated from the equations shown in \autoref{eq:calc_db_to_aandg}. The results are scaled by a factor of $2^4$ in order to calculate the fixed point gains. The result of these equations is shown in line 8 and 9 in \autoref{code:eq_init_code} where the index corresponds to the gain in dB.
+
+\begin{equation}\label{eq:calc_db_to_aandg}
+\begin{split}
+A &= 10^{\frac{n}{20}}\cdot 2 ^{4}\\
+G &= (10^{\frac{n}{20}} -1 )\cdot 2^{4}
+\end{split}
+\end{equation}
+
+\startexplain
+	\explain{A is the total amplification (1+G)}{}
+	\explain{G is the gain of the filter}{}
+	\explain{n is the index in decibel that is needed to be converted}{dB}
+\stopexplain
+
+
+\begin{lstlisting}[caption={Initialisation of constants and memory for the equaliser.},language=C,label={code:eq_init_code},tabsize=2]
+#define Fs 44100
+#define ftFs (unsigned long long) 176400
+#define etFs (unsigned long long) 352800
+
+short fc[3][5] = {0};
+short fd[3][5] = {0};
+
+const short dbtoa[] = {16, 18, 20, 23, 25, 28, 32, 36, 40, 45, 51, 57, 64};
+const short dbtog[] = {0, 2, 4, 7, 9, 12, 16, 20, 24, 29, 35, 41, 48};
+\end{lstlisting}
+
+In order to calculate the filter coefficients for the parametric filters a function for calculating band pass filters using the transfer functions in \autoref{eq:tf_boost_para} and \autoref{eq:tf_cut} is used. 
+In \autoref{code:eq_bp_coef_code} the band pass filter coefficients are calculated. First $\omega^2/Fs$ is calculated due to it's reoccurrence in the equations. Since $\omega_{max} = 2\cdot \pi \cdot 22050 = 138544$, which is an unsigned 18 bit value, the result is bit shifted down by 2, to get it to fit inside the 16 bit limit of the accumulator. To get the right size this is bit shifted up by 4 because of $(\frac{x}{2^{q}})^2=\frac{x^2}{2^{2 q}}$. Using this equation the following is true $x^2=(\frac{x}{2^q})^2 \cdot 2^{2q}$. But because the filter is calculated using the bilinear z-transform pre-warping is needed. This is done using $\omega = 2\cdot Fs \cdot tan(\frac{\Omega}{2Fs})$.
+
+The pre-warping results in a real maximum shown in \autoref{eq:prewarping_calc} giving a smaller than planed maximum frequency.
+
+\begin{equation}\label{eq:prewarping_calc}
+\begin{split}
+	2^{18}&= 2\cdot Fs \cdot tan(\frac{\pi f}{Fs})\\
+	f &= \SI{17492}{\hertz}
+\end{split}
+\end{equation}
+
+In order to have a frequency of $\SI{20}{\kilo \hertz}$ for this 20 bit is needed. This however this gave a problem with overflow in the accumulator. Therefore the maximum frequency is limited to 12 bit and therefore $\SI{17492}{\hertz}$.	
+
+Depending on the sign of the gain A the cut or boost filter is chosen. Then the gain is looked up in the dbtoa table.
+
+The filter coefficients are normalised by dividing by \texttt{a0}. To keep the calculations fixed point the numerator is bit shifted up by 6 while the denominator is bit shifted down by 6. This results in the result being multiplied by $2^{12}$. The sign is changed for \texttt{a1} and \texttt{a2} to be able to sum all the coefficients in the \gls{iir} filters differential equation instead of having to subtract the \texttt{a} coefficients.
+Lastly this is stored in \texttt{fc} defined in \autoref{code:eq_init_code}. The process for calculating the coefficients are the same for the shelving filters. 
+\begin{lstlisting}[caption={Calculating of band pass filter coefficients},language=C,label={code:eq_bp_coef_code},tabsize=2]
+void calc_coeffs_band( short * coeffs, unsigned short bw, long long w, short A)
+{
+	long long coef_a0 = 0, coef_b0 = 0, coef_b1 = 0, coef_a1 = 0;
+	long long coef_b2 = 0, coef_a2 = 0;
+	short bb0 = 0, bb1 = 0, bb2 = 0, aa0 = 0,aa1 = 0, aa2 = 0;
+	short shifft = 6;
+	//omega squared/Fs is calculated once to save calculations. 
+	//omega is bit shifted in order to keep it under 16 bit.
+	unsigned long long ws = (unsigned long long) (w>>2)*(w>>2);
+	ws = (ws <<4)/Fs;
+	//If the gain is positive the filter coefficients are calculated
+	if(A >= 0)
+	{
+		A = dbtoa[A];
+		coef_b0 = (((long long)A*bw)>>3)+ftFs+ws;
+		coef_b1 = -(etFs - (long long) 2*ws);
+		coef_b2 = -((((long long)A*bw)>>3)-ftFs-ws);
+		coef_a0 = ((unsigned long long)2*bw)+ftFs+ws;
+		coef_a1 = -(etFs - (long long)2*ws);
+		coef_a2 = -(((long long)2*bw)-ftFs-ws);
+	}
+	//If the gain is negative the coefficients need to be flipped
+	// due to H_cut = 1/H_boost
+	else if(A < 0)
+	{
+		A = dbtoa[abs(A)];
+		coef_b0 = ((unsigned long long)2*bw)+ftFs+ws;
+		coef_b1 = -(etFs - (long long)2*ws);
+		coef_b2 = -(((long long)2*bw)-ftFs-ws);
+		coef_a0 = (((long long)A*bw)>>3)+ftFs+ws;
+		coef_a1 = -(etFs - (long long) 2*ws);
+		coef_a2 = -((((long long)A*bw)>>3)-ftFs-ws);
+	}
+	//Normalising of the coefficients
+	bb0 =  (short)((coef_b0<<shifft)/(coef_a0>>shifft));
+	bb1 =  (short)(((coef_b1<<shifft)/(coef_a0>>shifft)));
+	bb2 =  (short)(((coef_b2<<shifft)/(coef_a0>>shifft)));
+	aa1 =  -(short)(((coef_a1<<shifft)/(coef_a0>>shifft)));
+	aa2 =  -(short)(((coef_a2<<shifft)/(coef_a0>>shifft)));
+	//Write coefficients to the given array
+	coeffs[0] =  bb0;
+	coeffs[1] =  bb1;
+	coeffs[2] =  bb2;
+	coeffs[3] =  aa1;
+	coeffs[4] =  aa2;
+	return;
+}
+\end{lstlisting}
+
+
+These filter coefficients are used in a generic second order \gls{iir} filter implementation. The function shown in \autoref{code:imp_filter} takes a sample and what index it has in the data and coefficient array. It then takes the coefficients and multiply them with the corresponding samples to satisfy \autoref{eq:direct_form_one}. 
+\begin{lstlisting}[caption={Single second order IIR filter implementation},language=C,label={code:imp_filter},tabsize=2]
+short filter(short x, short filnr)
+{
+	short i = 0;
+	long long y = 0;
+	short coff, dat;
+	fd[filnr][2] = fd[filnr][1];
+	fd[filnr][1] = fd[filnr][0];
+	fd[filnr][0] = x;
+	for(i = 0; i < 5; i++)
+	{
+		coff = fc[filnr][i];
+		dat = fd[filnr][i];
+		y = (long long)y + (long long)coff*dat;
+	}
+	fd[filnr][4] = fd[filnr][3];
+	fd[filnr][3] =(short)(y >> 12);
+	return fd[filnr][3];
+}
+\end{lstlisting}
+
+In order to keep track of the filters and feed the sample from one filter to the next a multi filter function is implemented as shown in \autoref{code:imp_mult_filter}. This takes a sample and moves it through all the filters before outputting the filtered sample.
+\begin{lstlisting}[caption={Single second order IIR filter implementation},language=C,label={code:imp_mult_filter},tabsize=2]
+short multifilter(short x)
+{
+	int i = 0;
+	int inp = x;
+	for(i = 0; i < 3; i++)
+	{
+		inp = filter(inp,i);
+	}
+	return inp;
+}
+\end{lstlisting}
+
+As an example of usage the coefficients are firstly generated for certain frequencies and gains. Then the measured input data is passed through all the filters in a loop as shown in \autoref{code:imp_filter_exmpl}.
+
+\begin{lstlisting}[caption={Example usage of filtering functions.},language=C,label={code:imp_filter_exmpl},tabsize=2]
+calc_coeffs_band(fc[0], bw, w[0], db[0]);
+calc_coeffs_hi_shelf(fc[1], w[1], db[1]);
+calc_coeffs_lo_shelf(fc[2], w[2], db[2]);
+
+while (1)
+{
+	/* Read Digital audio */
+	while((Rcv & I2S0_IR) == 0);  // Wait for interrupt pending flag
+	data3 = I2S0_W0_MSW_R;  // 16 bit left channel received audio data 
+
+	outputs = multifilter(data3); // Filtering of data
+
+	/* Write Digital audio */
+	while((Xmit  & I2S0_IR) == 0);  // Wait for interrupt pending flag
+	I2S0_W0_MSW_W = outputs;	//Left channel
+	I2S0_W0_LSW_W = 0;
+	I2S0_W1_MSW_W = 0;	//Right channel
+	I2S0_W1_LSW_W = 0;
+}
+\end{lstlisting}
