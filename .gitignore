@@ -130,7 +130,7 @@ sympy-plots-for-*.tex/
 # WinEdt
 *.bak
 *.sav
-/Report/master.pdf
+/Project/Report/master.pdf
 /Rapport/master.tps
 /Rapport/*.tcp
 /Rapport/*.tps
