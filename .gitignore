@@ -131,9 +131,9 @@ sympy-plots-for-*.tex/
 *.bak
 *.sav
 /Project/Report/master.pdf
-/Rapport/master.tps
-/Rapport/*.tcp
-/Rapport/*.tps
+/Project/Report/master.tps
+/Project/Report/*.tcp
+/Project/Report/*.tps
 *.tmp
 *.tcp
 
