@@ -4,3 +4,13 @@ From here three different types of approaches were made, namely a holistic and a
 
 The holistic approach encodes the entirety of a face and then identifies using template-matching, whereas the hybrid method uses both template-matching and feature extraction \citep{Wechsler2007}.
 In 1990, \gls{pca} was introduced for holistic face recognition. The \gls{pca} approach makes use of eigenfaces, each eigenface represents a component a face is encoded. But as \cite{Wechsler2007} claims, \gls{lda} is a more effective suitable approach for face identification and authentication. Another holistic approach is using \gls{svm} for face recognition \citep{Wechsler2007}.
+
+The feature approach gave way for what is now known as recognition-by-parts, which uses the features and a global structure to link these features. A structure for linking 2D features is the \gls{hmm}. \gls{pca} is also used in this approach, but is used to model shape or texture of the face.
+\todo[author=Niclas, inline]{We need an "introduction" to the subsection}
+
+\subsection{DeepID}
+\gls{deepid} is a \gls{cnn} which aims to use feature extraction for face identification and verification. It detects five facial landmarks; the two eye centres, the nose tip, and the two mouth corners. The network is made of four convolutional layers with max-pooling, which are used to extract features hierarchically. These are followed by the fully-connected \gls{deepid} layer and a softmax output layer to indicate identity classes. The feature extraction and recognition is done in two steps, where the first feature extraction is learned with the target of face identification \citep{deepID2014}.
+
+In the \gls{cnn}s the neuron number of the last hidden layer in the network is much smaller than that of the output layer. This is done, to better classify faces \citep{deepID2014}. The network extracts low-level features in the bottom layers, where feature numbers decreases for each layer. In opposition, the high-level features are formed in the top layers.
+
+The network is tested using the \gls{lfw} database. This database is images of faces from different angles and scenarios consisting of 13.233 images \citep{lfw2007}.
