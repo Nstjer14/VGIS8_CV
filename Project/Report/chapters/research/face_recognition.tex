@@ -25,3 +25,10 @@ The \gls{deepid2} layer is after the four convolutional layers. This layer is le
 \gls{deepid2} also uses the \gls{lfw} database and achieves a $99.15\%$ accuracy.
 
 \subsection{DeepID3}
+DeepID3 is a further expansion of both \gls{deepid} and \gls{deepid2} but is also drawing on some from elements from VGG net and GoogleNet \citep{sun2015}. The qualities from these two networks is the use of stacked convolution and inception layers. DeepID3 is in general a deeper network than \gls{deepid2} and its expansion DeepID2+.
+
+DeepID3 resembles \gls{deepid2} in the use of adding supervisory signals to early layers.
+
+\cite{sun2015} proposes two different networks with DeepID3. One is using eight convolutional layers with max pooling after every other convolutional layer. The second network has four convolutional layers with max pooling after every other, following are five inception layers.
+
+DeepID3 is also tested on the \gls{lfw} dataset with an accuracy of $99.52\%$ which is an increase in accuracy compared to \gls{deepid2}, but as stated in \cite{sun2015} it is not an improvement of \gls{deepid2}+.
