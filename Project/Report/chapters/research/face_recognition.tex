@@ -13,6 +13,15 @@ The feature approach gave way for what is now known as recognition-by-parts, whi
 
 In the \gls{cnn}s the neuron number of the last hidden layer in the network is much smaller than that of the output layer. This is done, to better classify faces \citep{deepID2014}. The network extracts low-level features in the bottom layers, where feature numbers decreases for each layer. In opposition, the high-level features are formed in the top layers.
 
-The network is tested using the \gls{lfw} database. This database is images of faces from different angles and scenarios consisting of 13.233 images \citep{lfw2007}.
+The network is tested using the \gls{lfw} database. This database is images of faces from different angles and scenarios consisting of 13.233 images \citep{lfw2007}. It achieves $97.45\%$ accuracy on this dataset, requiring weakly aligned faces \citep{deepID2014}.
 
 \subsection{DeepID2}
+\gls{deepid2} is an expansion upon \gls{deepid} and is a deep \glsentrylong{cnn} used for face identification and verification. This is done by using feature extraction.
+
+Just like \gls{deepid}, \gls{deepid2} uses four convolutional layers but only the first three uses max-pooling. It uses 400 face patches instead of 60 \citep{deepID2014,sun2014} and detects 21 landmarks of the face.
+
+The \gls{deepid2} layer is after the four convolutional layers. This layer is learned under two supervisory signals. The first is identification classifying the images into identities. The second is face verification which manipulates the \gls{deepid2} data to be similar to a matching identity should this be the same.
+
+\gls{deepid2} also uses the \gls{lfw} database and achieves a $99.15\%$ accuracy.
+
+\subsection{DeepID3}
