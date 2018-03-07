@@ -1,15 +1,54 @@
 \section{Information Fusion}
 
-A system that strives to utilise information from two or more different biometric traits in order to obtain one result is a called a multi-modal system which is a kind of multi-biometric system. Besides the multi-modal approach there are several other approaches, which results in information from two or more sources, therefore, methods for fusion of information from different sources into one system for classification purposes is a widely investigated area. \citep{Bowyer2016b} \todo{should this be in a small introduction before the three different areas?}
+A system that strives to utilise information from two or more different biometric traits in order to obtain one combined result is a called a multi-modal system which is a kind of multi-biometric system. Besides the multi-modal approach there are several other approaches, which results in information from two or more sources, therefore, methods for fusion of information from different sources into one system for classification purposes is a widely investigated area. \citep{Bowyer2016b}
 
 Fusion of information can happen on different levels. It can happen on one of five levels, each with a higher level of preprocessing: signal level, feature level, score level, rank level, or decision level. The level on which the fusion should be done depends on the kinds of multi biometric data that has to be fused, and the purpose of the fusing. In general score-level and feature-level are the most popular fusing techniques \citep{Bowyer2016b}. Fusing at the lowest level, signal level, might be done in order to merge data from different sources to construct a more detailed or larger dataset or signal. At the feature level the fusing might happen through merging of extracted features from different sources into one feature vector \citep{Ross2003}. At the score level the fusion can be done in order to determining the best sample to use for the processing based on which has the highest score and thus is the best match to the gallery samples. Rank level can be somewhat similar to the scores but depend on match rankings. At the decision level it can be making the decision based multiple classifiers, e.g. one for each modality\citep{Fierrez2018b}.
 
-In the literature a large variety of methods and algorithms have been utilised for fusing information on different levels. Some algorithms are fairly simple and basically makes decisions about which sample to use onwards for classification based on matching scores between samples and the gallery. Other methods are more advanced and well known for use in a variety of applications\todo{maybe mention some of the applications?}. These are methods such as \gls{svm}, \gls{knn}, decision trees, and bayesian methods \citep{Ross2003}. The highest rank method and Borda count are both well known methods for combining information based on ranking. The highest rank method ranks possible classes based on the highest rank assigned to the class by a classifier across all classifiers.\citep{Ho1994} The Borda count is a kind of majority voting which can be used in combination with \gls{mcs} \citep{Bowyer2016b,Ho1994}. An important aspect to consider is that whenever fusion between different kinds of information is done the information should be represented in the same data space, otherwise unwanted weighing of certain information above other might occur.  
+In the literature a large variety of methods and algorithms have been utilised for fusing information on different levels. Some algorithms are fairly simple and basically makes decisions about which sample to use onwards for classification based on matching scores between samples and the gallery. Other methods are more advanced and well known for use in applications such as classification. These are methods such as \gls{svm}, \gls{knn}, decision trees, and bayesian methods \citep{Ross2003}. The highest rank method and Borda count are both well known methods for combining information based on ranking. The highest rank method ranks possible classes based on the highest rank assigned to the class by a classifier across all classifiers.\citep{Ho1994} The Borda count is a kind of majority voting which can be used in combination with \gls{mcs} \citep{Bowyer2016b,Ho1994}. An important aspect to consider is that whenever  different kinds of information are fused together, the information should be represented in the same data space, otherwise unwanted weighing of certain information above other might occur.  
 
-In this report the focus is to implement a multimodal system utilising the biometric traits face and iris. In literature different approaches for the fusion of these traits have been presented. \cite{Al-Waisy2017a} as one of the lates researches within the area presented a work utilising deep learning for feature extraction and matching of the biometric traits and tests different methods for score and rank level fusion of the modalities. The tested methods on score level include eg.  sum, weighted sum, max etc while the rank level fusion uses the mentioned Borda count, Highest rank, or Logistic regression. 
+In this report, the focus is to implement a multimodal system utilising the biometric traits face and iris. In literature different approaches for the fusion of these traits have been presented. \cite{Al-Waisy2017a} as one of the lates researches within the area presented a work utilising deep learning for feature extraction and matching of the biometric traits and tests different methods for score and rank level fusion of the modalities. The tested methods on score level include eg.  sum, weighted sum, max etc while the rank level fusion uses the mentioned Borda count, Highest rank, or Logistic regression. 
 
 \section{Multi-Modal Databases}
 Even though recognition based on biometric traits is widely investigated, and research shows that multimodal systems perform better than the uni-modal systems based on the same data, the research in this area is limited and incomplete \citep{Chen2005a,Bowyer2016b}. Because of the limited availability of multimodal datasets, such datasets are often synthetically constructed based on randomly combined data, eg. iris and face datasets \citep{Chen2005a}. Only a limited amount of studies  utilise a multimodal dataset obtained from the same test subjects or maybe even with one sensor. However, a few multimodal datasets have been encountered in literature. The multimodal datasets varies in which modalities they include. The modalities can be different images of face, recordings of gait, hand geometry, handwriting, signature, fingerprint, finger vein, iris, speech etc. \citep{Yin2011, Dessimoz2007, Ross2003, Ortega-Garcia2010}. Examples of multimodal datasets containing both iris and face are the database $IV^2$ \citep{Petrovska-Delacretaz2008a}, consisting of data obtained from 300 subjects, the MBioID based on 120 subjects \citep{Dessimoz2007}, The BiosecureID based on 400 subjects, The BioSec database based on 250 subjects, the BMDB DS2 based on 667 subjects \citep{Ortega-Garcia2010}, the SDUMLA-HTM database based on 106 subjects, the MobBio containing data from 105 subjects acquired through a mobile device \citep{Sequeira2014},and the datasets provided for the The Multiple Biometric Grand Challenge (MBGC) \citep{Bowyer2016b}. The latter is available in two versions and can be obtained on request. Furthermore, it serves as a common test set in order to compare performance. However, some multimodal datasets have been created by researchers during their work, which are not named nor generally available \citep{Bowyer2016b}. 
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{ |X|X|X|X| }
+\hline
+\rowcolor{Grey}
+\textbf{Database Name}&\textbf{Responsible}&\textbf{Number of Subjects}&\textbf{Database Content}\\
+\hline
+$IV^2$&&300&\\
+\hline
+\rowcolor{lightGrey}
+MBioID&&120&\\
+\hline
+BiosecureID&&400&\\
+\hline
+\rowcolor{lightGrey}
+BioSec&&250&\\
+\hline
+BMDB DS2&&667&\\
+\hline
+\rowcolor{lightGrey}
+SDUMLA-HTM&&106&\\
+\hline
+MobBio&&105& \makecell{VL Iris \\ VL Face \\ voice} \\
+\hline
+\rowcolor{lightGrey}
+MBGC v1/v2&&&\\
+\hline
+Bowers&&&\\
+\hline
+\rowcolor{lightGrey}
+&&&\\
+\hline
+\end{tabularx}
+\label{MultiDatabase}
+\caption{Multi modal biometric databases containing both iris and face information.}
+\end{table}
+
+
 
 
 
