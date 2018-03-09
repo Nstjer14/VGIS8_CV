@@ -15,6 +15,13 @@ In the \gls{cnn}s the neuron number of the last hidden layer in the network is m
 
 The network is tested using the \gls{lfw} database. This database is images of faces from different angles and scenarios consisting of 13.233 images \citep{lfw2007}. It achieves $97.45\%$ accuracy on this dataset, requiring weakly aligned faces \citep{deepID2014}.
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{figures/deepid_convnet}
+	\caption{Structure of the \gls{cnn} used in \gls{deepid} \citep{deepID2014}}
+	\label{fig:deepid_convnet}
+\end{figure}
+
 \subsection{DeepID2}
 \gls{deepid2} is an expansion upon \gls{deepid} and is a deep \glsentrylong{cnn} used for face identification and verification. This is done by using feature extraction.
 
@@ -24,6 +31,13 @@ The \gls{deepid2} layer is after the four convolutional layers. This layer is le
 
 \gls{deepid2} also uses the \gls{lfw} database and achieves a $99.15\%$ accuracy.
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{figures/deepid2_convnet}
+	\caption{Structure of the \gls{cnn} used in \gls{deepid2} \citep{sun2014}}
+	\label{fig:deepid2_convnet}
+\end{figure}
+
 \subsection{DeepID3}
 DeepID3 is a further expansion of both \gls{deepid} and \gls{deepid2} but is also drawing on some from elements from VGG net and GoogleNet \citep{sun2015}. The qualities from these two networks is the use of stacked convolution and inception layers. DeepID3 is in general a deeper network than \gls{deepid2} and its expansion \gls{deepid2}+.
 
@@ -32,3 +46,10 @@ DeepID3 resembles \gls{deepid2} in the use of adding supervisory signals to earl
 \cite{sun2015} proposes two different networks with DeepID3. One is using eight convolutional layers with max pooling after every other convolutional layer. The second network has four convolutional layers with max pooling after every other, following are five inception layers.
 
 DeepID3 is also tested on the \gls{lfw} dataset with an accuracy of $99.52\%$ which is an increase in accuracy compared to \gls{deepid2}, but as stated in \cite{sun2015} it is not an improvement of \gls{deepid2}+.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{figures/deepid3_net}
+	\caption{Structure of the \gls{cnn} used in DeepID3 \citep{sun2015}}
+	\label{fig:deepid3_net}
+\end{figure}
