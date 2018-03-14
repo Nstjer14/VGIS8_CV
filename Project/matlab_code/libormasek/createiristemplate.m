@@ -22,7 +22,7 @@ function [template, mask] = createiristemplate(eyeimage_filename)
 
 % path for writing diagnostic images
 global DIAGPATH
-DIAGPATH = 'diagnostics';
+DIAGPATH = 'results';
 
 %normalisation parameters
 radial_res = 20;
