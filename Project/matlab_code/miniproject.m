@@ -150,6 +150,8 @@ disp(img_numb);
     end
 end
 
+save('database_segmented.mat','extractedDatabase','classifier','-v7.3');
+
 
 
 

@@ -47,6 +47,7 @@ for ii=1:n;
     end    
 end
 toc
+save('database.mat','database','-v7.3');
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % OBS! BELOW IS OLD SHIT CODE THAT IS NOT RELEVANT BUT CAN BE USEFULL TO
