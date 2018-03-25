@@ -12,7 +12,7 @@ function [reconstructIris] = noiseremover(sourceimage,HistoFrac,RecognitionValue
 %RecognitionValue=2;
 [counts,binLocations] = imhist(sourceimage);
 
-figure, stem(binLocations,counts);
+%figure, stem(binLocations,counts);
 Numberofbins=size(binLocations);
 
 lowVal = 1.0;

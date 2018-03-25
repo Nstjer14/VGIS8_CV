@@ -3,7 +3,7 @@
 % Members : Shagen, Marike, Niclas
 % Date : 2018-03-21
 % Dependencies: libormasek, Daugmans Integrodifferential Operator,
-% folder named diagnostics, warsaw database Voicebox
+% folder named diagnostics, warsaw database, Voicebox, Wavelet Toolbox
 % Matlab version: R2017b
 % Functionality: Using Daugmans Integrodifferential Operator to find the
 % iris and pupil bounds, masek to supress the eyelids and use daugmans
@@ -28,23 +28,46 @@ addpath(genpath('daugman'));
 global DIAGPATH
 DIAGPATH = 'diagnostics';
 
+showFigure = false;
+extractedDatabase = [];
+classifier = [];
 %% Performing Daugmans Integro Differential operator to locate the center of
 
-img_numb = 2;
-subj_eye = 36;
-img = database{subj_eye,2}{img_numb};
+
+for ii = 1:length(database)
+    subj_numb = ii;
+    skip = false;
+    if isempty(database{subj_numb,2}) == true
+        %subj = database{subj_numb,1};
+        %disp(subj);
+        skip = true;
+    end
+    if skip == false;
+        for jj = 1:length(database{subj_numb,2})
+            img_numb = jj;
+        %    disp(img_numb);
+
+
+%subj_numb = 48;
+% img_numb = 1;
+img = database{subj_numb,2}{img_numb};
 
 %img = imread('E:\2. P8 Project\Project\matlab_code\warsaw\0001right\session1\IMG_0102.jpg');
 img = img(:,:,1);  % using the red band of the image as they did in the paper. CANNOT BE A DOUBLE
 
-figure('Name','Whole eye'), colormap(gray(256));
-imagesc(img);
+if showFigure == true
+    figure('Name','Whole eye'), colormap(gray(256));
+    imagesc(img);
+end
 %rmin, rmax:the minimum and maximum values of the iris radius. They have so
 %far been chosen arbitrarily.
 rmin = 80;
 rmax = 180;
 [ci,cp,out] = thresh(img,rmin,rmax);
-figure('Name','Marked Eye'), imshow(out,[])
+if showFigure == true
+    figure('Name','Marked Eye');
+    imshow(out,[]);
+end
 %OUTPUTS:
 %cp:the parametrs[xc,yc,r] of the pupilary boundary
 %ci:the parametrs[xc,yc,r] of the limbic boundary
@@ -52,16 +75,19 @@ figure('Name','Marked Eye'), imshow(out,[])
 
 %% Eye Lid Suppresion
 
-%imagewithnoise = neweyelidsup(img);
-imagewithnoise = double(img);
-
+imagewithnoise = neweyelidsup(img);
+%imagewithnoise = double(img);
+if showFigure == true
+    figure('Name','Supressed Eyelids');
+    imshow(imagewithnoise,[]);
+end
 %% Rubber Model Normalization
 w = cd;
 radial_res = 64;
 angular_res = 512;
 
 %mkdir(database{2,1});
-eyeimage_filename = strcat(database{subj_eye,1},'_',num2str(img_numb));
+eyeimage_filename = strcat(database{subj_numb,1},'_',num2str(img_numb));
 
 [polar_array noise_array] = normaliseiris((imagewithnoise),...
     ci(2), ci(1), ci(3),...
@@ -74,138 +100,55 @@ imwrite(polar_array,[eyeimage_filename,'-polar.jpg'],'jpg');
 imwrite(noise_array,[eyeimage_filename,'-polarnoise.jpg'],'jpg');
 cd(w); % Return to the script folder
 
-%Show the normalised image
-figure('Name','Polar Array')
-colormap(gray(256));
-imshow(polar_array);
+if showFigure == true
+    %Show the normalised image
+    figure('Name','Polar Array')
+    colormap(gray(256));
+    imshow(polar_array);
+end
 %% Eyelash Removal
 
 HistoFrac = 0.1;
 RecognitionValue=2;
 
-[counts,binLocations] = imhist(polar_array);
-
-figure, stem(binLocations,counts);
-Numberofbins=size(binLocations);
-
-lowVal = 1.0;
-HigVal = 0.0;
-
-for i=1:1:Numberofbins(1)%Find the higest and the lovest binvalue of the histogram
-    if counts(i)>RecognitionValue
-        if binLocations(i)<lowVal
-            lowVal=binLocations(i);
-        end
-        if binLocations(i)>HigVal
-            HigVal=binLocations(i);
-        end
-    end
+[reconstructIris] = noiseremover(polar_array,HistoFrac,RecognitionValue);
+if showFigure == true
+    figure('Name','Reconstructed iris');
+    imshow(reconstructIris,[]);
 end
-
-ThresVal=lowVal+HistoFrac*(HigVal-lowVal);%Find the threshold value based on the interval of the main histogram
-
-reconstructIris=polar_array;
-[polarrows,polarcols]=size(polar_array);
-Equalised=zeros(polarrows,polarcols);
-ref = polar_array < ThresVal;
-[rows,cols] = find(ref==1);
-processMap=ref;
-NumberofEliminations=size(rows);
-numberofUneliminatedNeighbors=0;
-pixelVal=0;
-SumVal=0;
-
-UnprocessedPixels=NumberofEliminations(1);
-
-while UnprocessedPixels>0
-    
-    for ii=1:1:NumberofEliminations(1)
-        if processMap(rows(ii),cols(ii))==1
-            if rows(ii)-1~=0
-                if processMap(rows(ii)-1,cols(ii)) ~= 1 && isnan(polar_array(rows(ii)-1,cols(ii))) == 0
-                    SumVal=SumVal+polar_array(rows(ii)-1,cols(ii));
-                    numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
-                    %alternative: add the values directly to the sum and devide by
-                    %counter in the end
-                end
-            end
-            if rows(ii)+1<=polarrows
-                if processMap(rows(ii)+1,cols(ii)) ~= 1 && isnan(polar_array(rows(ii)+1,cols(ii))) == 0
-                    SumVal=SumVal+polar_array(rows(ii)+1,cols(ii));
-                    numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
-                end
-            end
-            if cols(ii)-1~=0
-                if processMap(rows(ii),cols(ii)-1) ~= 1 && isnan(polar_array(rows(ii),cols(ii)-1)) == 0
-                    SumVal=SumVal+polar_array(rows(ii),cols(ii)-1);
-                    numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
-                end
-            end
-            if cols(ii)+1<=polarcols
-                if processMap(rows(ii),cols(ii)+1) ~= 1 && isnan(polar_array(rows(ii),cols(ii)+1)) == 0
-                    SumVal=SumVal+polar_array(rows(ii),cols(ii)+1);
-                    numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
-                end
-            end
-            %the numbers in the if statement below represents the number of
-            %included
-            if numberofUneliminatedNeighbors==4 || numberofUneliminatedNeighbors==3 || numberofUneliminatedNeighbors==2
-                pixelVal=SumVal/numberofUneliminatedNeighbors;
-                reconstructIris(rows(ii),cols(ii))=pixelVal;
-                processMap(rows(ii),cols(ii))=0;
-                UnprocessedPixels=UnprocessedPixels-1;
-            end
-            SumVal=0;
-            numberofUneliminatedNeighbors=0;
-            
-        end
-    end
-end
-
-figure('Name','ref'), imshow(ref)
-figure('Name','Reconstructed iris'), imshow(reconstructIris)
 
 %% Histogram Equalization
 
-[countsN,binLocationsN] = imhist(reconstructIris); 
+[equalised]=equalisehistogram(reconstructIris);
 
-%figure, stem(binLocationsN,countsN);
-NumberofbinsN=size(binLocationsN);
-
-lowValN = 1.0;
-HigValN = 0.0;
-
-for iii=1:1:NumberofbinsN(1)%Find the higest and the lovest binvalue of the histogram
-    if countsN(iii)>0
-        if binLocationsN(iii)<lowValN
-            lowValN=binLocationsN(iii);
-        end
-        if binLocationsN(iii)>HigValN
-            HigValN=binLocationsN(iii);
-        end
-    end
+if showFigure == true
+    figure('Name','Equalised iris')
+    imshow(equalised,[]);
 end
-
-
-for k=1:1:NumberofbinsN(1)
-    temp=(binLocationsN(k)-lowValN)*(1/(HigValN-lowValN));
-    if temp>0 && temp<1
-      binLocationsNn(k)=temp;
-      countsNn(k)=countsN(k);
-    end
-end
-
-Equalised=(reconstructIris-lowValN)*(1/(HigValN-lowValN));
-
-figure('Name','Equalised'), imshow(Equalised)
 
 %% Feature Extraction
 
+[a,h,v,d] = haart2(equalised,3);
+if showFigure == true
+    figure('Name','Haar Wavelets')
+    %colormap(gray(256));
+    imshow(a);
+end
+%a is the same as LL is called the approximation of the image.
+%h is the same as LH is the horizontal detail,
+%v is the same as HL is the vertical detail
+%d is the same as HH represents the diagonal detail of the image.
+
+feature_vec = reshape(a',[1,512]); % Resizing as they did in the paper. The rows are concatanated.
 
 disp("finished running script");
-
-
-
+extractedDatabase = vertcat(extractedDatabase,feature_vec);
+classifier = vertcat(classifier,string(database{subj_numb,1}));
+disp(subj_numb);
+disp(img_numb);
+        end
+    end
+end
 
 
 
