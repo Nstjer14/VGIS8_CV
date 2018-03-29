@@ -41,7 +41,7 @@ reflecthres = 240;
 % find the iris boundary
 %[row, col, r] = findcircle(eyeimage, lirisradius, uirisradius, scaling, 2, 0.20, 0.19, 1.00, 0.00);
 
-rmin = 30;
+rmin = 80;%30;
 rmax = 220;
 [ci,cp,out] = thresh(eyeimage,rmin,rmax); % Daugmans Integro Operator
 
