@@ -1,0 +1,177 @@
+ Program
+   BeforeStart
+     var_safety≔1
+     var_safety_forc≔50
+     var_moveType≔"j"
+     receive_data≔[6,0,0,0,0,0,0]
+     Move_To_Pos≔p[0,0,0,0,0,0]
+     Move_To_Joints≔[0,0,0,0,0,0]
+     var_moving≔0
+     Call pgr_setupPose
+     var_velacc≔[0.2,0.2]
+     'socket_open("192.168.10.2",30000)'
+     socket_open("127.0.0.1",30000)
+     task≔[0,0]
+     coop≔0
+   Robot Program
+     task=socket_read_ascii_float(1)
+     Wait: 0.01
+     If task[1]≟1
+       Call p01_readPosJ
+       task≔[0,0]
+     ElseIf task[1]≟2
+       Call p02_readPosC
+       task≔[0,0]
+     ElseIf task[1]≟8
+       Call p08_readAnalog
+     ElseIf task[1]≟9
+       Call p09_readDigital
+     ElseIf task[1]≟11
+       Call p11_moveJ
+     ElseIf task[1]≟13
+       Call p1x_moveL
+     ElseIf task[1]≟14
+       Call p14_SetVelAcc
+     ElseIf task[1]≟15
+       Call p15_setIO
+     ElseIf task[1]≟18
+       Call p18_setRG2
+     ElseIf task[1]≟93
+       coop≔1
+       socket_send_string("1")
+       task≔[0,0]
+     ElseIf task[1]≟94
+       coop≔0
+       socket_send_string("1")
+       task≔[0,0]
+   Safety_Program
+     var_safety≔0
+     MoveJ
+       safety_move_rel
+       Wait: 1.0
+     socket_send_string("2")
+   Thread_1
+     If coop≟1
+       Loop coop≟1
+         Force
+           Wait: 0.01
+       coop≔0
+       Call pgr_setupPose
+     Else
+       If force()<var_safety_forc
+         If var_moving≟1
+           If var_safety≟1
+             If var_moveType≟"j"
+               movej(Move_To_Joints,a=var_velacc[0],v=var_velacc[1],r=0)
+               'TODO: Check if movement finished succesfully'
+               socket_send_string("1")
+               var_moving≔0
+             ElseIf var_moveType≟"l"
+               movel(Move_To_Pos,a=var_velacc[0],v=var_velacc[1],r=0)
+               If pose_dist(get_forward_kin(),Move_To_Pos)<0.01
+                 socket_send_string("1")
+                 var_moving≔0
+       Else
+         Call Safety_Program
+       cur_velvac≔var_velacc
+       Wait: 0.01
+   pgr_setupPose
+     pose_1=get_forward_kin()
+     pointer≔0
+     Loop pointer<receive_data[0]
+       Move_To_Pos[pointer]=pose_1[pointer]
+       pointer≔pointer+1
+   p01_readPosJ
+     pose_1=get_actual_joint_positions()
+     socket_send_string(pose_1)
+   p02_readPosC
+     'Read pose'
+     pose_1=get_forward_kin()
+     socket_send_string(pose_1)
+   p08_readAnalog
+     receive_data=socket_read_ascii_float(2)
+     If receive_data[0]≠2
+       socket_send_string("0")
+     Else
+       socket_send_string("1")
+       Wait: 0.01
+       socket_send_string( analog_in[receive_data[1]] )
+       task≔[0,0]
+   p09_readDigital
+     receive_data=socket_read_ascii_float(2)
+     If receive_data[0]≠2
+       socket_send_string("0")
+     Else
+       socket_send_string("1")
+       Wait: 0.01
+       If  digital_in[receive_data[1]] ≟ True 
+         socket_send_string("1")
+       Else
+         socket_send_string("0")
+       task≔[0,0]
+   p11_moveJ
+     'Move in joint space'
+     receive_data=socket_read_ascii_float(6)
+     If receive_data[0]≠6
+       socket_send_string("0")
+     Else
+       socket_send_string("1")
+       var_moveType≔"j"
+       pointer≔0
+       Loop pointer<receive_data[0]
+         Move_To_Joints[pointer]=receive_data[pointer+1]
+         pointer≔pointer+1
+       var_moving≔1
+       task≔[0,0]
+   p1x_moveL
+     'Move in joint space'
+     receive_data=socket_read_ascii_float(6)
+     If receive_data[0]≠6
+       socket_send_string("0")
+     Else
+       socket_send_string("1")
+       var_moveType≔"l"
+       pointer≔0
+       Loop pointer<receive_data[0]
+         Move_To_Pos[pointer]=receive_data[pointer+1]
+         pointer≔pointer+1
+       var_moving≔1
+       task≔[0,0]
+   p14_SetVelAcc
+     'velocity and acceleration parameters'
+     receive_data=socket_read_ascii_float(6)
+     If receive_data[0]≠6
+       socket_send_string("0")
+     Else
+       socket_send_string("1")
+       pointer≔0
+       var_velacc[0]=receive_data[1]
+       var_velacc[1]=receive_data[2]
+       task≔[0,0]
+   p15_setIO
+     'Set I/O params'
+     receive_data=socket_read_ascii_float(6)
+     If receive_data[0]≠6
+       socket_send_string("0")
+     Else
+       socket_send_string("1")
+       If receive_data[1]≟ True 
+           digital_out[receive_data[2]]= True 
+       Else
+           digital_out[receive_data[2]]= False 
+       task≔[0,0]
+   p18_setRG2
+     'Set parameters for OnRobot RG2 gripper'
+     receive_data=socket_read_ascii_float(6)
+     If receive_data[0]≠6
+       socket_send_string("0")
+     Else
+       socket_send_string("1")
+       DO8_Off_DO9_Off≔receive_data[1]
+       DO8_On_DO9_Off≔receive_data[2]
+       DO8_Off_DO9_On≔receive_data[3]
+       DO8_On_DO9_On≔receive_data[4]
+       Grip_Force≔receive_data[5]
+       Script: wrap1G4P1F.txt
+       Script: program_gripper.txt
+       task≔[0,0]
