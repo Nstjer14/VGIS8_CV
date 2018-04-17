@@ -95,20 +95,20 @@ OB_green_max = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):
 OB_mass = OB_pos(4)*OB_pos(3);
 
 % % White Brick
-% fig = figure;
-% title('Mark White Brick, right-click and press "crop image"')
-% hold on
-% [WB_im, WB_pos] = imcrop(rgbImage);
-% close(fig)
+fig = figure;
+title('Mark White Brick, right-click and press "crop image"')
+hold on
+[WB_im, WB_pos] = imcrop(rgbImage);
+close(fig)
 % 
-% WB_pos = round(WB_pos);
+WB_pos = round(WB_pos);
 % 
-% WB_red_min = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),1),1,[]),WB_config.LowerPrcTile);
-% WB_red_max = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),1),1,[]),WB_config.upperPrcTile);
-% WB_green_min = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),2),1,[]),WB_config.LowerPrcTile);
-% WB_green_max = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),2),1,[]),WB_config.upperPrcTile);
+WB_red_min = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),1),1,[]),WB_config.LowerPrcTile);
+WB_red_max = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),1),1,[]),WB_config.upperPrcTile);
+WB_green_min = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),2),1,[]),WB_config.LowerPrcTile);
+WB_green_max = prctile(reshape(rgiImage(WB_pos(2):WB_pos(2)+WB_pos(4),WB_pos(1):WB_pos(1)+WB_pos(3),2),1,[]),WB_config.upperPrcTile);
 % 
-% WB_mass = WB_pos(4)*WB_pos(3);
+WB_mass = WB_pos(4)*WB_pos(3);
 
 %% minimum mass calculation
 
@@ -121,8 +121,9 @@ save('thresholds.mat','RB_red_min','RB_red_max','RB_green_min','RB_green_max',..
                       'GB_red_min','GB_red_max','GB_green_min','GB_green_max',...
                       'BB_red_min','BB_red_max','BB_green_min','BB_green_max',...
                       'YB_red_min','YB_red_max','YB_green_min','YB_green_max',...
-                      'OB_red_min','OB_red_max','OB_green_min','OB_green_max',...                      
-                      'mass_min');%'WB_red_min','WB_red_max','WB_green_min','WB_green_max',...
+                      'OB_red_min','OB_red_max','OB_green_min','OB_green_max',...
+                      'WB_red_min','WB_red_max','WB_green_min','WB_green_max',...
+                      'mass_min');
 
 
 end

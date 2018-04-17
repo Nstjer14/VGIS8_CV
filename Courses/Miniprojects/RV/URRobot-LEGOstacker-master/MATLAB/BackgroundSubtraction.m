@@ -11,7 +11,7 @@ FG_pixelsI = (F_abs(:,:,3) > BG_threshold); % foregrounds pixels = 1's for the i
 % matrix with ones everywhere the F_abs is bigger than a treshold (the foreground pixels)
 
 FG_pixels = uint8(FG_pixelsR | FG_pixelsG | FG_pixelsI); 
-% only assume backgound pixel if all channels is below the threshold
+% only assume background pixel if all channels is below the threshold
 
 Foreground(:,:,1) = rgiImage(:,:,1).*FG_pixels; % only the foreground is kept
 Foreground(:,:,2) = rgiImage(:,:,2).*FG_pixels;

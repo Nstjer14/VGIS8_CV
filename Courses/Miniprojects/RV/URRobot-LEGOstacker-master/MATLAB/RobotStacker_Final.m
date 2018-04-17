@@ -9,6 +9,7 @@ CameraToObjectDistance = Cal.Tc_1(3);
 clear Cal;
 
 rgbImage = imread('rgbImage.jpg');
+rgbImage2 = imread('rgbImage2.jpg');
 BGImage = imread('background.jpg');
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,11 +118,11 @@ YB_config.green_min = YB_green_min;
 YB_config.green_max = YB_green_max;
 clear YB_red_min YB_red_max YB_green_min YB_green_max
 
-% WB_config.red_min = WB_red_min;
-% WB_config.red_max = WB_red_max;
-% WB_config.green_min = WB_green_min;
-% WB_config.green_max = WB_green_max;
-% clear WB_red_min WB_red_max WB_green_min WB_green_max
+WB_config.red_min = WB_red_min;
+WB_config.red_max = WB_red_max;
+WB_config.green_min = WB_green_min;
+WB_config.green_max = WB_green_max;
+clear WB_red_min WB_red_max WB_green_min WB_green_max
 
 OB_config.red_min = OB_red_min;
 OB_config.red_max = OB_red_max;
@@ -158,7 +159,7 @@ RB = imageProcessing( rgiImage,RB_config ); % Returns cell array with
 GB = imageProcessing( rgiImage,GB_config );
 BB = imageProcessing( rgiImage,BB_config );
 YB = imageProcessing( rgiImage,YB_config );
-%WB = imageProcessing( rgiImage,WB_config );
+WB = imageProcessing( rgiImage,WB_config );
 OB = imageProcessing( rgiImage,OB_config );
 
 saveImages2
