@@ -8,9 +8,9 @@ Cal = load('calib/Calib_Results.mat', 'Tc_1');
 CameraToObjectDistance = Cal.Tc_1(3);
 clear Cal;
 
-rgbImage = imread('rgbImage.jpg');
-rgbImage2 = imread('rgbImage2.jpg');
-BGImage = imread('background.jpg');
+rgbImage = imread('rgbImage.bmp');
+%rgbImage2 = imread('rgbImage2.jpg');
+BGImage = imread('background.bmp');
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------------------------- config  --------------------------------%
@@ -169,7 +169,7 @@ PlaceY = 120;
 PlaceZ = BrickPlaceZ;
 RobotPlaceLocation = [PlaceX, PlaceY, PlaceZ, pi, 0, 0];
 BricksPickedUp = 1;
-Bricks = {RB, GB, BB, YB, OB};
+Bricks = {RB, GB, BB, YB, OB, WB};
 
 %% Convert to robot world coordinate
 while (BricksPickedUp > 0)

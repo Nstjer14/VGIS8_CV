@@ -1,0 +1,355 @@
+%  A simple AAU report template.
+%  2014-09-13 v. 1.1.0
+%  Copyright 2010-2014 by Jesper Kjær Nielsen <jkn@es.aau.dk>
+%
+%  This is free software: you can redistribute it and/or modify
+%  it under the terms of the GNU General Public License as published by
+%  the Free Software Foundation, either version 3 of the License, or
+%  (at your option) any later version.
+%
+%  This is distributed in the hope that it will be useful,
+%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%  GNU General Public License for more details.
+%
+%  You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
+%
+\documentclass[11pt,twoside,a4paper,openright]{report}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Language, Encoding and Fonts
+% http://en.wikibooks.org/wiki/LaTeX/Internationalization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Select encoding of your inputs. Depends on
+% your operating system and its default input
+% encoding. Typically, you should use
+%   Linux  : utf8 (most modern Linux distributions)
+%            latin1 
+%   Windows: ansinew
+%            latin1 (works in most cases)
+%   Mac    : applemac
+% Notice that you can manually change the input
+% encoding of your files by selecting "save as"
+% an select the desired input encoding. 
+\usepackage[utf8]{inputenc}
+% Make latex understand and use the typographic
+% rules of the language used in the document.
+\usepackage[danish,english]{babel}
+% Use the vector font Latin Modern which is going
+% to be the default font in latex in the future.
+\usepackage{lmodern}
+% Choose the font encoding
+\usepackage[T1]{fontenc}
+% For checkmarks: \cmark and crossmarks: \xmark
+\usepackage{pifont}
+	\newcommand{\cmark}{\ding{51}}%
+	\newcommand{\xmark}{\ding{55}}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Graphics and Tables
+% http://en.wikibooks.org/wiki/LaTeX/Importing_Graphics
+% http://en.wikibooks.org/wiki/LaTeX/Tables
+% http://en.wikibooks.org/wiki/LaTeX/Colors
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% load a colour package
+\usepackage[table,dvipsnames]{xcolor}
+\definecolor{aaublue}{RGB}{33,26,82}% dark blue
+\definecolor{lightGrey}{RGB}{240,240,240}% 
+\definecolor{Grey}{gray}{0.7}
+% The standard graphics inclusion package
+\usepackage{graphicx}
+% Load package to convert eps-files to use as figures
+\usepackage{epstopdf}
+
+%\usepackage[dvips,final]{graphicx} 
+%\usepackage[dvips]{geometry}
+\usepackage{color} %include even if images aren’t in color \usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{pstricks}
+
+%\usepackage{epsfig}
+
+% Set up how figure and table captions are displayed
+\usepackage{caption}
+\captionsetup{%
+  font=footnotesize,% set font size to footnotesize
+  labelfont=bf % bold label (e.g., Figure 3.2) font
+}
+\usepackage[section]{placeins} % Figurer overskrider ikke sections
+% For subfigures
+\usepackage{subcaption}
+% Make the standard latex tables look so much better
+\usepackage{array,booktabs}
+% Enable the use of frames around, e.g., theorems
+% The framed package is used in the example environment
+\usepackage{framed}
+
+% Afstand mellem listepunkter og tilføjelse af resume funktion til lister: \begin{enumerate}[resume]
+\usepackage{enumitem}
+\setlist{itemsep=-2pt}
+
+% Tilføjer mulighed for at lave enkelte sider i landskab.
+\usepackage{lscape}
+
+\newcounter{listcounter}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mathematics
+% http://en.wikibooks.org/wiki/LaTeX/Mathematics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Defines new environments such as equation,
+% align and split 
+\usepackage{amsmath}
+% Adds new math symbols
+\usepackage{amssymb}
+% Use theorems in your document
+% The ntheorem package is also used for the example environment
+% When using thmmarks, amsmath must be an option as well. Otherwise \eqref doesn't work anymore.
+\usepackage[framed,amsmath,thmmarks]{ntheorem}
+
+% Tilføjer \degree symbol
+\usepackage{textcomp}
+\usepackage{gensymb}
+
+% Fjerner mellemrum efter komma i formler.
+%\usepackage{icomma}
+
+% Packages for SI units
+\usepackage[binary-units]{siunitx}
+% Format SI units as italic in italic texts
+\sisetup{detect-all}
+\sisetup{per-mode=symbol}
+
+
+% Argument til amsmath der gør parenteser uden om parenteser pænere ved brug af \right og \left kommandoerne
+\delimitershortfall=-1pt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Page Layout
+% http://en.wikibooks.org/wiki/LaTeX/Page_Layout
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Change margins, papersize, etc of the document
+\usepackage[
+  inner=28mm,% left margin on an odd page
+  outer=41mm,% right margin on an odd page
+  ]{geometry}
+% Modify how \chapter, \section, etc. look
+% The titlesec package is very configureable
+\usepackage[explicit]{titlesec}
+%\titleformat*{\section}{\normalfont\Large\bfseries\color{aaublue}}
+%\titleformat*{\subsection}{\normalfont\large\bfseries\color{aaublue}}
+%\titleformat*{\subsubsection}{\normalfont\normalsize\bfseries\color{aaublue}}
+%\titleformat*{\paragraph}{\normalfont\normalsize\bfseries\color{aaublue}}
+%\titleformat*{\subparagraph}{\normalfont\normalsize\bfseries\color{aaublue}}
+\usepackage{calc}
+
+% Spacing omkring kapiteloverskrift
+\titlespacing*{\chapter}{0pt}{40pt}{50pt}
+
+
+
+% Overskrift med stort nummer til venstre og titel til højre
+%\newlength\chapnumb
+%\setlength{\chapnumb}{1.5cm}
+%\titleformat{\chapter}[block]
+%{\normalfont\bfseries}{}{0pt}
+%{\parbox[b]{\chapnumb}{%
+	  %\fontsize{2cm}{0}\selectfont\thechapter}%
+  %\parbox[b]{\dimexpr\textwidth-\chapnumb\relax}{%
+    %\raggedleft%
+    %\hfill{\Huge#1}\\
+    %\rule{\dimexpr\textwidth-\chapnumb\relax}{.5pt}}}
+%\titleformat{name=\chapter,numberless}[block]
+%{\normalfont\bfseries}{}{0pt}
+	%{\Huge#1}
+
+% Clear empty pages between chapters
+\let\origdoublepage\cleardoublepage
+\newcommand{\clearemptydoublepage}{%
+  \clearpage
+  {\pagestyle{empty}\origdoublepage}%
+}
+\let\cleardoublepage\clearemptydoublepage
+
+% Change the headers and footers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} %delete everything
+\renewcommand{\headrulewidth}{0pt} %remove the horizontal line in the header
+\fancyhead[RE]{\color{black}\small\nouppercase\leftmark} %even page - chapter title
+\fancyhead[LO]{\color{black}\small\nouppercase\rightmark} %uneven page - section title
+\fancyhead[LE,RO]{\thepage} %page number on all pages
+% Do not stretch the content of a page. Instead,
+% insert white space at the bottom of the page
+\raggedbottom
+% Enable arithmetics with length. Useful when
+% typesetting the layout.
+
+\setlength{\headheight}{14pt}
+
+% Raise penalties for bastards
+\widowpenalty=10000
+\clubpenalty=10000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Table of Contents
+% http://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Add additional commands for Table of Contents
+\usepackage{bookmark}
+
+{\setcounter{tocdepth}{1}}
+
+% Control of space between items in Table of Contents
+\usepackage[titles]{tocloft}
+\setlength{\cftbeforepartskip}{10pt}
+\setlength{\cftbeforechapskip}{4pt}
+\setlength{\cftbeforesecskip}{2pt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
+% http://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Add the \citep{key} command which display a
+% reference as [author, year]
+\usepackage[square]{natbib}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Misc
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Add bibliography and index to the table of
+% contents
+\usepackage[nottoc]{tocbibind}
+% Add the command \pageref{LastPage} which refers to the
+% page number of the last page
+\usepackage{lastpage}
+\usepackage[
+%  disable, %turn off todonotes
+  colorinlistoftodos, %enable a coloured square in the list of todos
+  textwidth=\marginparwidth, %set the width of the todonotes
+  textsize=scriptsize, %size of the text in the todonotes
+  ]{todonotes}
+
+% Add command \includepdf to add a whole pdf page to document
+\usepackage{pdfpages}
+
+
+% Add option to easy format directory tree
+\usepackage{dirtree}
+
+% String manipulation
+\usepackage{xstring,xifthen}
+
+% Tikz package for drawing nice figures
+\usepackage{tikz}
+\usepackage{schemabloc}
+\usetikzlibrary{circuits}
+
+
+% Package for drawing pretty schematics, without leaving LaTex
+\usepackage[american currents, american voltages, european resistors, cute inductors,
+american ports]{circuitikz}
+\usepackage{tikzscale}
+
+% Code syntax highlight
+\usepackage{listings}
+\lstset{breaklines=true,
+		breakatwhitespace=true,
+		commentstyle=\color{ForestGreen},
+		numbers=left,
+		numberstyle=\tiny\color{black},
+		keywordstyle=\color{blue},
+		basicstyle=\footnotesize\ttfamily,
+        showstringspaces=false,
+		}
+\renewcommand{\lstlistingname}{Code Snippet}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Table environments
+% http://en.wikibooks.org/wiki/LaTeX/Tables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Better table environments for stuff like table width specifier
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{makecell}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Project info and abstract
+% chapters\abstract.tex, chapters\projectinfo.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Loads project info and abstract for use in
+% hypersetup
+\input{chapters/projectinfo}
+\input{chapters/abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hyperlinks
+% http://en.wikibooks.org/wiki/LaTeX/Hyperlinks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Enable hyperlinks and insert info into the pdf
+% file. Hypperref should be loaded as one of the 
+% last packages
+\usepackage{hyperref}
+\hypersetup{%
+	%pdfpagelabels=true,%
+	plainpages=false,%
+	pdfauthor={\projectGroup, \projectFaculty, \iflanguage{english}{Aalborg University}{Aalborg Universitet}},%
+	pdftitle={\projectTitle},%
+	pdfsubject={\projectTheme},%
+	bookmarksnumbered=true,%
+	colorlinks,%
+	citecolor=black,%aaublue,%
+	filecolor=black,%aaublue,%
+	linkcolor=black,%aaublue,% you should probably change this to black before printing
+	urlcolor=black,%aaublue,%
+	pdfstartview=FitH,%
+	bookmarksdepth=2,%
+}
+
+% Defines where URLs should break
+\def\UrlBreaks{\do\/\do-\do_}
+\urlstyle{same}
+
+% Give the possibility to autoformat reference based on distance to the referenced page. Ex. \vpageref{}
+\usepackage{varioref}
+
+
+% Package to warn about missing references.
+%\usepackage{refcheck}
+
+% Package to make a glossary of acronyms.
+\usepackage{glossaries}
+\usepackage{glossary-mcols}
+\glstoctrue
+\makenoidxglossaries
+\input{chapters/glossary}
+
+% Package to make semi-bold font.
+\usepackage[outline]{contour}
+\contourlength{0.1pt}
+\contournumber{50}%
+\newcommand{\textsb}[1]{\contour{black}{#1}}
+
+% Package for splitting lists or other things up in columns. Ex: \begin{multicols}{2}
+\usepackage{multicol}
+
+% Package for rotating a page to landscape orientation. Ex: \begin{landscape}
+\usepackage{pdflscape}
+
+% Package for circuit diagrams in tikz
+\usepackage{circuitikz}
+
+% For adding notes to tables
+\usepackage{threeparttable}
+
+% For adding smileys ;) I know....
+\usepackage{MnSymbol,wasysym}
+
+% For adding algorithms
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\renewcommand*{\glsgroupskip}{\vspace{2mm}}
+
+% Package to use fixme fxnote
+\usepackage[footnote,marginclue,draft,danish,silent,nomargin]{fixme} 
+

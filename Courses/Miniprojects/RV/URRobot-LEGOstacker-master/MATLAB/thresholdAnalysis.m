@@ -112,8 +112,8 @@ WB_mass = WB_pos(4)*WB_pos(3);
 
 %% minimum mass calculation
 
-%mass_min = min([RB_mass,GB_mass,BB_mass,YB_mass,WB_mass,OB_mass]);
-mass_min = min([RB_mass,GB_mass,BB_mass,YB_mass,OB_mass]);
+mass_min = min([RB_mass,GB_mass,BB_mass,YB_mass,WB_mass,OB_mass]);
+%mass_min = min([RB_mass,GB_mass,BB_mass,YB_mass,OB_mass]);
 
 
 %% save variables for late use
