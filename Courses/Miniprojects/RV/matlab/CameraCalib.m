@@ -32,11 +32,14 @@ disp('Press Play on robot');
 fopen(sock);
 disp('Connected!');
 
-a = urReadPosC(sock);
-a
 homepos = [156.8230 -387.7130  560.1100   -3.1296    0.0074    0.0004];
+currentPos = urReadPosC(sock);
+if currentPos ~ homepos
 urMoveL(sock,homepos);
+end
 homeimg = snapshot(cam);
+figure(2)
+imshow(homeimg);
 %imwrite(homeimg, ['calibrationfolder/' '3pt_calibration' '.bmp'], 'bmp')
 %%
 %RP1 = [18.3821 -679.0230  141.8320   -3.1296    0.0074    0.0004];
@@ -60,9 +63,9 @@ img_mat = [1 65 1026; 1 63 234; 1 867 234;];
 theta = linsolve(img_mat,X_rob); % X coordinate coefficients
 phi = linsolve(img_mat,Y_rob); % Y coordinate coefficients
 
-newP = [1561 1028]
-x_test = [1 newP]*theta;
-y_test = [1 newP]*phi;
+%newP = [799 526]
+%x_test = [1 newP]*theta;
+%y_test = [1 newP]*phi;
 
 
 urMoveL(sock, [x_test y_test 144.8210    3.1288    0.0920   -0.0342]);
@@ -110,24 +113,4 @@ end
 
 
 %%
-IP1 = [65 1026];
-IP2 = [63 234];
-IP3 = [867 234];
-
-RP1 = [18.3821 -679.0230 0];
-RP2 = [-160.4770 -498.0370 0];
-RP3 = [23.1680 -316.3760 0];
-
-RP12 = [9.6565 577.7831]
-RP22 = [-84.3021 -261.6298]
-RP32 = [12.1707 -166.1993]
-
-yI = IP2(2)-IP1(2);
-xI = IP2(1)-IP3(1);
-
-yR = RP22(2)-RP12(2);
-xR = RP22(1)-RP32(1);
-
-dy = yI/yR;
-dx = xI/xR;
 
