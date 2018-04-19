@@ -1,0 +1,12 @@
+﻿"Symbol";"Value";"Unit";
+"TraceParts.PartNumber";"10-20122010-068626";"";
+"DESIGN";"LEGO® brick 2x2, color Blue";"";
+"TraceParts.PartTitle";"LEGO® brick 2x2";"";
+"TraceParts.InstanceId";"10-20122010-068626D52RHNST8N1JREFCPPQQLB5E5";"";
+"TraceParts.PartStatus";"Published";"";
+"TraceParts.PartStatusId";"";"";
+"SUPPLIER";"LEGO®";"";
+"TraceParts.PartVersion";"1.0.5";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartLanguage";"en";"";
+"TraceParts.ClassPath";"LEGO:/F_LEGO/LEGO.010/10-20122010-068626";"";

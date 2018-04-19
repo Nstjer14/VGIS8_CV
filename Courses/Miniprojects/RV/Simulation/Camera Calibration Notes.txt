@@ -1,0 +1,29 @@
+Vi laver tre punkter i den her form 
+
+XP1	XP2
+
+
+
+XP3
+
+Hvor den til venstre skal svare nogenlunde til 0,0 positionen i billedet.
+
+Når jeg tager billedet for jeg er punker P1, P2 og P3 der har en (X,Y) komponent.
+Så tager jeg robotten og flytter dem over til punktet P1, P2 og P3 i virkeligeden. Så får jeg robottens koordinater på de tre punkter (X,Y,Z). Jeg ignorer Z for jeg har sat kameraet vinkelret og kigger lige ned. Så tager jeg og siger dX=P1(x)-P2(x) og dY=P1(Y)-P2(y)
+Så gør jeg det samme for de robottens punkter dX'=P1'(x)-P2'(x) og dY'=P1'(Y)-P2'(y)
+Forholdet mellem dem bliver så min transformations matrice fra virkeligheden til billedet:
+[dX/dX' dY/dY']
+
+Når jeg så ganger dX/dX' på x koordinatet på billedet får jeg så hvad det svarer til i robot koordinaten. Og så kan jeg are bare flytte robotten derover. Det kan bruges når jeg har lavet min billede behandling og fundet centrum af min klods.
+
+P1 230.468 499.427
+
+P2 520.596 390.159
+
+P3 522.451 -77.629
+
+P1: 114.1410  499.4270  208.4710
+P2: 404.2690  390.1590  210.7030
+P3: 406.1240  -77.6290  208.4170
+
+0.3256    0.0000    0.9455    0.0000

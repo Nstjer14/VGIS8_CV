@@ -1,0 +1,9 @@
+MODULE MatlabCamera
+    PROC main()
+        IP_Initialize;
+        CONH_EstablishConnection "127.0.0.1", 1024;
+        WHILE TRUE DO
+            COMH_CommandListener;
+        ENDWHILE
+    ENDPROC
+ENDMODULE
