@@ -197,19 +197,47 @@ saveImages2
 Bricks = {RB, GB, BB, YB, OB}; % WB removed
 
 %% Move robot to brick
-disp('Get ready to the robot to get funky!. Press enter when ready and clear.');
-pause();
-brickPos = Bricks{1,1}{1}.boudingBoxCenter;
 zHeight = 144.8210;
-worldBrickPos = [[1 brickPos] * [theta phi] zHeight+BrickHeight];
+%disp('Enter the character you want made!');
+pause();
+
+char = input('Enter your character' , 's');
+
+switch char
+    case 'Homer'
+        run(homer.m);
+        
+    case 'Marge'
+        run(marge.m);
+        
+    case 'Bart'
+        run(bart.m);
+    
+    case 'Lisa'
+        run(lisa.m);
+        
+    case 'Maggie'
+        run(maggie.m);
+        
+    otherwise
+        disp('Character unknonw');
+end
+        
 
 
-ToolPose = GetSO4FromURpose(homepos);
-BrickPose = ToolPose * trotz(deg2rad(-Bricks{1,1}{1}.rotation));
-BrickPose(1:3,4) = worldBrickPos;
-BrickPoseUR = GetURposeFromSO4(BrickPose);
 
-urMoveL(sock,BrickPoseUR);
+
+
+% brickPos = Bricks{1,1}{1}.boudingBoxCenter;
+% worldBrickPos = [[1 brickPos] * [theta phi] zHeight+BrickHeight];
+% 
+% 
+% ToolPose = GetSO4FromURpose(homepos);
+% BrickPose = ToolPose * trotz(deg2rad(-Bricks{1,1}{1}.rotation));
+% BrickPose(1:3,4) = worldBrickPos;
+% BrickPoseUR = GetURposeFromSO4(BrickPose);
+% 
+% urMoveL(sock,BrickPoseUR);
 
 %deg2rad(Bricks{1,1}{1}.rotation);
 %rotation = [-3.1296    0.0074    0.0004];
