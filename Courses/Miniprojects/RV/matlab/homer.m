@@ -5,17 +5,18 @@
 
 
     disp('Building Homer');
-    brickPos = Bricks{4,1}{length(Bricks{4,1})}.BoudingBoxCenter;
+    brickPos = Bricks{1,4}{YL}.boudingBoxCenter;
     worldBrickPos = [[1 brickPos] * [theta phi] zHeight+BrickHeight];
 
     ToolPose = GetSO4FromURpose(homepos);
-    BrickPose = ToolPose * trotz(deg2rad(-Bricks{4,1}{length(Bricks{4,1})}.rotation));
+    BrickPose = ToolPose * trotz(deg2rad(-Bricks{1,4}{YL}.rotation));
     BrickPose(1:3,4) = worldBrickPos;
     BrickPoseUR = GetURposeFromSO4(BrickPose);
 
     urMoveL(sock, BrickPoseUR);
+    YL = YL-1;
 
-    disp('Blue brick has been picked up');
+    disp('Yellow brick has been picked up');
 
 
     urMoveL(sock,homepos);
@@ -23,15 +24,16 @@
 
 
 
-    brickPos = Bricks{1,1}{length(Bricks{1,1})}.BoudingBoxCenter;
+    brickPos = Bricks{1,1}{RL}.boudingBoxCenter;
     worldBrickPos = [[1 brickPos] * [theta phi] zHeight+BrickHeight];
 
     ToolPose = GetSO4FromURpose(homepos);
-    BrickPose = ToolPose * trotz(deg2rad(-Bricks{1,1}{length(Bricks{1,1})}.rotation));
+    BrickPose = ToolPose * trotz(deg2rad(-Bricks{1,1}{RL}.rotation));
     BrickPose(1:3,4) = worldBrickPos;
     BrickPoseUR = GetURposeFromSO4(BrickPose);
 
     urMoveL(sock, BrickPoseUR);
+    RL = RL-1;
 
     disp('Red brick has been picked up');
 
@@ -39,17 +41,18 @@
     urMoveL(sock,homepos);
     BrickHeight = BrickHeight*1.5;
 
-    brickPos = Bricks{3,1}{length(Bricks{3,1})}.BoudingBoxCenter;
+    brickPos = Bricks{1,3}{BL}.boudingBoxCenter;
     worldBrickPos = [[1 brickPos] * [theta phi] zHeight+BrickHeight];
 
     ToolPose = GetSO4FromURpose(homepos);
-    BrickPose = ToolPose * trotz(deg2rad(-Bricks{3,1}{length(Bricks{3,1})}.rotation));
+    BrickPose = ToolPose * trotz(deg2rad(-Bricks{1,3}{BL}.rotation));
     BrickPose(1:3,4) = worldBrickPos;
     BrickPoseUR = GetURposeFromSO4(BrickPose);
 
     urMoveL(sock, BrickPoseUR);
+    BL = BL-1;
 
-    disp('Yellow brick has been picked up');
+    disp('Blue brick has been picked up');
 
 
     urMoveL(sock,homepos);

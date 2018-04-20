@@ -1,5 +1,6 @@
 %% Setting up webcam
 clear all;
+close all;
 clc;
 
 cam = webcam(1);
@@ -12,7 +13,7 @@ cam.ExposureMode = 'manual';
 cam.Exposure = -6;
 
 
-%% Connect to UR 
+%% Connect to UR
 addpath(genpath('ur_interface'));
 addpath(genpath('calibrationfolder'));
 
@@ -27,13 +28,12 @@ disp('Press Play on robot');
 fopen(sock);
 disp('Connected!');
 
-%% Get to home position. 
+%% Get to home position.
 homepos = [156.8230 -387.7130  560.1100   -3.1296    0.0074    0.0004];
 rotation = [-3.1296    0.0074    0.0004];
 currentPos = urReadPosC(sock);
-if isequal(currentPos,not(homepos)) == 0
+if isequal(currentPos,homepos) == 0
     urMoveL(sock,homepos);
-   
 end
 pause(2);
 figure(1);
@@ -41,10 +41,13 @@ camshot = snapshot(cam);
 imshow(camshot);
 
 %% Calculate projection matrix
-IP1 = [61 1024];
-IP2 = [59 232];
-IP3 = [863 230];
+IP1 = [57 1062];
+IP2 = [63 270];
+IP3 = [863 268];
 
+% Calibration rotation: [-3.1296    0.0074    0.0004]
+% Calibration z: 141.8320
+% urMoveL(sock,[RP1 141.8320 -3.1296 0.0074 0.0004]
 RP1 = [19.03 -678.12];
 RP2 = [-160.92 -496];
 RP3 = [22.58 -316.86];
@@ -78,22 +81,22 @@ imwrite(rgbImage, 'rgbImage.bmp');
 %-------------------------------- config  --------------------------------%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 configStruct =  struct('I_treshold_min',uint8(20),...
-                       'red_min',[],... %[x_min x_max y_min y_max]
-                       'red_max',[],...
-                       'green_min',[],...
-                       'green_max',[],...
-                       'R_closing',10,...
-                       'R_opening',5,...
-                       'LowerPrcTile',5,...
-                       'upperPrcTile',95,...
-                       'color',[],...
-                       'mass_min',1000);
-                   
+    'red_min',[],... %[x_min x_max y_min y_max]
+    'red_max',[],...
+    'green_min',[],...
+    'green_max',[],...
+    'R_closing',10,...
+    'R_opening',5,...
+    'LowerPrcTile',5,...
+    'upperPrcTile',95,...
+    'color',[],...
+    'mass_min',1000);
+
 % Brick dimensions
 BrickHeight = 20;
 BrickWidth = 27;
 
-%% Setup Vision processing configuration                   
+%% Setup Vision processing configuration
 RB_config = configStruct;
 GB_config = configStruct;
 BB_config = configStruct;
@@ -178,9 +181,9 @@ ForegroundImage = BackgroundSubtraction( rgiImage,BG_threshold );
 
 rgiImage = ForegroundImage;
 
-RB = imageProcessing( rgiImage,RB_config ); % Returns cell array with 
-                                            % information of each brick 
-                                            % in the given color
+RB = imageProcessing( rgiImage,RB_config ); % Returns cell array with
+% information of each brick
+% in the given color
 GB = imageProcessing( rgiImage,GB_config );
 BB = imageProcessing( rgiImage,BB_config );
 YB = imageProcessing( rgiImage,YB_config );
@@ -198,31 +201,49 @@ Bricks = {RB, GB, BB, YB, OB}; % WB removed
 
 %% Move robot to brick
 zHeight = 144.8210;
-%disp('Enter the character you want made!');
+disp('Enter the character you want made!: ');
 pause();
 
-char = input('Enter your character' , 's');
+RL = length(Bricks{1,1});
+GL = length(Bricks{1,2});
+BL = length(Bricks{1,3});
+YL = length(Bricks{1,4});
+OL = length(Bricks{1,5});
 
-switch char
-    case 'Homer'
-        run(homer.m);
-        
-    case 'Marge'
-        run(marge.m);
-        
-    case 'Bart'
-        run(bart.m);
-    
-    case 'Lisa'
-        run(lisa.m);
-        
-    case 'Maggie'
-        run(maggie.m);
-        
-    otherwise
-        disp('Character unknonw');
+dropoff = [-259.16 -235.14 220.17 2.1095 -2.2545 0.0202];
+
+while(1)
+    pause();
+    char = input('Enter the character you want made!: ' , 's');
+    switch char
+        case 'Homer'
+            run('homer.m');
+            urMoveL(sock,dropoff);
+            urMoveL(sock,homepos);
+        case 'Marge'
+            run('marge.m');
+            urMoveL(sock,dropoff);
+            urMoveL(sock,homepos);
+        case 'Bart'
+            run('bart.m');
+            urMoveL(sock,dropoff);
+            urMoveL(sock,homepos);
+        case 'Lisa'
+            run('lisa.m');
+            urMoveL(sock,dropoff);
+            urMoveL(sock,homepos);
+        case 'Maggie'
+            run('maggie.m');
+            urMoveL(sock,dropoff);
+            urMoveL(sock,homepos);
+        case 'Exit'
+            break;
+            
+        otherwise
+            disp('Character unknonw');
+            
+    end
 end
-        
 
 
 
@@ -230,13 +251,13 @@ end
 
 % brickPos = Bricks{1,1}{1}.boudingBoxCenter;
 % worldBrickPos = [[1 brickPos] * [theta phi] zHeight+BrickHeight];
-% 
-% 
+%
+%
 % ToolPose = GetSO4FromURpose(homepos);
 % BrickPose = ToolPose * trotz(deg2rad(-Bricks{1,1}{1}.rotation));
 % BrickPose(1:3,4) = worldBrickPos;
 % BrickPoseUR = GetURposeFromSO4(BrickPose);
-% 
+%
 % urMoveL(sock,BrickPoseUR);
 
 %deg2rad(Bricks{1,1}{1}.rotation);
