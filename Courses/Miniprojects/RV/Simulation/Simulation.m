@@ -1,13 +1,14 @@
 %clear all;
 %clc;
-addpath(genpath('D:\Produkt- og Designpsykologi\8. Semester\2. Robot Vision\Workshops\Tutorial 3 - Matlab'));
+addpath(genpath('D:\2. P8 Project\Courses\Miniprojects\RV\Simulation\Tutorial 3 - Matlab'));
 
 myConnector = RobotStudioConnector('127.0.0.1',1024);
 %myConnector.gripperOn()
 %%
 %myConnector.movePTP(448.2070,300.0000,15.3523,0.3256,0.0000,-0.9455,-0.0000,'v100');
 %%
-B = myConnector.getPosition()
+%B = myConnector.getPosition();
+myConnector.gripperOff();
 %%
 %myConnector.takePicture();
 %%

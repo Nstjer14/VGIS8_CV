@@ -1,0 +1,31 @@
+MODULE Module1
+    !***********************************************************
+    !
+    ! Module:  Module1
+    !
+    ! Description:
+    !   <Insert description here>
+    !
+    ! Author: Shaggy
+    !
+    ! Version: 1.0
+    !
+    !***********************************************************
+    
+    
+    !***********************************************************
+    !
+    ! Procedure main
+    !
+    !   This is the entry point of your program
+    !
+    !***********************************************************
+    PROC main()
+        IP_Initialize;
+        CONH_EstablishConnection "127.0.0.1", 1024;
+        
+        WHILE TRUE DO 
+            COMH_CommandListener;
+        ENDWHILE
+    ENDPROC
+ENDMODULE
