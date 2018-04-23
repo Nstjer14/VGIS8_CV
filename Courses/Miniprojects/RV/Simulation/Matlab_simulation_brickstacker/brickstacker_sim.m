@@ -61,12 +61,18 @@ myConnector.movePTP(newPointInWorld,'v100');
 %pause(3);
 %% Get images for background subtraction
 %figure(1)
-background = imread('background.png');
+background_png = imread('background.png');
+imwrite(background_png,'background.bmp','bmp');
+background = imread('background.bmp');
+
 %imshow(background);
 
 %figure(2);
-rgbImage = imread('withBlocks.png');
+withBlocks = imread('withBlocks.png');
+imwrite(withBlocks,'rgbImage.bmp','bmp');
+rgbImage =  imread('rgbImage.bmp');
 %imshow(rgbImage);
+
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------------------------- config  --------------------------------%
@@ -166,7 +172,7 @@ imwrite(rgbImage, [TimeStamp '.bmp']);
 
 %% Background Subtraction
 
-BG_threshold = 12;
+BG_threshold = 255;
 
 ForegroundImage = BackgroundSubtraction( rgiImage,BG_threshold );
 

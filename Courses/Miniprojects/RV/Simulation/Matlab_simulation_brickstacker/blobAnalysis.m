@@ -30,7 +30,7 @@ function [ bricks ] = blobAnalysis( binaryImage,config )
     
     %% BLOB features
     % BLOB features 7.2...
-    % in this process we remove all BLOBS with to little mass!
+    % in this process we remove all BLOBS with too little mass!
     %mass_min = 3500; % minimum mass of BLOB to be recognized as a brick
 
     brickStruct =  struct('identifier',[],...

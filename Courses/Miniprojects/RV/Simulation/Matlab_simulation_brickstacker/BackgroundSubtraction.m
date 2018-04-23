@@ -1,6 +1,6 @@
 function [ Foreground ] = BackgroundSubtraction( rgiImage,BG_threshold )
 %% Background Subtraction
-BGImageRGB = imread('background.png');
+BGImageRGB = imread('background.bmp');
 BGImageRGI = RGB2RGI2( BGImageRGB );
 
 % do we want to remove background intesity 

@@ -11,7 +11,7 @@ G_threshold_max = config.green_max;
 % Meaning that values close to (0,0,0) in the color cube 
 % are put to (0,0,0).
 % When a pixel is close to (0,0,0) "it is hard to distinguish colors" (p. 58 bottom)
-% This coresponds to I = (R+G+B)/3 << 1
+% This corresponds to I = (R+G+B)/3 << 1
 
     for n = 1:size(rgiImage,1);
         for m = 1:size(rgiImage,2);
