@@ -1,6 +1,6 @@
 %clear all;
 %clc;
-addpath(genpath('D:\2. P8 Project\Courses\Miniprojects\RV\Simulation\Tutorial 3 - Matlab'));
+%addpath(genpath('D:\2. P8 Project\Courses\Miniprojects\RV\Simulation\Tutorial 3 - Matlab'));
 
 myConnector = RobotStudioConnector('127.0.0.1',1024);
 robothome = [236.7230  282.1160  601.8670    0.5002   -0.3524    0.7558    0.2333];
@@ -60,13 +60,13 @@ myConnector.movePTP(newPointInWorld,'v100');
 %myConnector.gripperOn();
 %pause(3);
 %% Get images for background subtraction
-figure(1)
+%figure(1)
 background = imread('background.png');
-imshow(background);
+%imshow(background);
 
-figure(2);
+%figure(2);
 rgbImage = imread('withBlocks.png');
-imshow(rgbImage);
+%imshow(rgbImage);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------------------------- config  --------------------------------%
@@ -173,8 +173,8 @@ ForegroundImage = BackgroundSubtraction( rgiImage,BG_threshold );
 rgiImage = ForegroundImage;
 
 RB = imageProcessing( rgiImage,RB_config ); % Returns cell array with
-% information of each brick
-% in the given color
+                                            % information of each brick
+                                            % in the given color
 GB = imageProcessing( rgiImage,GB_config );
 BB = imageProcessing( rgiImage,BB_config );
 YB = imageProcessing( rgiImage,YB_config );
@@ -189,4 +189,7 @@ saveImages2
 %RobotPlaceLocation = [PlaceX, PlaceY, PlaceZ, pi, 0, 0];
 %BricksPickedUp = 1;
 Bricks = {RB, GB, BB, YB, OB}; % WB removed
+
+figure(3);
+imshow(ForegroundImage);
 

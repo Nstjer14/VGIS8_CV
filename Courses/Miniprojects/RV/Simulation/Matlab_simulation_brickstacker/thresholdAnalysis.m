@@ -1,4 +1,4 @@
-function [ ] = thresholdAnalysis(rgbImage, RB_config,GB_config,BB_config,YB_config,WB_config,OB_config  )
+function [ ] = thresholdAnalysis(rgbImage, RB_config,GB_config,BB_config,YB_config,OB_config  )
 
 [ rgiImage ] = RGB2RGI2( rgbImage );
 
@@ -112,7 +112,7 @@ OB_mass = OB_pos(4)*OB_pos(3);
 
 %% minimum mass calculation
 
-mass_min = min([RB_mass,GB_mass,BB_mass,YB_mass,WB_mass,OB_mass]);
+mass_min = min([RB_mass,GB_mass,BB_mass,YB_mass,OB_mass]);
 %mass_min = min([RB_mass,GB_mass,BB_mass,YB_mass,OB_mass]);
 
 
@@ -122,7 +122,6 @@ save('thresholds.mat','RB_red_min','RB_red_max','RB_green_min','RB_green_max',..
                       'BB_red_min','BB_red_max','BB_green_min','BB_green_max',...
                       'YB_red_min','YB_red_max','YB_green_min','YB_green_max',...
                       'OB_red_min','OB_red_max','OB_green_min','OB_green_max',...
-                      'WB_red_min','WB_red_max','WB_green_min','WB_green_max',...
                       'mass_min');
 
 
