@@ -131,6 +131,7 @@ sympy-plots-for-*.tex/
 *.bak
 *.sav
 /Project/Report/master.pdf
+/Courses/Miniprojetcs/RV/Report/master.pdf
 /Project/Report/master.tps
 /Project/Report/*.tcp
 /Project/Report/*.tps
@@ -258,3 +259,5 @@ IITD_Database/
 diagnostics/
 database.mat
 database_segmented.mat
+
+
