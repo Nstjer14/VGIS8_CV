@@ -22,10 +22,10 @@ close(fig)
 
 RB_pos = round(RB_pos);
 
-RB_red_min = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),1),1,[]),RB_config.LowerPrcTile);
-RB_red_max = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),1),1,[]),RB_config.upperPrcTile);
-RB_green_min = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),2),1,[]),RB_config.LowerPrcTile);
-RB_green_max = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),2),1,[]),RB_config.upperPrcTile);
+RB_red_min = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),1),1,[]),RB_config.LowerPrcTile)-5;
+RB_red_max = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),1),1,[]),RB_config.upperPrcTile)+5;
+RB_green_min = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),2),1,[]),RB_config.LowerPrcTile)-5;
+RB_green_max = prctile(reshape(rgiImage(RB_pos(2):RB_pos(2)+RB_pos(4),RB_pos(1):RB_pos(1)+RB_pos(3),2),1,[]),RB_config.upperPrcTile)+5;
 
 RB_mass = RB_pos(4)*RB_pos(3);
 
@@ -39,10 +39,10 @@ close(fig)
 
 GB_pos = round(GB_pos);
 
-GB_red_min = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),1),1,[]),GB_config.LowerPrcTile);
-GB_red_max = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),1),1,[]),GB_config.upperPrcTile);
-GB_green_min = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),2),1,[]),GB_config.LowerPrcTile);
-GB_green_max = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),2),1,[]),GB_config.upperPrcTile);
+GB_red_min = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),1),1,[]),GB_config.LowerPrcTile)-5;
+GB_red_max = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),1),1,[]),GB_config.upperPrcTile)+5;
+GB_green_min = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),2),1,[]),GB_config.LowerPrcTile)-5;
+GB_green_max = prctile(reshape(rgiImage(GB_pos(2):GB_pos(2)+GB_pos(4),GB_pos(1):GB_pos(1)+GB_pos(3),2),1,[]),GB_config.upperPrcTile)+5;
 
 GB_mass = GB_pos(4)*GB_pos(3);
 
@@ -55,10 +55,10 @@ close(fig)
 
 BB_pos = round(BB_pos);
 
-BB_red_min = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),1),1,[]),BB_config.LowerPrcTile);
-BB_red_max = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),1),1,[]),BB_config.upperPrcTile);
-BB_green_min = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),2),1,[]),BB_config.LowerPrcTile);
-BB_green_max = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),2),1,[]),BB_config.upperPrcTile);
+BB_red_min = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),1),1,[]),BB_config.LowerPrcTile)-5;
+BB_red_max = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),1),1,[]),BB_config.upperPrcTile)+5;
+BB_green_min = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),2),1,[]),BB_config.LowerPrcTile)-5;
+BB_green_max = prctile(reshape(rgiImage(BB_pos(2):BB_pos(2)+BB_pos(4),BB_pos(1):BB_pos(1)+BB_pos(3),2),1,[]),BB_config.upperPrcTile)+5;
 
 BB_mass = BB_pos(4)*BB_pos(3);
 
@@ -71,10 +71,10 @@ close(fig)
 
 YB_pos = round(YB_pos);
 
-YB_red_min = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),1),1,[]),YB_config.LowerPrcTile);
-YB_red_max = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),1),1,[]),YB_config.upperPrcTile);
-YB_green_min = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),2),1,[]),YB_config.LowerPrcTile);
-YB_green_max = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),2),1,[]),YB_config.upperPrcTile);
+YB_red_min = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),1),1,[]),YB_config.LowerPrcTile)-5;
+YB_red_max = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),1),1,[]),YB_config.upperPrcTile)+5;
+YB_green_min = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),2),1,[]),YB_config.LowerPrcTile)-5;
+YB_green_max = prctile(reshape(rgiImage(YB_pos(2):YB_pos(2)+YB_pos(4),YB_pos(1):YB_pos(1)+YB_pos(3),2),1,[]),YB_config.upperPrcTile)+5;
 
 YB_mass = YB_pos(4)*YB_pos(3);
 
@@ -87,10 +87,10 @@ close(fig)
 
 OB_pos = round(OB_pos);
 
-OB_red_min = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),1),1,[]),OB_config.LowerPrcTile);
-OB_red_max = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),1),1,[]),OB_config.upperPrcTile);
-OB_green_min = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),2),1,[]),OB_config.LowerPrcTile);
-OB_green_max = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),2),1,[]),OB_config.upperPrcTile);
+OB_red_min = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),1),1,[]),OB_config.LowerPrcTile)-5;
+OB_red_max = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),1),1,[]),OB_config.upperPrcTile)+5;
+OB_green_min = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),2),1,[]),OB_config.LowerPrcTile)-5;
+OB_green_max = prctile(reshape(rgiImage(OB_pos(2):OB_pos(2)+OB_pos(4),OB_pos(1):OB_pos(1)+OB_pos(3),2),1,[]),OB_config.upperPrcTile)+5;
 
 OB_mass = OB_pos(4)*OB_pos(3);
 

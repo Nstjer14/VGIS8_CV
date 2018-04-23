@@ -18,6 +18,7 @@ fig = figure;
 title('Mark Red Brick, right-click and press "crop image"')
 hold on
 [RB_im, RB_pos] = imcrop(rgbImage);
+
 close(fig)
 
 RB_pos = round(RB_pos);

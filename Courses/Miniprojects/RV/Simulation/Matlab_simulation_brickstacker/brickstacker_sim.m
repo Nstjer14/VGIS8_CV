@@ -77,7 +77,7 @@ rgbImage =  imread('rgbImage.bmp');
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------------------------- config  --------------------------------%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-configStruct =  struct('I_treshold_min',uint8(20),...
+configStruct =  struct('I_treshold_min',uint8(12),...
     'red_min',[],... %[x_min x_max y_min y_max]
     'red_max',[],...
     'green_min',[],...
@@ -172,7 +172,7 @@ imwrite(rgbImage, [TimeStamp '.bmp']);
 
 %% Background Subtraction
 
-BG_threshold = 255;
+BG_threshold = 12;
 
 ForegroundImage = BackgroundSubtraction( rgiImage,BG_threshold );
 
