@@ -14,7 +14,7 @@
     BrickPose(1:3,4) = worldBrickPos;
     BrickPoseUR = GetURposeFromSO4(BrickPose);
 
-    urMoveL(sock, BrickPoseUR);
+    myConnector.movePTP(BrickPoseUR,'v100');;
     YL = YL-1;
 
     disp('Yellow brick has been picked up');
@@ -33,7 +33,7 @@
     BrickPose(1:3,4) = worldBrickPos;
     BrickPoseUR = GetURposeFromSO4(BrickPose);
 
-    urMoveL(sock, BrickPoseUR);
+    myConnector.movePTP(BrickPoseUR,'v100');;
     OL = OL-1;
 
     disp('Orange brick has been picked up');
@@ -51,7 +51,7 @@
     BrickPose(1:3,4) = worldBrickPos;
     BrickPoseUR = GetURposeFromSO4(BrickPose);
 
-    urMoveL(sock, BrickPoseUR);
+    myConnector.movePTP(BrickPoseUR,'v100');;
     BL = BL-1;
     
     disp('Blue brick has been picked up');

@@ -1,19 +1,23 @@
-%clear all;
-%clc;
-%addpath(genpath('D:\2. P8 Project\Courses\Miniprojects\RV\Simulation\Tutorial 3 - Matlab'));
-
-myConnector = RobotStudioConnector('127.0.0.1',1024);
-robothome = [236.7230  282.1160  601.8670    0.5002   -0.3524    0.7558    0.2333];
-pickupOrientation = [440.8810   56.2063  254.1650    0.0076    0.0002    0.9993   -0.0366];
-
+clear all;
 
 % myConnector.movePTP(robothome,'v100');
+clc;
+close all;
+addpath(genpath('D:\2. P8 Project\Courses\Miniprojects\RV\Simulation\Tutorial 3 - Matlab'));
+
+myConnector = RobotStudioConnector('127.0.0.1',1024);
+robothome = [236.7230  282.1160  601.8670    0.0076    0.0002    0.9993   -0.0366]; % in quartionions
+homepos = [440.8810   56.2063  254.1650  0 0 1 0]; %[robothome(1:3) quat2eul(robothome(4:end))];
+pickupOrientation = [440.8810   56.2063  254.1650  0 0 1 0];
+pickupOrientation_eul = [pickupOrientation(1:3) deg2rad(quat2eul(pickupOrientation(4:end)))];
+dropOffPos = [411.0700 -300.0000  244.8200    0.0000   -0.0000    1.0000   -0.0000];
+
 %myConnector.gripperOn()
 %%
 %myConnector.movePTP(448.2070,300.0000,15.3523,0.3256,0.0000,-0.9455,-0.0000,'v100');
 %%
-%B = myConnector.getPosition();
-%B
+B = myConnector.getPosition();
+B
 %myConnector.gripperOff();
 %%
 %myConnector.takePicture();
@@ -31,20 +35,20 @@ pickupOrientation = [440.8810   56.2063  254.1650    0.0076    0.0002    0.9993 
 
 % There are the X,Y coordinates of the bricks in world space. They are the
 % calibration points
-
-%P1 = [408.9 142.683] 
-%P2 = [541.277 -176.305]
-%P3 = [332.842 -158.966]
+% calibrationImage = imread('withBlocks.png');
+%P1 = [513.144 132.435] 
+%P2 = [525.361 -42.115]
+%P3 = [361.276 75.068]
 
 % zHeight = 254.1650;
 % Orientation = [0.0002    0.9993   -0.0366];
-IP1 = [181 381];
-IP2 = [541 237];
-IP3 = [520 469];
+IP1 = [221 226];
+IP2 = [775 183];
+IP3 = [404 721];
 
-RP1 = [405.3410  159.8390];
-RP2 = [537.7210 -159.1540];
-RP3 = [329.2810 -141.8100];
+RP1 = [513.1400  132.4300];
+RP2 = [525.3600  -42.1100];
+RP3 = [361.2800   75.0680];
 
 X_rob = [RP1(1) RP2(1) RP3(1)]';
 Y_rob = [RP1(2) RP2(2) RP3(2)]';
@@ -54,9 +58,9 @@ theta = linsolve(img_mat,X_rob); % X coordinate coefficients
 phi = linsolve(img_mat,Y_rob); % Y coordinate coefficients
 % example of how to use: fromPixelToWorld = [1 IP] * [theta phi];
 % newPointInWorld = [fromPixelToWorld Z Orientation]
-fromPixelToWorld = [1 IP1] * [theta phi];
-newPointInWorld = [fromPixelToWorld zHeight+20 0.0076    0.0002    0.9993   -0.0366];
-myConnector.movePTP(newPointInWorld,'v100');
+%fromPixelToWorld = [1 IP1] * [theta phi];
+%newPointInWorld = [fromPixelToWorld zHeight+20 0.0076    0.0002    0.9993   -0.0366];
+%myConnector.movePTP(newPointInWorld,'v100');
 %myConnector.gripperOn();
 %pause(3);
 %% Get images for background subtraction
@@ -199,3 +203,48 @@ Bricks = {RB, GB, BB, YB, OB}; % WB removed
 figure(3);
 imshow(ForegroundImage);
 
+%% Move robot to brick
+zHeight = 234.8200;
+disp('Enter the character you want made!: ');
+pause();
+
+RL = length(Bricks{1,1});
+GL = length(Bricks{1,2});
+BL = length(Bricks{1,3});
+YL = length(Bricks{1,4});
+OL = length(Bricks{1,5});
+
+dropoff = [-259.16 -235.14 220.17 2.1095 -2.2545 0.0202];
+
+while(1)
+    pause();
+    char = input('Enter the character you want made!: ' , 's');
+    switch char
+        case 'Homer'
+            run('homer.m');
+            %urMoveL(sock,dropoff);
+            %myConnector.movePTP(homepos,'v100');;
+        case 'Marge'
+            run('marge.m');
+            %urMoveL(sock,dropoff);
+            %myConnector.movePTP(homepos,'v100');;
+        case 'Bart'
+            run('bart.m');
+            %urMoveL(sock,dropoff);
+            %myConnector.movePTP(homepos,'v100');;
+        case 'Lisa'
+            run('lisa.m');
+            %urMoveL(sock,dropoff);
+            %myConnector.movePTP(homepos,'v100');;
+        case 'Maggie'
+            run('maggie.m');
+            %urMoveL(sock,dropoff);
+            %myConnector.movePTP(homepos,'v100');;
+        case 'Exit'
+            break;
+            
+        otherwise
+            disp('Character unknonw');
+            
+    end
+end
