@@ -101,5 +101,11 @@ The next step is finding the centre of the BLOBs or bricks, done by using centre
 \end{equation}
 
 
+To be able to pick up the bricks properly, the rotation of the bricks must be found. By calculating the distance from each pixel, forming a BLOB of a brick, to the centre of the BLOB the four corners are found by finding the four pixels furthest away from the centre. By defining four vectors from the centre of the brick to each corner the angles are calculated and by that the rotation. This is found by finding the mean of the four angles. In illustration of the vectors defined of the BLOB is shown in \autoref{fig:rot_fig}.
 
-\section{Feature Extraction}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\textwidth]{figures/rot_fig}
+	\caption{Rotations found from vectors and corners in a BLOB}
+	\label{fig:rot_fig}
+\end{figure}
