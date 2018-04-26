@@ -6,7 +6,7 @@ close all;
 addpath(genpath('D:\2. P8 Project\Courses\Miniprojects\RV\Simulation\Tutorial 3 - Matlab'));
 
 myConnector = RobotStudioConnector('127.0.0.1',1024);
-robothome = [236.7230  282.1160  601.8670    0.0076    0.0002    0.9993   -0.0366]; % in quartionions
+robothome = [2 36.7230  282.1160  601.8670    0.0076    0.0002    0.9993   -0.0366]; % in quartionions
 homepos = [440.8810   56.2063  254.1650  0 0 1 0]; %[robothome(1:3) quat2eul(robothome(4:end))];
 pickupOrientation = [440.8810   56.2063  254.1650  0 0 1 0];
 pickupOrientation_eul = [pickupOrientation(1:3) deg2rad(quat2eul(pickupOrientation(4:end)))];
@@ -16,8 +16,8 @@ dropOffPos = [411.0700 -300.0000  244.8200    0.0000   -0.0000    1.0000   -0.00
 %%
 %myConnector.movePTP(448.2070,300.0000,15.3523,0.3256,0.0000,-0.9455,-0.0000,'v100');
 %%
-B = myConnector.getPosition();
-B
+%B = myConnector.getPosition();
+%B
 %myConnector.gripperOff();
 %%
 %myConnector.takePicture();
@@ -200,8 +200,7 @@ saveImages2
 %BricksPickedUp = 1;
 Bricks = {RB, GB, BB, YB, OB}; % WB removed
 
-figure(3);
-imshow(ForegroundImage);
+
 
 %% Move robot to brick
 zHeight = 234.8200;
