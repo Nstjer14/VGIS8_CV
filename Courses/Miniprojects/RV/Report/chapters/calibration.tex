@@ -71,14 +71,14 @@ Lastly there can also be some radial distortion in the image cause by the lens w
 
 
 \section{From image to robot}
-Once the parameters are known they need to be transformed into robot coordinates. For this the transformation matrix from the camera coordinates to robot is needed. A way to simplify this is to use a different approach than finding the camera parameters. If the camera is orthogonal to the planar space that robot needs to operate in it can be assumed that image is simply a version of the planar space with constant scaling. If a point is known in pixel coordinates and in robot coordinates it is possible to compute a simple projection between. Then it is not necessary to get the camera parameters and know the robots frame as long as the mapping is known. The mapping can be found as seen in \autoref{fig:camera_robot_shortcut} with:
+Once the parameters are known they need to be transformed into robot coordinates. For this the transformation matrix from the camera coordinates to robot is needed. A way to simplify this is to use a different approach than finding the camera parameters. If the camera is orthogonal to the planar space that the robot needs to operate in it can be assumed that image is simply a version of the planar space with constant scaling. If a point is known in pixel coordinates and in robot coordinates it is possible to compute a simple projection between. Then it is not necessary to get the camera parameters and know the robots frame as long as the mapping is known. The mapping can be found as seen in \autoref{fig:camera_robot_shortcut} with:
 \begin{equation}
 \begin{split}
 x_{rob}&=\theta_{0}+\theta_{1}*x_{img}+\theta_{2}*y_{img}\\
 x_{rob}&=(1+*x_{img}+y_{img}) * \vec{\theta}
 \end{split}
 \end{equation}
- where $x_{rob}$ is the x coordinate for the robot in a place in the image space. $x_img$ and $y_img$ are the pixel coordinates of the exact same point with $\theta_1$ and $\theta_2$ is a scaling between when the robot moves in the x direction in robot coordinates how much does it move in x and y of the pixel coordinates. $\theta_0$ is the offset that comes from the robots base not having the same origin as the image. When done for both x and y the result becomes:
+ where $x_{rob}$ is the x coordinate for the robot in a place in the image space. $x_{img}$ and $y_{img}$ are the pixel coordinates of the exact same point with $\theta_1$ and $\theta_2$ is a scaling between when the robot moves in the x direction in robot coordinates how much does it move in x and y of the pixel coordinates. $\theta_0$ is the offset that comes from the robots base not having the same origin as the image. When done for both x and y the result becomes:
 \begin{equation}
 \begin{split}
 x_{rob}&=(1+*x_{img}+y_{img})*\vec{\theta}\\
@@ -95,9 +95,9 @@ x_{rob3}
 \end{bmatrix} 
  =
 \begin{bmatrix}
-1 & x_{img1} & y_{img1} & 0 \\
-1 & x_{img2} & y_{img2} & 0 \\
-1 & x_{img3} & y_{img3} & 0 
+1 & x_{img1} & y_{img1} \\
+1 & x_{img2} & y_{img2} \\
+1 & x_{img3} & y_{img3} 
 \end{bmatrix}  
 * \vec{\theta}
 \end{equation}
@@ -113,9 +113,9 @@ y_{rob} \\
 1 & x_{img} & y_{img}\\
 \end{bmatrix} 
 \begin{bmatrix}
-\theta_0 & \phi_0 & \\
-\theta_1 & \phi_1 & \\
-\theta_2 & \phi_3 &  
+\theta_0 & \phi_0\\
+\theta_1 & \phi_1\\
+\theta_2 & \phi_3  
 \end{bmatrix}  
 \end{equation}
 
