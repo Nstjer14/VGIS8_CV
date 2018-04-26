@@ -72,7 +72,7 @@ Lastly there can also be some radial distortion in the image caused by the lens,
 \end{figure}
 
 
-\section{From image to robot}
+\section{From Image to Robot}
 Once the parameters are known they need to be transformed into robot coordinates. For this the transformation matrix from the camera coordinates to robot is needed. A way to simplify this is to use a different approach than finding the camera parameters. If the camera is orthogonal to the planar space that the robot needs to operate in it can be assumed that image is simply a version of the planar space with constant scaling. If a point is known in pixel coordinates and in robot coordinates it is possible to compute a simple projection between the points. Then it is not necessary to get the camera parameters and know the robots frame as long as the mapping is known. The mapping can be found as shown in \autoref{fig:camera_robot_shortcut} with \autoref{eq:cam_calib1}.
 
 \begin{equation}\label{eq:cam_calib1}
