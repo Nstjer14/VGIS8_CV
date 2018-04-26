@@ -7,7 +7,7 @@
 \caption{}
 \label{fig:camera_calibration_focal_point}
 \end{figure}
-When taking an image for the use of detecting an object it is necessary to transform the image frame into the robot frame. First the image has to be transformed from world coordinates into camera coordinates and then to robot coordinates. When going from world to camera the pinhole camera model can be used. A graphical depiction of the model is shown in \autoref{fig:camera_calibration_focal_point}. The camera is assumed to be box where no light can enter except from a small hole called the focal point. The light that is cast on the back wall is an inverted 2D representation of the 3D world outside of the box. The 2D image depends on the distance from the focal point to the back wall, called the focal length. The transformation is split into two parts; from world coordinates to camera coordinates and from camera coordinates to image coordinates. This is done by finding the intrinsic and extrinsic parameters. The intrinsic parameters look like shown in \autoref{eq:intr_param}.
+When taking an image for the use of detecting an object it is necessary to transform the image frame into the robot frame. First the image has to be transformed from world coordinates into camera coordinates and then to robot coordinates. When going from world to camera the pinhole camera model can be used. A graphical depiction of the model is shown in \autoref{fig:camera_calibration_focal_point}. The camera is assumed to be a box where no light can enter except from a small hole called the focal point. The light that is cast on the back wall is an inverted 2D representation of the 3D world outside of the box. The 2D image depends on the distance from the focal point to the back wall, called the focal length. The transformation is split into two parts; from world coordinates to camera coordinates and from camera coordinates to image coordinates. This is done by finding the intrinsic and extrinsic parameters. The intrinsic parameters look like shown in \autoref{eq:intr_param}.
 
 \begin{equation}\label{eq:intr_param}
 \begin{bmatrix}
@@ -19,7 +19,7 @@ w
 \begin{bmatrix}
 a_x & s & x_0 & 0 \\
 0 & a_y & y_0 & 0 \\
-0 & 0 & 0 & 0 
+0 & 0 & 1 & 0 
 \end{bmatrix}  
 \begin{bmatrix}
 x_s \\
@@ -48,7 +48,7 @@ w
 \begin{bmatrix}
 a_x & s & x_0 & 0 \\
 0 & a_y & y_0 & 0 \\
-0 & 0 & 0 & 0 
+0 & 0 & 1 & 0 
 \end{bmatrix}  
 \begin{bmatrix}
 R & -RC  \\
