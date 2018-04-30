@@ -50,25 +50,25 @@ for ii=1:1:NumberofEliminations(1)
     if processMap(rows(ii),cols(ii))==1
     if rows(ii)-1~=0    
     if processMap(rows(ii)-1,cols(ii)) ~= 1 && isnan(sourceimage(rows(ii)-1,cols(ii))) == 0 
-       SumVal=SumVal+sourceimage(rows(ii)-1,cols(ii));
+       SumVal=SumVal+reconstructIris(rows(ii)-1,cols(ii));
         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
     end
     end
     if rows(ii)+1<=polarrows
     if processMap(rows(ii)+1,cols(ii)) ~= 1 && isnan(sourceimage(rows(ii)+1,cols(ii))) == 0 
-        SumVal=SumVal+sourceimage(rows(ii)+1,cols(ii));
+        SumVal=SumVal+reconstructIris(rows(ii)+1,cols(ii));
       numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
     end
     end
     if cols(ii)-1~=0
     if processMap(rows(ii),cols(ii)-1) ~= 1 && isnan(sourceimage(rows(ii),cols(ii)-1)) == 0 
-        SumVal=SumVal+sourceimage(rows(ii),cols(ii)-1);
+        SumVal=SumVal+reconstructIris(rows(ii),cols(ii)-1);
       numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
     end
     end
     if cols(ii)+1<=polarcols
     if processMap(rows(ii),cols(ii)+1) ~= 1 && isnan(sourceimage(rows(ii),cols(ii)+1)) == 0 
-        SumVal=SumVal+sourceimage(rows(ii),cols(ii)+1);
+        SumVal=SumVal+reconstructIris(rows(ii),cols(ii)+1);
       numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1;
     end
     end
