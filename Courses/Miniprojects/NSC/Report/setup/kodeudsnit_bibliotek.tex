@@ -1,0 +1,99 @@
+\definecolor{javared}{rgb}{0.6,0,0} % for strings
+\definecolor{javagreen}{rgb}{0.25,0.5,0.35} % comments
+\definecolor{javapurple}{rgb}{0.5,0,0.35} % keywords
+\definecolor{javadocblue}{rgb}{0.25,0.35,0.75} % javadoc
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\definecolor{lightblue}{rgb}{0.0,0.3,0.7}
+\definecolor{orange}{rgb}{0.8,0.3,0.0}
+
+
+%Hvordan XML kode skal se ud
+\lstdefinestyle{customXML}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=XML,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{darkblue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version,type},
+ commentstyle=\color{gray}\upshape,
+}
+
+
+%Hvordan java kode skal se ud
+\lstdefinestyle{customjava}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=java,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{javapurple}\bfseries,
+stringstyle=\color{javared},
+commentstyle=\color{javagreen},
+morecomment=[s][\color{javadocblue}]{/**}{*/},
+}
+
+%Hvordan C kode skal se ud
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{gray},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+%Hvordan VHDL kode skal se ud
+\lstdefinestyle{customVHDL}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=VHDL,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{blue!100!black!80},
+  commentstyle=\itshape\color{green!90!black!90},
+  identifierstyle=\color{black},
+  stringstyle=\color{orange},
+}
+
+%Hvordan PHP kode skal se ud
+\lstdefinestyle{customPHP}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=PHP,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+ keywordstyle    = \color{blue},
+  stringstyle     = \color{gray},
+  identifierstyle = \color{lightblue},
+  commentstyle    = \color{green},
+  emph            =[1]{php},
+  emphstyle       =[1]\color{black},
+}
+
+%Commando til at indsætte kode i latex
+\newcommand{\includeCode}[7]{\lstinputlisting[caption=#5 | #1, style=custom#2, numbers=left, firstnumber=#3, firstline=#3, lastline=#4, label=#6]{#7#1}}
+
+%Caption navn foran nummeret i kode
+\renewcommand{\lstlistingname}{Code snippet}
+\def\lstlistingautorefname{Code snippet}

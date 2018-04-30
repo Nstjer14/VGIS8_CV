@@ -1,0 +1,388 @@
+%  A simple AAU report template.
+%  2014-09-13 v. 1.1.0
+%  Copyright 2010-2014 by Jesper Kjær Nielsen <jkn@es.aau.dk>
+%
+%  This is free software: you can redistribute it and/or modify
+%  it under the terms of the GNU General Public License as published by
+%  the Free Software Foundation, either version 3 of the License, or
+%  (at your option) any later version.
+%
+%  This is distributed in the hope that it will be useful,
+%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%  GNU General Public License for more details.
+%
+%  You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
+%
+%
+%
+% see, e.g., http://en.wikibooks.org/wiki/LaTeX/Customizing_LaTeX#New_commands
+% for more information on how to create macros
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Loads user defined variables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{setup/variables.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros for the titlepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Creates the aau titlepage
+\newcommand{\aautitlepage}[3]{%
+  {
+    %set up various length
+    \ifx\titlepageleftcolumnwidth\undefined
+      \newlength{\titlepageleftcolumnwidth}
+      \newlength{\titlepagerightcolumnwidth}
+    \fi
+    \setlength{\titlepageleftcolumnwidth}{0.5\textwidth-\tabcolsep}
+    \setlength{\titlepagerightcolumnwidth}{\textwidth-2\tabcolsep-\titlepageleftcolumnwidth}
+    %create title page
+    \thispagestyle{empty}
+    \noindent%
+    \begin{tabular}{@{}ll@{}}
+      \parbox{\titlepageleftcolumnwidth}{
+        \iflanguage{danish}{%
+          \includegraphics[page=1,width=\titlepageleftcolumnwidth]{figures/aau_logo}
+        }{%
+          \includegraphics[page=2,width=\titlepageleftcolumnwidth]{figures/aau_logo}
+        }
+      } &
+      \parbox{\titlepagerightcolumnwidth}{\raggedleft\sf\small
+        #2
+      }\bigskip\\
+       #1 &
+      \parbox[t]{\titlepagerightcolumnwidth}{%
+        \iflanguage{danish}{%
+          \textbf{Synopsis:}\smallskip\par
+        }{%
+          \textbf{Abstract:}\smallskip\par
+        }
+        \fbox{\parbox{\titlepagerightcolumnwidth-2\fboxsep-2\fboxrule}{%
+          #3
+        }}
+      }\\
+    \end{tabular}
+    \vfill
+    \iflanguage{danish}{%
+      \noindent{\footnotesize\emph{Rapportens indhold er frit tilgængeligt, men offentliggørelse (med kildeangivelse) må kun ske efter aftale med forfatterne.}}
+    }{%
+      \noindent{\footnotesize\emph{The content of this report is freely available, but publication may only be pursued with reference.}}
+    }
+    \cleardoublepage
+  }
+}
+
+%Create english project info
+\newcommand{\englishprojectinfo}[8]{%
+  \parbox[t]{\titlepageleftcolumnwidth}{
+    \textbf{Title:}\\ #1\bigskip\par
+    \textbf{Theme:}\\ #2\bigskip\par
+    \textbf{Project Period:}\\ #3\bigskip\par
+    \textbf{Project Group:}\\ #4\bigskip\par
+    \textbf{Participants:}\\ #5\bigskip\par
+    \textbf{Supervisor:}\\ #6\bigskip\par
+    \textbf{Number of Pages:} \pageref{LastPage}\bigskip\par
+    \textbf{Date of Completion:}\\ #8
+  }
+}
+
+%Create danish project info
+\newcommand{\danishprojectinfo}[8]{%
+  \parbox[t]{\titlepageleftcolumnwidth}{
+    \textbf{Titel:}\\ #1\bigskip\par
+    \textbf{Tema:}\\ #2\bigskip\par
+    \textbf{Projektperiode:}\\ #3\bigskip\par
+    \textbf{Projektgruppe:}\\ #4\bigskip\par
+    \textbf{Deltagere:}\\ #5\bigskip\par
+    \textbf{Vejleder:}\\ #6\bigskip\par
+    \textbf{Oplagstal:} #7\bigskip\par
+    \textbf{Sidetal:} \pageref{LastPage}\bigskip\par
+    \textbf{Afleveringsdato:}\\ #8
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% An example environment
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremheaderfont{\normalfont\bfseries}
+\theorembodyfont{\normalfont}
+\theoremstyle{break}
+\def\theoremframecommand{{\color{aaublue!50}\vrule width 5pt \hspace{5pt}}}
+\newshadedtheorem{exa}{Example}[chapter]
+\newenvironment{example}[1]{%
+		\begin{exa}[#1]
+}{%
+		\end{exa}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exponential function defined as upright e, \exp
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\exp}{\text{e}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Command \clearevenpage start chapter on even page
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\newcommand*{\clearevenpage}{%
+  \clearpage
+  \if@twoside
+    \ifodd\c@page
+      \hbox{}%
+      \newpage
+      \if@twocolumn
+        \hbox{}%
+        \newpage
+      \fi
+    \fi
+  \fi
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Command \addunit. Use it to add si units to equations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\providecommand\add@text{}
+\newcommand\addunit[1]{%
+  \gdef\add@text{\text{[}\ifthenelse{\equal{#1}{}}{\noSIunit}{\si{#1}}\text{]}\gdef\add@text{}}}% 
+\renewcommand\tagform@[1]{%
+  \maketag@@@{\llap{\add@text\quad}(\ignorespaces#1\unskip\@@italiccorr)}%
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Oversættelser af ord ved brug af \autoref{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\addto\extrasdanish{%
+  \def\figureautorefname{Figur}%
+  \def\subfigureautorefname{Figur}%
+  \def\tableautorefname{Tabel}%
+  \def\partautorefname{Del}%
+  \def\appendixautorefname{Bilag}%
+  \def\equationautorefname{Ligning}%
+  \def\Itemautorefname{Punkt}%
+  \def\chapterautorefname{Kapitel}%
+  \def\sectionautorefname{Afsnit}%
+  \def\subsectionautorefname{Afsnit}%
+  \def\subsubsectionautorefname{Underafsnit}%
+  \def\paragraphautorefname{Delafsnit}%
+  \def\Hfootnoteautorefname{Fodnote}%
+  \def\AMSautorefname{Ligning}%
+  \def\theoremautorefname{Sætning}%
+  \def\pageautorefname{Side}%
+  \def\requirementautorefname{Krav}%
+}
+
+\addto\extrasenglish{%
+  \def\sectionautorefname{section}%
+  \def\subsectionautorefname{section}%
+  \def\subsubsectionautorefname{section}%
+  \def\requirementautorefname{Requirement}%
+  \def\algorithmautorefname{Algorithm}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \fullref{} for både at referere til nummer og navn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}} % One single link
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer forkortelser af ord.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\AAU}{%
+\iflanguage{english}{%
+Aalborg University%
+}{%
+Aalborg Universitet%
+}}
+
+\newcommand{\opamp}{%
+\iflanguage{english}{%
+operational amplifier%
+}{%
+operationsforstærker%
+}}
+
+\newcommand{\hifi}{%
+\iflanguage{english}{%
+hi-fi amplifier%
+}{%
+hi-fi-forstærker%
+}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Command \DefVar{VARIBLE_NAME}
+% Is used to create a variable.
+% Set varible: \VARIBLE_NAME{VALUE}
+% Get varible: \getVARIBLE_NAME
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter%
+\newcommand{\DefVar}[1]{\@namedef{#1}##1{\global\@namedef{get#1}{##1}}\@nameuse{#1}{}}%
+\makeatother%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Requirements environment:
+%
+% \begin{requirement}
+%   \requirement{}
+%   \argument{}
+%   \fullfilment{}
+% \end{requirement}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\reqPrefixName{??}% Individual prefix for the requirements
+\newcounter{reqIDCounter}% Requirement counter for the subsections
+\newcounter{requirement}% Absolute requirement counter. Used to trigger label/reference target.
+
+\newlength{\reqBoxWidth}% Create length varible to define width of requirement box
+\setlength{\reqBoxWidth}{5cm}% Actual width of requirement box
+
+\newcommand{\reqPrefix}[1]{% Command to define requirement prefix
+\ifthenelse{\equal{#1}{}}{\reqPrefixName}{\setcounter{reqIDCounter}{0}\def\reqPrefixName{#1}}%
+}
+
+\makeatletter% Define requirementID for references
+\newcommand{\reqLabel}{%
+\protected@edef\@currentlabel{\reqPrefixName\thereqIDCounter}%
+\protected@edef\@currentlabelname{Requirement}%
+}\makeatother%
+
+\newenvironment{requirement}%
+{\par\vspace{\baselineskip}\noindent\ignorespaces%
+\refstepcounter{requirement}%
+\stepcounter{reqIDCounter}%
+\reqLabel%
+\DefVar{requirement}\DefVar{argument}\DefVar{fullfilment}%
+%
+\tabularx{1\textwidth}{p{\reqBoxWidth} !{\color{white}{\vrule width 2pt}} X}%
+\greyrow \parbox[t]{\reqBoxWidth}{\textsb{Requirement~\reqPrefixName\thereqIDCounter}\\\getrequirement\vskip1mm}%
+&%
+\parbox[t]{\textwidth-\reqBoxWidth-4\tabcolsep-2pt}{\textsb{Argumentation}\\\getargument\vskip1mm}\\
+\addlinespace[2pt]%
+\greyrow \multicolumn{2}{l}{\parbox{\textwidth-2\tabcolsep}{\vskip1mm\textsb{Conditions of fulfilment}\\\getfullfilment\vskip1mm}}%
+}%
+{\endtabularx\par\ignorespacesafterend}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \numnameref{labelnavn}
+% Kommandoen tilføjer en reference til et afsnit med både nummer og navn.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\numnameref}[1]{%
+\hyperref[#1]{\autoref{#1}: \nameref{#1}}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Defines subscript as upright text if it contains more than one character.
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\catcode`\_=12% Makes underscore an inactive character
+\begingroup\lccode`~=`\_% Loads underscore character for redefinition
+\lowercase{\endgroup\def~}#1{% Start definition of underscore
+\StrLen{#1}[\subscriptstringlen]% Determine length of subscript string
+\ifthenelse{\subscriptstringlen=1}% Test if subscript string contain one character
+{\sb{#1}}% Prints subscript as italic if only one character is present
+{\sb{\mathrm{#1}}}}% Prints subscript as upright text if there are more than one character
+\AtBeginDocument{\mathcode`\_=\string"8000 }% Makes underscore active only in math mode
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \startexplain, \stopexplain og \explain{}{}
+% Bruges til forklaringer af ligninger.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{firstexplain}% Holder styr på om det er den første symbolforklaring
+
+\def\startexplain{%
+	\setcounter{firstexplain}{1}%
+	{\noindent}%
+	{\par\noindent}
+	\begin{tabular}{@{}p{.06\columnwidth}p{.76\columnwidth}@{\hskip.04\columnwidth}p{.02\columnwidth}@{}}}%
+\def\stopexplain{\end{tabular}\\[10pt]}%
+
+\newcommand{\explain}[2]{%
+	\ifthenelse{\thefirstexplain=1}{%
+	Where:\\
+	&#1&[\ifthenelse{\equal{#2}{}}{\noSIunit}{#2}]\\\setcounter{firstexplain}{0}
+	}{%
+	&#1&[\ifthenelse{\equal{#2}{}}{\noSIunit}{#2}]\\%
+	}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \startexplain, \stopexplain og \explain{}{}
+% Bruges til forklaringer af ligninger.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \hyph
+% Bruges til bindestreger i ord så de stadig kan deles korrekt af Latex.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\hyph{-\penalty0\hskip0pt\relax}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \hex og \bin
+% Bruges til at skrive hexidecimal og binære tal.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\hex}[1]{%
+	\texttt{#1$_{16}$}
+}%
+
+\newcommand{\bin}[1]{%
+	\texttt{#1$_{2}$}
+}%
+
+
+\newcommand{\greyrow}{%
+	\rowcolor{lightGrey}
+}%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \citeref
+% Bruges til at referere til egen rapport/bilag.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\citeref}[1]{%
+	[\autoref{#1}]%
+}%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \rot{}
+% Bruges fx til at rotere kollonneoverskrifter i en tabel.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*\rot{\rotatebox{60}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tilføjer kommando \file{}
+% Bruges til at indsætte et filnavn i teksten.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\file}[1]{\texttt{#1}}
+
+\input{setup/kodeudsnit_bibliotek}
+
+
+\makeatletter
+%\newcommand*{\getlength}[1]{\strip@pt#1}
+% Or rounded back to `mm` (there will be some rounding errors!)
+\newcommand*{\getlength}[1]{\strip@pt\dimexpr0.35146\dimexpr#1\relax\relax}
+%
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LEGO registered trademark
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\lego}{LEGO\textsuperscript{\textregistered}}
