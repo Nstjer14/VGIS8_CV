@@ -109,3 +109,25 @@ print("Accuracy of validation on LDA: ",lda_model.score(X_test,np.ravel(y_test))
 knn_model = KNeighborsClassifier(n_neighbors=optimal_k).fit(X_train,np.ravel(y_train))
 print("Accuracy of validation on KNN k=1: ",knn_model.score(X_test,np.ravel(y_test)))
 
+
+def indices(lst, element):
+    result = []
+    offset = -1
+    while True:
+        try:
+            offset = lst.index(element, offset+1)
+        except ValueError:
+            return result
+        result.append(offset)
+
+
+
+def genRand(min, max, sampleSize):
+    answer=[]
+    answerSize=0
+    while answerSize < sampleSize:
+        r = np.random.randint(min, max)
+        if r not in answer:
+            answerSize += 1
+            answer.append(r)
+    return answer
