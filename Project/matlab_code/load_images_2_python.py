@@ -31,6 +31,3 @@ for entry in iris_normal_list:
 
 
 dataFrame = pd.DataFrame({'image':image_list,'label':label_list})
-
-
-
