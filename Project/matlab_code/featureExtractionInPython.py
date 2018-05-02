@@ -16,3 +16,6 @@ for entry in dataFrame.image:
     wavelet_results= pywt.wavedec2(entry,'haar',level=3)
     featureVec = wavelet_results[0].reshape(wavelet_results[0].size)
     featureVector.append(featureVec)
+
+dataFrame['featureVector'] = featureVector
+dataFrame.to_pickle('pythonDatabase')

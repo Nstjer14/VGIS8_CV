@@ -22,9 +22,12 @@ label_list = []
 
 for entry in iris_normal_list:
     folder_img_split = entry.split("\\")
+    #print(folder_img_split)
     subject_img_split = folder_img_split[1].split("_")
+    #print(subject_img_split)
     subject = subject_img_split[0]
-    img = cv2.imread(iris_normal_list[0])
+    #print(entry)
+    img = cv2.imread(entry)
     img = img[:,:,1] # All channels are equal to each other since it is a grayscale image. 
     image_list.append(img)
     label_list.append(subject)
