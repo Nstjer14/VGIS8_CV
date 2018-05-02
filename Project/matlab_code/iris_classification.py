@@ -10,6 +10,19 @@ import scipy as spy
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import load_images_2_python
+import pandas as pd
+
+# Machine learning models
+from sklearn.model_selection import KFold # import KFold
+from sklearn import svm
+from sklearn.model_selection import cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
 
 # Ignore warnings from sklearn because they fill up the console
 import warnings
@@ -42,9 +55,7 @@ def genRand(min, max, sampleSize):
 
 
 #load the data 
-
-
-
+'''
 f = h5py.File('database_segmented.mat', 'r');
  
 print("Keys: %s" % f.keys())
@@ -60,23 +71,43 @@ with open('label.csv', 'r') as f:
    reader = csv.reader(f)
    label = [row for row in reader]
 
-
-#set general parameters
-
-#k_fold_param=5
-PPTrainSize=5 
-
-#split data in train and validation sets
-
 label_list = [item for sublist in label for item in sublist]#make a it flatlist
+
+'''
+# Load the data from pythonDatabase that is generated in main_script. 
+# Contains a pandas dataframe with the image, label and feature.
+dataFrame = pd.read_pickle("pythonDatabase")
+temp = dataFrame.featureVector.values
+featureVector = []
+
+for i in temp:
+    featureVector.append(np.array(i.reshape(512)))
+featureVector = np.asarray(featureVector)
+
+p=featureVector.shape
+label = dataFrame.label
+
+label_list = label.tolist() # The list coming from dataFrame is already in the correct format.
+
+
+'''
+This is the part that splits the training data for cross validation into subets of only 5 images pr. class.
+The rest are used as validation
+'''
 uniqueClasses=np.unique(label_list)
 NuniqueClasses=len(uniqueClasses)
+print("Number of classes: ",NuniqueClasses)
 
-np.random.seed(42)
+np.random.seed(42) # Set the random seed so we always get the same "random" result
 
 TrainData=np.empty((0,p[1]))
 TrainIndices=[]
 TrainLabel=[] 
+#set general parameters
+kf = 5 #KFold(n_splits=5) # Define the split - into 5 folds
+PPTrainSize=5 
+
+#split data in train and validation sets
 
 for s in range(0,NuniqueClasses):
     globals()['ClassSamples%s' % s]=indices(label_list,uniqueClasses[s])
@@ -95,25 +126,19 @@ for NValiSample in range(0,len(ValidationIndices)):
     ValiLabel.append(label_list[ValidationIndices[NValiSample]])
     ValiData=np.append(ValiData,[featureVector[ValidationIndices[NValiSample]]],axis=0)
 
-print(AllI)
-print(ValidationIndices)
-print(TrainData.shape)
-print(TrainIndices)
-print(ValidationIndices)
-
+#print(AllI)
+#print(ValidationIndices)
+#print(TrainData.shape)
+#print(TrainIndices)
+#print(ValidationIndices)
 
 
 
 '''
 This part is about training and seeing how well the different classifiers
-perform with k=5 K-fold cross validation. We use 20% of the data for training
+perform with k=5 K-fold cross validation.
 '''
-from sklearn.model_selection import KFold # import KFold
-from sklearn import svm
-from sklearn.model_selection import cross_val_score
 
-
-kf = 5 #KFold(n_splits=5) # Define the split - into 5 folds
 print("Performing",kf,"Kfold crossvalidation")
 clf = svm.SVC(kernel='linear')
 scores = cross_val_score(clf, TrainData, np.ravel(TrainLabel), cv=kf)
@@ -123,15 +148,14 @@ clf2 = svm.SVC(kernel='poly')
 scores2 = cross_val_score(clf2,TrainData, np.ravel(TrainLabel), cv=kf)
 print("Accuracy for quadratic CV: %0.2f (+/- %0.2f)" % (scores2.mean(), scores2.std() * 2))
 
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 lda = LinearDiscriminantAnalysis()
 scores3 = cross_val_score(lda, TrainData, np.ravel(TrainLabel), cv=kf)
 print("Accuracy for LDA CV: %0.2f (+/- %0.2f)" % (scores3.mean(), scores3.std() * 2))
 
-from sklearn.neighbors import KNeighborsClassifier
-import matplotlib.pyplot as plt
-myList = list(range(1,25))
-neighbors = list(filter(lambda x: x % 2 != 0, myList))
+
+# Here we run K-means with different number of K's to find the best K
+myList = list(range(1,25)) # Number of K's we try to check for
+neighbors = list(filter(lambda x: x % 2 != 0, myList)) # Get odd number K's
 cv_scores = []
 for k in neighbors:
     knn = KNeighborsClassifier(n_neighbors=k)
@@ -150,17 +174,18 @@ knn2 = KNeighborsClassifier(n_neighbors=optimal_k)
 scores4 = cross_val_score(knn2,TrainData, np.ravel(TrainLabel), cv=kf, scoring='accuracy')
 print("Accuracy for KNN k =",optimal_k," CV: ",scores4.mean(), "+/-", scores4.std() * 2)
 
-'''
-Here we train the model with the 20% data and validate it on the rest of the 80% 
-'''
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 
-size_of_train_for_model = 0.5
+'''
+Here we train the model with the actual models. 
+'''
+
+
+size_of_train_for_model = 0.1
 X_train, X_test, y_train, y_test = train_test_split(featureVector, label, train_size=size_of_train_for_model,stratify=label,random_state=42)
 print("Amount of data being used training: ",size_of_train_for_model, "and", 1-size_of_train_for_model, "for validation")
 
-clf_model = svm.SVC(kernel='linear').fit(X_train,np.ravel(y_train))
+# If y_train is givis prolems try using np.ravel(y_train) instead.
+clf_model = svm.SVC(kernel='linear').fit(X_train,y_train)
 predicted_data = clf_model.predict(X_test)
 print("Accuracy of validation on linear SVM: ",accuracy_score(y_test, predicted_data))
 
@@ -173,11 +198,11 @@ print("Accuracy of validation on linear SVM: ",accuracy_score(y_test, predicted_
 #print('SVM accuracy:',SVM_accuracy)
 
 
-clf2_model = svm.SVC(kernel='poly').fit(X_train,np.ravel(y_train))
+clf2_model = svm.SVC(kernel='poly').fit(X_train,y_train)
 print("Accuracy of validation on quadratic SVM: ",accuracy_score(y_test, clf2_model.predict(X_test)))
 
-lda_model = LinearDiscriminantAnalysis().fit(X_train,np.ravel(y_train))
+lda_model = LinearDiscriminantAnalysis().fit(X_train,y_train)
 print("Accuracy of validation on LDA: ",accuracy_score(y_test, lda_model.predict(X_test)))
 
-knn_model = KNeighborsClassifier(n_neighbors=optimal_k).fit(X_train,np.ravel(y_train))
+knn_model = KNeighborsClassifier(n_neighbors=optimal_k).fit(X_train,y_train)
 print("Accuracy of validation on KNN k =",optimal_k,": ",accuracy_score(y_test, knn_model.predict(X_test)))
