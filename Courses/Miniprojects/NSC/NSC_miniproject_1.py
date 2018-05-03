@@ -3,14 +3,37 @@ import matplotlib.pyplot as plt
 import copy
 
 
+def customzero(dimensions):
+    mat=[]
+    print(dimensions[0],dimensions[1])
+    for d in range(0,dimensions[0]):
+        for dd in range(0,dimensions[1]):
+            mat[d][dd]=0
+
+    return mat
+
+
 def customhist(image,numberofbins,range):
-    increment=range[2]/numberofbins
-    
+    increment=range[1]/numberofbins
+    binsE=np.zeros(numberofbins+1)
+    fg=numberofbins+1
+    print(type(increment))
+    hist=np.zeros(numberofbins)
+    for i in range(0,fg):
+         binsE[i]=i*increment
+    imdim=image.shape
+    for ii in range(0,imdim[0]):
+        for iii in range(0,imdim[1]):
+            for pp in range(0,numberofbins):
+                if image[ii][iii]>=binsE[pp] and image[ii][iii]<binsE[pp+1]:
+                    hist[pp]=hist[pp]+1
+    return hist, binsE 
 
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
-    histE, bin_edgesE=np.histogram(reconstructIris,numberOfBins,range=(0,255),density=False)
+    histE, bin_edgesE=customhist(reconstructIris,numberOfBins,(0,256))
+    print(len(histE),len(bin_edgesE))
     imageDim=reconstructIris.shape
     Equalised=np.zeros(imageDim)
     lowVal = 255.0
@@ -38,7 +61,7 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 
-
+#=np.histogram(reconstructIris,numberOfBins,range=(0,256),density=False)
 
 
 
@@ -82,7 +105,7 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
     numberofUneliminatedNeighbors=0
     pixelVal=0
     SumVal=0
-    UnprocessedPixels=copy.deepcopy(NumberofEliminations)
+    UnprocessedPixels=NumberofEliminations
 
     
     while UnprocessedPixels>0:
@@ -130,7 +153,6 @@ RecVal=40
 #plt.show()
 
 K=noiseremover(F,HistFrac,RecVal)
-hist, bin_edges=np.histogram(K,256,range=(0,256),density=False)
 #plt.hist(K.ravel(),256,range=(0,256),density=False)
 #plt.show()
 L=equalisehistogram(F,40)
