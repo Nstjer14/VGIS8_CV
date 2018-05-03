@@ -12,6 +12,7 @@ import math
 import matplotlib.pyplot as plt
 import load_images_2_python
 import pandas as pd
+from collections import Counter
 
 # Machine learning models
 from sklearn.model_selection import KFold # import KFold
@@ -28,6 +29,8 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 warnings.filterwarnings("ignore", category=UserWarning) 
+warnings.filterwarnings("ignore", category=FutureWarning) 
+
 #import tensorflow as tf
 #from more_itertools import locate
 
@@ -77,10 +80,21 @@ label_list = [item for sublist in label for item in sublist]#make a it flatlist
 # Load the data from pythonDatabase that is generated in main_script. 
 # Contains a pandas dataframe with the image, label and feature.
 dataFrame = pd.read_pickle("pythonDatabase")
-temp = dataFrame.featureVector.values
+
+# Dropping classes with less than 10 images
+counts = Counter(dataFrame.label)
+discardList = []
+minNumOfImages = 10
+for iris_name,value in counts.items():
+    if value<=minNumOfImages:
+        discardList.append(iris_name)
+dataFrame = dataFrame[~dataFrame['label'].isin(discardList)]
+print("Classes' with less than %.f images discarded in total are %.f : " % (minNumOfImages,len(discardList)),discardList)
+
+temp_for_reshape = dataFrame.featureVector.values
 featureVector = []
 
-for i in temp:
+for i in temp_for_reshape:
     featureVector.append(np.array(i.reshape(512)))
 featureVector = np.asarray(featureVector)
 
@@ -88,6 +102,7 @@ p=featureVector.shape
 label = dataFrame.label
 
 label_list = label.tolist() # The list coming from dataFrame is already in the correct format.
+
 
 
 '''
@@ -105,7 +120,7 @@ TrainIndices=[]
 TrainLabel=[] 
 #set general parameters
 kf = 5 #KFold(n_splits=5) # Define the split - into 5 folds
-PPTrainSize=5 
+PPTrainSize=5
 
 #split data in train and validation sets
 
@@ -114,9 +129,13 @@ for s in range(0,NuniqueClasses):
     globals()['Rand%s' % s]=genRand(0,len(eval('ClassSamples' + str(s))),PPTrainSize)
 
     for t in range(0, len(eval('Rand' + str(s)))):
+        if (len(eval('ClassSamples' + str(s)))<PPTrainSize):
+            print("Warning message! You classes have fewer images than %.f" % PPTrainSize)
+            
         TrainIndices.append(eval('ClassSamples' + str(s))[eval('Rand' + str(s))[t]])
         TrainData=np.append(TrainData,[featureVector[eval('ClassSamples' + str(s))[eval('Rand' + str(s))[t]]]],axis=0)
         TrainLabel.append(label_list[eval('ClassSamples' + str(s))[eval('Rand' + str(s))[t]]])
+        #print("...")
 ValiLabel=[]#Create a list for the labels of the validation samples
 ValiData=np.empty((0,p[1]))#Create an array for the validation samples
 AllI=np.arange(p[0])
@@ -125,6 +144,7 @@ ValidationIndices=np.setdiff1d(AllI,TrainIndices)#find all indices for the ones 
 for NValiSample in range(0,len(ValidationIndices)):
     ValiLabel.append(label_list[ValidationIndices[NValiSample]])
     ValiData=np.append(ValiData,[featureVector[ValidationIndices[NValiSample]]],axis=0)
+    #print("---")
 
 #print(AllI)
 #print(ValidationIndices)
@@ -138,20 +158,6 @@ for NValiSample in range(0,len(ValidationIndices)):
 This part is about training and seeing how well the different classifiers
 perform with k=5 K-fold cross validation.
 '''
-
-print("Performing",kf,"Kfold crossvalidation")
-clf = svm.SVC(kernel='linear')
-scores = cross_val_score(clf, TrainData, np.ravel(TrainLabel), cv=kf)
-print("Accuracy for linear CV: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-
-clf2 = svm.SVC(kernel='poly')
-scores2 = cross_val_score(clf2,TrainData, np.ravel(TrainLabel), cv=kf)
-print("Accuracy for quadratic CV: %0.2f (+/- %0.2f)" % (scores2.mean(), scores2.std() * 2))
-
-lda = LinearDiscriminantAnalysis()
-scores3 = cross_val_score(lda, TrainData, np.ravel(TrainLabel), cv=kf)
-print("Accuracy for LDA CV: %0.2f (+/- %0.2f)" % (scores3.mean(), scores3.std() * 2))
-
 
 # Here we run K-means with different number of K's to find the best K
 myList = list(range(1,25)) # Number of K's we try to check for
@@ -172,7 +178,21 @@ plt.show()
 
 knn2 = KNeighborsClassifier(n_neighbors=optimal_k)
 scores4 = cross_val_score(knn2,TrainData, np.ravel(TrainLabel), cv=kf, scoring='accuracy')
-print("Accuracy for KNN k =",optimal_k," CV: ",scores4.mean(), "+/-", scores4.std() * 2)
+print("Accuracy for KNN k =",optimal_k," CV: %.2f"%scores4.mean(), "+/-%.2f" % (scores4.std() * 2))
+
+
+print("Performing",kf,"Kfold crossvalidation")
+clf = svm.SVC(kernel='linear')
+scores = cross_val_score(clf, TrainData, np.ravel(TrainLabel), cv=kf)
+print("Accuracy for linear CV: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+clf2 = svm.SVC(kernel='poly')
+scores2 = cross_val_score(clf2,TrainData, np.ravel(TrainLabel), cv=kf)
+print("Accuracy for quadratic CV: %0.2f (+/- %0.2f)" % (scores2.mean(), scores2.std() * 2))
+
+lda = LinearDiscriminantAnalysis()
+scores3 = cross_val_score(lda, TrainData, np.ravel(TrainLabel), cv=kf)
+print("Accuracy for LDA CV: %0.2f (+/- %0.2f)" % (scores3.mean(), scores3.std() * 2))
 
 
 '''
@@ -180,14 +200,14 @@ Here we train the model with the actual models.
 '''
 
 
-size_of_train_for_model = 0.1
+size_of_train_for_model = 0.8
 X_train, X_test, y_train, y_test = train_test_split(featureVector, label, train_size=size_of_train_for_model,stratify=label,random_state=42)
-print("Amount of data being used training: ",size_of_train_for_model, "and", 1-size_of_train_for_model, "for validation")
+print("Amount of data being used training: %.2f" % size_of_train_for_model, "and %.2f" % (1-size_of_train_for_model), "for validation")
 
 # If y_train is givis prolems try using np.ravel(y_train) instead.
 clf_model = svm.SVC(kernel='linear').fit(X_train,y_train)
 predicted_data = clf_model.predict(X_test)
-print("Accuracy of validation on linear SVM: ",accuracy_score(y_test, predicted_data))
+print("Accuracy of validation on linear SVM: %.2f" % accuracy_score(y_test, predicted_data))
 
 
 # This is to manually calcuate the accuracy instead of using the accuracy_score functionallity which does the same.
@@ -199,10 +219,10 @@ print("Accuracy of validation on linear SVM: ",accuracy_score(y_test, predicted_
 
 
 clf2_model = svm.SVC(kernel='poly').fit(X_train,y_train)
-print("Accuracy of validation on quadratic SVM: ",accuracy_score(y_test, clf2_model.predict(X_test)))
+print("Accuracy of validation on quadratic SVM: %.2f" % accuracy_score(y_test, clf2_model.predict(X_test)))
 
 lda_model = LinearDiscriminantAnalysis().fit(X_train,y_train)
-print("Accuracy of validation on LDA: ",accuracy_score(y_test, lda_model.predict(X_test)))
+print("Accuracy of validation on LDA: %.2f" % accuracy_score(y_test, lda_model.predict(X_test)))
 
 knn_model = KNeighborsClassifier(n_neighbors=optimal_k).fit(X_train,y_train)
-print("Accuracy of validation on KNN k =",optimal_k,": ",accuracy_score(y_test, knn_model.predict(X_test)))
+print("Accuracy of validation on KNN k =",optimal_k,": %.2f" % accuracy_score(y_test, knn_model.predict(X_test)))
