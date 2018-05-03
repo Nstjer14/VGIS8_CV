@@ -253,11 +253,12 @@ AAUsimpletheme.pdf
 
 *.mp3
 *.wav
+*.pyc
 
 warsaw/
 IITD_Database/
 diagnostics/
 database.mat
 database_segmented.mat
-
+normalised_iris/
 
