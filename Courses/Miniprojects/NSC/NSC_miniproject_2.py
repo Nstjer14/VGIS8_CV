@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 
-
+#@profile
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
@@ -19,14 +19,18 @@ def equalisehistogram(reconstructIris,LimitValue):
             if bin_edgesE[i]>higVal:
                 higVal=bin_edgesE[i]
 
-    for p in range(0,imageDim[0]):#for all pixels in input image stretch the histogram and make sure that the values beyond the possible pixel values are set equal 0 or 255
-         for c in range(0,imageDim[1]):
-              temp=(reconstructIris[p][c]-lowVal)*(255/(higVal-lowVal))
-              Equalised[p][c]=temp
-              if temp<0:
-                  Equalised[p][c]=0 
-              if temp>255:
-                  Equalised[p][c]=255 
+    temp=(reconstructIris-lowVal)*(255/(higVal-lowVal))
+    
+#for p in reconstructIris
+        
+    #for p in range(0,imageDim[0]):#for all pixels in input image stretch the histogram and make sure that the values beyond the possible pixel values are set equal 0 or 255
+     #    for c in range(0,imageDim[1]):
+      #        temp=(reconstructIris[p][c]-lowVal)*(255/(higVal-lowVal))
+       #       Equalised[p][c]=temp
+        #      if temp<0:
+         #         Equalised[p][c]=0 
+          #    if temp>255:
+           #       Equalised[p][c]=255 
     return Equalised
 
 
@@ -34,7 +38,7 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 
-
+#@profile
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
 
     numberOfBins=256

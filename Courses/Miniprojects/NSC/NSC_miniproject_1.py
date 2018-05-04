@@ -3,23 +3,11 @@ import matplotlib.pyplot as plt
 import copy
 
 
-def customzero(dimensions):
-    mat=[]
-    print(dimensions[0],dimensions[1])
-    for d in range(0,dimensions[0]):
-        for dd in range(0,dimensions[1]):
-            mat[d][dd]=0
-
-    return mat
-
-
-def customhist(image,numberofbins,range):
-    increment=range[1]/numberofbins
+def customhist(image,numberofbins,ran):
+    increment=ran[1]/numberofbins
     binsE=np.zeros(numberofbins+1)
-    fg=numberofbins+1
-    print(type(increment))
     hist=np.zeros(numberofbins)
-    for i in range(0,fg):
+    for i in range(0,numberofbins+1):
          binsE[i]=i*increment
     imdim=image.shape
     for ii in range(0,imdim[0]):
@@ -29,11 +17,11 @@ def customhist(image,numberofbins,range):
                     hist[pp]=hist[pp]+1
     return hist, binsE 
 
+@profile
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
     histE, bin_edgesE=customhist(reconstructIris,numberOfBins,(0,256))
-    print(len(histE),len(bin_edgesE))
     imageDim=reconstructIris.shape
     Equalised=np.zeros(imageDim)
     lowVal = 255.0
@@ -68,11 +56,11 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 
-
+@profile
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
 
     numberOfBins=256
-    hist, bin_edges=np.histogram(sourceimage,numberOfBins,range=(0,256),density=False)
+    hist, bin_edges=customhist(sourceimage,numberOfBins,(0,256))
     #plt.hist(sourceimage.ravel(),256)
     #plt.show()
 
