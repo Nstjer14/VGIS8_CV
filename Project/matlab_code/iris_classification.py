@@ -90,7 +90,7 @@ for iris_name,value in counts.items():
         discardList.append(iris_name)
 dataFrame = dataFrame[~dataFrame['label'].isin(discardList)]
 print("Classes' with less than %.f images discarded in total are %.f : " % (minNumOfImages,len(discardList)),discardList)
-
+#
 temp_for_reshape = dataFrame.featureVector.values
 featureVector = []
 
@@ -103,7 +103,7 @@ label = dataFrame.label
 
 label_list = label.tolist() # The list coming from dataFrame is already in the correct format.
 
-
+#%%
 
 '''
 This is the part that splits the training data for cross validation into subets of only 5 images pr. class.
@@ -152,13 +152,13 @@ for NValiSample in range(0,len(ValidationIndices)):
 #print(TrainIndices)
 #print(ValidationIndices)
 
-
+#%%
 
 '''
 This part is about training and seeing how well the different classifiers
 perform with k=5 K-fold cross validation.
 '''
-
+print("Cross Validation (CV)")
 # Here we run K-means with different number of K's to find the best K
 myList = list(range(1,25)) # Number of K's we try to check for
 neighbors = list(filter(lambda x: x % 2 != 0, myList)) # Get odd number K's
@@ -195,10 +195,11 @@ scores3 = cross_val_score(lda, TrainData, np.ravel(TrainLabel), cv=kf)
 print("Accuracy for LDA CV: %0.2f (+/- %0.2f)" % (scores3.mean(), scores3.std() * 2))
 
 
+#%%
 '''
 Here we train the model with the actual models. 
 '''
-
+print("Actual models")
 
 size_of_train_for_model = 0.8
 X_train, X_test, y_train, y_test = train_test_split(featureVector, label, train_size=size_of_train_for_model,stratify=label,random_state=42)
