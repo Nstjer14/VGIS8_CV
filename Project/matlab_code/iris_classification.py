@@ -33,7 +33,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 #import tensorflow as tf
 #from more_itertools import locate
-
+@profile
 def indices(lst, element):
     result = []
     offset = -1
