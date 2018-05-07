@@ -17,7 +17,7 @@ def customhist(image,numberofbins,ran):
                     hist[pp]=hist[pp]+1
     return hist, binsE 
 
-@profile
+#@profile
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
@@ -56,7 +56,7 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 
-@profile
+#@profile
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
 
     numberOfBins=256
@@ -131,19 +131,19 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
 
 
 ##################For Testing###########################
-
+if __name__ == '__main__':
 #plt.ion()#uncomment if you don't vant to plot stuff
-F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg')
-HistFrac=0.1
-RecVal=40
+    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg')
+    HistFrac=0.1
+    RecVal=40
 
 #plt.imshow(F,cmap="gray") #Uncomment to show initial image 
 #plt.show()
 
-K=noiseremover(F,HistFrac,RecVal)
+#K=noiseremover(F,HistFrac,RecVal)
 #plt.hist(K.ravel(),256,range=(0,256),density=False)
 #plt.show()
-L=equalisehistogram(F,40)
+#L=equalisehistogram(F,40)
 
 #plt.imshow(L,cmap="gray") #Uncomment to show final image 
 #plt.show()

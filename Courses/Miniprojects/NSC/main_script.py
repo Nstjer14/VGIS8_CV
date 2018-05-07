@@ -5,7 +5,7 @@ Created on Tue May  1 13:24:40 2018
 @author: Shaggy
 """
 import load_images_2_python
-import noiseremover_python as noiserm
+import NSC_miniproject_1 as noiserm
 import pywt
 import cv2
 import matplotlib.pyplot as plt
@@ -27,8 +27,6 @@ def iris_proc (image):
     return featureVec
 
 #%%
-
-
 featureVector = []
 dataFrame = load_images_2_python.dataFrame
     

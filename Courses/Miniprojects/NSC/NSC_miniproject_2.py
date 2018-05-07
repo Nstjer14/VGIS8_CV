@@ -84,13 +84,14 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
 
 ##################For Testing###########################
 
+if __name__ == '__main__':
 
-F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg')
-HistFrac=0.1
-RecVal=40
-
-
-K=noiseremover(F,HistFrac,RecVal)
-L=equalisehistogram(F,40)
+    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg')
+    HistFrac=0.1
+    RecVal=40
+    
+    
+    #K=noiseremover(F,HistFrac,RecVal)
+    #L=equalisehistogram(F,40)
 
 
