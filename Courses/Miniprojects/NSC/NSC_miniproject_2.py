@@ -8,7 +8,6 @@ def equalisehistogram(reconstructIris,LimitValue):
     numberOfBins=256
     histE, bin_edgesE=np.histogram(reconstructIris,numberOfBins,range=(0,256),density=False)#create histogram
     imageDim=reconstructIris.shape 
-    Equalised=np.zeros(imageDim) #create an output array with the same dimensions as input array 
     lowVal = 255.0
     higVal = 0.0
 
@@ -19,22 +18,11 @@ def equalisehistogram(reconstructIris,LimitValue):
             if bin_edgesE[i]>higVal:
                 higVal=bin_edgesE[i]
 
-    temp=(reconstructIris-lowVal)*(255/(higVal-lowVal))
-    
-#for p in reconstructIris
-        
-    #for p in range(0,imageDim[0]):#for all pixels in input image stretch the histogram and make sure that the values beyond the possible pixel values are set equal 0 or 255
-     #    for c in range(0,imageDim[1]):
-      #        temp=(reconstructIris[p][c]-lowVal)*(255/(higVal-lowVal))
-       #       Equalised[p][c]=temp
-        #      if temp<0:
-         #         Equalised[p][c]=0 
-          #    if temp>255:
-           #       Equalised[p][c]=255 
-    return Equalised
+    Equalised=(reconstructIris-lowVal)*(255/(higVal-lowVal))
+    withoutovers=np.where(Equalised>255,255,Equalised)
+    withoutunders=np.where(withoutovers<0,0,withoutovers) 
 
-
-
+    return withoutunders
 
 
 
