@@ -5,7 +5,7 @@ Created on Tue May  1 13:24:40 2018
 @author: Shaggy
 """
 import load_images_2_python
-import NSC_miniproject_1 as noiserm
+import NSC_miniproject_2 as noiserm
 import pywt
 import cv2
 import matplotlib.pyplot as plt
@@ -74,6 +74,6 @@ def parallel():
     
 
 if __name__ == '__main__':    
-    #parallel()
+    parallel()
     #sequential()
     pass
