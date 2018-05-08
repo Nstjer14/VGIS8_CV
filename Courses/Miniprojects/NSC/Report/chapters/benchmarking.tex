@@ -18,7 +18,8 @@ The times for this test were both measured using line_profiler as well as using 
 \caption{Execution times of the processing of 10 iris images. }
 \end{table}
 \noindent
-For the comparison between the optimised code running normally in a sequential way or running the processing of images in parallel using multi processing the code was run on the entire available database. Since the line_profiler was not working for the multiprocessing the scripts were only timed using timeit. 
+Furthermore, it should be noted what a large difference in execution time there is between the runs of the two implementations. The second, optimised implementation, which utilises Numpy functionalities, is more than 1,300 times faster. \\
+For the comparison between the optimised code running normally in a sequential way or running the processing of images in parallel using multi processing the code was run on the entire available database. Since the line_profiler was not working for the multiprocessing the scripts were only timed using the timeit module. 
 \begin{table}[H]
 \centering
 \begin{tabular}{ |c|c| }
@@ -34,5 +35,5 @@ For the comparison between the optimised code running normally in a sequential w
 \caption{Execution times of the processing of the entire database of iris images. }
 \end{table}
 \noindent
-
+As can be seen in \autoref{SeqMu} the execution time is decreased significantly by utilising multiprocessing. This shows how beneficial multiprocessing can be. For this, rather small, example of processing of a database  the time used for implementing the multiprocessing might not worth the time saved in the execution, however, one can imagine that a decrease in execution time by almost half of the time for processing a very large database could be a huge gain. 
      
