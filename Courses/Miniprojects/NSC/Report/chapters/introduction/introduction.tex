@@ -1,26 +1,20 @@
 \chapter{Introduction}
-For the mini project in the Robot Vision 2018 course the task of assembling Simpsons figures with a robot was given. The figures are made of \lego Duplo bricks stacked on each other as can be seen in \autoref{fig:Simpsons_duplo}. The figures are the following:
+The focus of this mini project is to implement and optimise a piece of python code. 
+In this case the code snippet consists of two functions used in process of image processing of images of the iris. The functions are a noice remover function and a histogram equalisation function. In the following sections the functionalities of the functions are elaborated and the setup and approach for the optimisation is outlined. 
 
-\begin{itemize}
-\item Homer: Yellow, Red, Blue
-\item Bart: Yellow, Orange, Blue
-\item Maggie: Yellow, Red
-\item Lisa: Yellow, Orange, Yellow
-\item Marge: Blue, Yellow, Green
-\end{itemize}
-
+\section{The Functions}
+The images which are processed by the two functions are normalised images of the iris as can be seen in \autoref{fig:SimPolar}. First the image is handled by the noise remover function and then the output is handled by the Equalise histogram function. The following sections describe the functionalities of the functions. 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{figures/simpsons_duplo_figures.png}
-\caption{}
-\label{fig:Simpsons_duplo}
+\includegraphics[width=\textwidth]{figures/002polar.jpg}
+\caption{The normalised image of the iris before applying functions.}
+\label{fig:SimPolar}
 \end{figure}
 
-To automatically solve this task a robot and a camera is needed in a setup like \autoref{fig:robot_theoretical_setup}. The camera takes pictures of the area where the bricks are located. The image is then processed to figure out where the bricks are located and how they are oriented. The robot is then ordered to assemble a figure e.g. Homer and can now do this automatically since it knows where the bricks are. The figure is then assembled and dropped off in a loading area and the robot prepares for a new order. 
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{figures/robot_theoretical_setup.png}
-\caption{}
-\label{fig:robot_theoretical_setup}
-\end{figure}
+\subsection{Noise Remover}
+The purpose of the noise remover function is to remove noise occurring in the form of eyelashes covering parts of the iris. Usually the pixels showing the lashes will be among the darkest pixels. Since every image of the iris is different and how dark the iris is also varies a threshold has to be identified adaptively. After the threshold has ben found it is applied to all pixels in the image. If the pixels are lower than the threshold the pixels have to be eliminated and reconstructed from neighbouring pixels.
+  
+\subsection{Equalise Histogram}
+This function has to identify the span of the "main" pixel values in the histogram. Once the "main" part of the  histogram has been identified this is stretched to cover the whole span of the range of the pixel values. This is done in order to increase the contrast in the image.  
+

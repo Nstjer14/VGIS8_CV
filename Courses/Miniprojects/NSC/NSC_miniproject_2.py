@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 
-#@profile
+@profile
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
@@ -26,7 +26,7 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 
-#@profile
+@profile
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
 
     numberOfBins=256

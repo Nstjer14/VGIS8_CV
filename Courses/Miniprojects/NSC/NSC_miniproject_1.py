@@ -17,7 +17,7 @@ def customhist(image,numberofbins,ran):
                     hist[pp]=hist[pp]+1
     return hist, binsE 
 
-#@profile
+@profile
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
@@ -56,7 +56,7 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 
-#@profile
+@profile
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
 
     numberOfBins=256
