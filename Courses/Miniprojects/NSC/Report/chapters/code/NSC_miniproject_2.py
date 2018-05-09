@@ -6,7 +6,7 @@ import copy
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
-    histE, bin_edgesE=np.histogram(reconstructIris,numberOfBins,range=(0,256),density=False)#create histogram
+    histE, bin_edgesE=np.histogram(reconstructIris, numberOfBins, range=(0,256), density=False) #create histogram
     imageDim=reconstructIris.shape 
     lowVal = 255.0
     higVal = 0.0

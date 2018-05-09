@@ -1,10 +1,12 @@
 \section{Benchmarking}
-In order to benchmark the implemented code some tests were conducted. The three different versions of the code were compared in regard to execution time. During development line_profiler was used for identifying the most time demanding lines in order to know what lines to improve. However, this section describes the comparison of the final versions of the code. For the testing described in this section a script that contains the database of iris images and necessary functions was created. This script can be seen in \autoref{AppMain}. \\
-A comparison of the na\"ive implementation and the optimised implementation was done comparing the run times of the processing of 10 images. Ideally a comparison of the processing of the entire available database would be conducted. However, during development it was observed that the processing of a single image by the na\"ive implementation takes more than a minute, and since there are more than 1200 images in the database it would take more than 20 hours to let the na\"ive implementation process the whole database. Therefore, the decision was made to only run on a limited set of images and compare these times. \\
-The times for this test were both measured using line_profiler as well as using the timeit module. The complete line_profile of the code can be found in \autoref{AppLinePS110} for the naive implementation and \autoref{AppLinePS210} for the optimised.  The precision of the two method differ and the obtained result also in some case differs a little as can be seen in \autoref{NaOPT}.  
+In order to benchmark the implemented code, some tests are conducted. The three different versions of the code are compared in regards to execution time. During development line_profiler was used for identifying the most time demanding lines in order to know what lines to improve. However, this section describes the comparison of the final versions of the code. For the testing described in this section a script that contains the database of iris images and necessary functions was created. This script is shown in \autoref{AppMain}. \\
+A comparison of the na\"ive implementation and the optimised implementation is done by comparing the run times of the processing of 10 images. Ideally a comparison of the processing of the entire available database would be conducted. However, during development it was observed that the processing of a single image by the na\"ive implementation takes more than a minute, and since there are more than $ 1200 $ images in the database it would take more than 20 hours to let the na\"ive implementation process the whole database. Therefore, the decision is made to only run on a limited set of images and compare these times. \\
+The times for this test were both measured using line_profiler as well as using the timeit module. The complete line_profile of the code can be found in \autoref{AppLinePS110} for the naive implementation and \autoref{AppLinePS210} for the optimised.  The precision of the two methods differ and the obtained results also in some cases differs a little as it can be seen in \autoref{NaOPT}.  
 
 \begin{table}[H]
 \centering
+\caption{Execution times of the processing of 10 iris images. }
+\label{NaOPT}
 \begin{tabular}{ |c|c|c| }
 \hline
 \textbf{Implementation}&\textbf{line_profiler}&\textbf{timeit} \\
@@ -14,14 +16,16 @@ The times for this test were both measured using line_profiler as well as using 
 \textbf{Optimised}&$0.871651~s$&$0.8716400859993882~s$\\
 \hline
 \end{tabular}
-\label{NaOPT}
-\caption{Execution times of the processing of 10 iris images. }
 \end{table}
+
 \noindent
-Furthermore, it should be noted what a large difference in execution time there is between the runs of the two implementations. The second, optimised implementation, which utilises Numpy functionalities, is more than 1,300 times faster. \\
-For the comparison between the optimised code running normally in a sequential way or running the processing of images in parallel using multi processing the code was run on the entire available database. Since the line_profiler was not working for the multiprocessing the scripts were only timed using the timeit module. 
+Furthermore, it should be noted that there is a large difference in execution  between the runs of the two implementations. The second, optimised implementation, which utilises Numpy functionalities, is more than 1,300 times faster. \\
+For the comparison between the optimised code running normally in a sequential way or running the processing of images in parallel using multi processing the code was run on the entire available database. Since the line_profiler was not working for the multiprocessing the scripts were only timed using the timeit module. The results of this is shown in \autoref{tab:SeqMu}.
+
 \begin{table}[H]
 \centering
+\caption{Execution times of the processing of the entire database of iris images }
+\label{tab:SeqMu}
 \begin{tabular}{ |c|c| }
 \hline
 \textbf{Implementation}&\textbf{timeit} \\
@@ -31,10 +35,8 @@ For the comparison between the optimised code running normally in a sequential w
 \textbf{Multi Processing}&$56.29580797100061~s$\\
 \hline
 \end{tabular}
-\label{SeqMu}
-\caption{Execution times of the processing of the entire database of iris images. }
 \end{table}
 \noindent
-As can be seen in \autoref{SeqMu} the execution time is decreased significantly by utilising multiprocessing. This shows how beneficial multiprocessing can be. For this, rather small, example of processing of a database  the time used for implementing the multiprocessing might not worth the time saved in the execution, however, one can imagine that a decrease in execution time by almost half of the time for processing a very large database could be a huge gain. 
+As is can be seen in \autoref{tab:SeqMu} the execution time is decreased significantly by utilising multiprocessing. This shows how beneficial multiprocessing can be. For this, rather small, example of processing of a database  the time used for implementing the multiprocessing might not be worth the time saved in the execution, however, one can imagine that a decrease in execution time by almost half of the time for processing a very large database could be an immense gain. 
 
      

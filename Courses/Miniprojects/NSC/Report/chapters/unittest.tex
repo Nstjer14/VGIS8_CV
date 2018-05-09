@@ -1,9 +1,11 @@
-\section{Unit Teasting}
-Unit testing was used to ensure the coded worked as intended during development. The concept of unit testing is to build tests cases for the smallest part of the code that can be run to check if the code produces the expected results. Each test case is independent from each other.  When the unit test is run a log is generated with error messages, if any were found. The unit test was run before working on the code and after finishing work.  For this the framework unittest in python was used.  Here a separate module is created with a class that contains the test cases. Two separate cases, setUp and tearDown, are also created to be run before and after every test. This ensures that the data being used in the tests is not changed from test to test. Three test cases were made:
+\section{Unit Testing}
+Unit testing is used to ensure the code works as intended during development. The concept of unit testing is to build tests cases for the smallest part of the code that can be run to check if the code produces the expected results. Each test case is independent from each other.  When the unit test is run a log is generated with error messages, if any is found. The unit test is run before working on the code and after finishing work.  For this the framework unittest in Python was used.  Here a separate module is created with a class that contains the test cases. Two separate cases, setUp and tearDown, are also created to be run before and after every test. This ensures that the data being used in the tests is not changed from test to test. Three test cases were made:
+
 \begin{itemize}
 \item Comparing the panda dataframe produced by the parallel and the sequential implementation
 \item Comparing the histogram equalisation from the naive implementation and optimised implementation
 \item Comparing the noise removal and reconstruction from the naive implementation and optimised implementation
 \end{itemize}
+
 \noindent
-In all three Numpy was used to compare the values with numpy.isclose(). Comparing floats directly using the  $==$ operator can return false because of floating point errors. Since the things being compared were images which are stored as matrices, numpy.isclose() returns a boolean matrix. numpy.all() is then used to check if all the entries are true. If they are all true the test case is accepted.
+In all three, Numpy was used to compare the values with numpy.isclose(). Comparing floats directly using the  $==$ operator can return false because of floating point errors. Since the things being compared were images which are stored as matrices, numpy.isclose() returns a boolean matrix. numpy.all() is then used to check if all the entries are true. If they are all true the test case is accepted.
