@@ -1,0 +1,114 @@
+Timer unit: 1e-06 s
+
+Total time: 0.024001 s
+File: /Users/Marike/Documents/Git VGIS8/Courses/Miniprojects/NSC/NSC_miniproject_2.py
+Function: equalisehistogram at line 5
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     5                                           @profile
+     6                                           def equalisehistogram(reconstructIris,LimitValue):
+     7                                           
+     8        10          9.0      0.9      0.0      numberOfBins=256
+     9        10       9614.0    961.4     40.1      histE, bin_edgesE=np.histogram(reconstructIris,numberOfBins,range=(0,256),density=False)#create histogram
+    10        10         34.0      3.4      0.1      imageDim=reconstructIris.shape 
+    11        10          6.0      0.6      0.0      lowVal = 255.0
+    12        10          7.0      0.7      0.0      higVal = 0.0
+    13                                           
+    14      2570       1698.0      0.7      7.1      for i in range(0,numberOfBins): #find the lowest and highest bin values where the frequency is higher than a specified LimitValue 
+    15      2560       2682.0      1.0     11.2          if histE[i]>LimitValue:
+    16       847        758.0      0.9      3.2              if bin_edgesE[i]<lowVal:
+    17        10         10.0      1.0      0.0                  lowVal=bin_edgesE[i]
+    18       847        748.0      0.9      3.1              if bin_edgesE[i]>higVal:
+    19       847        685.0      0.8      2.9                  higVal=bin_edgesE[i]
+    20                                           
+    21        10       6397.0    639.7     26.7      Equalised=(reconstructIris-lowVal)*(255/(higVal-lowVal))
+    22        10        713.0     71.3      3.0      withoutovers=np.where(Equalised>255,255,Equalised)
+    23        10        625.0     62.5      2.6      withoutunders=np.where(withoutovers<0,0,withoutovers) 
+    24                                           
+    25        10         15.0      1.5      0.1      return withoutunders
+
+Total time: 0.629836 s
+File: /Users/Marike/Documents/Git VGIS8/Courses/Miniprojects/NSC/NSC_miniproject_2.py
+Function: noiseremover at line 29
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    29                                           @profile
+    30                                           def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
+    31                                           
+    32        10         14.0      1.4      0.0      numberOfBins=256
+    33        10      11041.0   1104.1      1.8      hist, bin_edges=np.histogram(sourceimage,numberOfBins,range=(0,255),density=False)
+    34        10         18.0      1.8      0.0      lowVal = 255.0
+    35        10          9.0      0.9      0.0      higVal = 0.0
+    36      2570       2104.0      0.8      0.3      for i in range(0,numberOfBins):#find the lowest and highest bin values where the frequency is higher than a specified RecognitionValue
+    37      2560       3038.0      1.2      0.5          if hist[i]>RecognitionValue:
+    38       946       1021.0      1.1      0.2              if bin_edges[i]<lowVal:
+    39        10          9.0      0.9      0.0                  lowVal=bin_edges[i]
+    40       946        965.0      1.0      0.2              if bin_edges[i]>higVal:
+    41       946        909.0      1.0      0.1                  higVal=bin_edges[i]
+    42        10         22.0      2.2      0.0      ThresVal=lowVal+HistoFrac*(higVal-lowVal);
+    43        10        529.0     52.9      0.1      reconstructIris=copy.deepcopy(sourceimage)
+    44        10         18.0      1.8      0.0      imageDim=sourceimage.shape
+    45        10         64.0      6.4      0.0      ref=np.empty(imageDim, dtype=bool)
+    46        10        508.0     50.8      0.1      ref = sourceimage < ThresVal
+    47        10       2706.0    270.6      0.4      Coordinates = np.where(ref==True)
+    48        10        224.0     22.4      0.0      processMap=copy.deepcopy(ref)
+    49        10         19.0      1.9      0.0      NumberofEliminations=len(Coordinates[0])
+    50        10          9.0      0.9      0.0      numberofUneliminatedNeighbors=0
+    51        10          6.0      0.6      0.0      pixelVal=0
+    52        10          9.0      0.9      0.0      SumVal=0
+    53        10         68.0      6.8      0.0      UnprocessedPixels=copy.deepcopy(NumberofEliminations)
+    54                                           
+    55        68         91.0      1.3      0.0      while UnprocessedPixels>0: #While there are still pixels that have not been reconstructed 
+    56     38038      41142.0      1.1      6.5          for ii in range(0,NumberofEliminations): #go through all of the eliminated pixels
+    57     37980     168503.0      4.4     26.8              if processMap[Coordinates[0][ii]][Coordinates[1][ii]]==True: #if the current pixel still has not been reconstructed then do reconstruction
+    58      8032      17659.0      2.2      2.8                  if Coordinates[0][ii]-1>=0: #look at whether the neighbor pixel exist within the image boundary 
+    59      4492      27737.0      6.2      4.4                      if processMap[Coordinates[0][ii]-1][Coordinates[1][ii]] == False and sourceimage[Coordinates[0][ii]-1][Coordinates[1][ii]] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
+    60      3203      26203.0      8.2      4.2                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]-1][Coordinates[1][ii]] #
+    61      3203       3855.0      1.2      0.6                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    62      8032      16744.0      2.1      2.7                  if Coordinates[0][ii]+1<imageDim[0]:#make sure the neighbor is within the image boundary
+    63      8014      48720.0      6.1      7.7                      if processMap[Coordinates[0][ii]+1][Coordinates[1][ii]] == False and sourceimage[Coordinates[0][ii]+1][Coordinates[1][ii]] is not None:
+    64      4543      32566.0      7.2      5.2                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]+1][Coordinates[1][ii]]
+    65      4543       5528.0      1.2      0.9                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    66      8032      17170.0      2.1      2.7                  if Coordinates[1][ii]-1>=0: #make sure the neighbor is within the image boundary
+    67      7981      50314.0      6.3      8.0                      if processMap[Coordinates[0][ii]][Coordinates[1][ii]-1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii]-1] is not None:
+    68      5404      17539.0      3.2      2.8                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]-1]
+    69      5404       5934.0      1.1      0.9                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    70      8032      16281.0      2.0      2.6                  if Coordinates[1][ii]+1<imageDim[1]:#make sure the neighbor is within the image boundary
+    71      8013      41560.0      5.2      6.6                      if processMap[Coordinates[0][ii]][Coordinates[1][ii]+1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii]+1] is not None: 
+    72      1045       3241.0      3.1      0.5                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]+1]
+    73      1045       1110.0      1.1      0.2                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    74                                                           #the numbers in the if statement below represents the number of included 
+    75      8032      10453.0      1.3      1.7                  if numberofUneliminatedNeighbors==4 or numberofUneliminatedNeighbors==3 or numberofUneliminatedNeighbors==2:  
+    76      5430       7600.0      1.4      1.2                       pixelVal=SumVal/numberofUneliminatedNeighbors
+    77      5430      14056.0      2.6      2.2                       reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]]=pixelVal
+    78      5430      12145.0      2.2      1.9                       processMap[Coordinates[0][ii]][Coordinates[1][ii]]=False
+    79      5430       6022.0      1.1      1.0                       UnprocessedPixels=UnprocessedPixels-1
+    80      8032       7533.0      0.9      1.2                  SumVal=0
+    81      8032       6810.0      0.8      1.1                  numberofUneliminatedNeighbors=0
+    82        10         10.0      1.0      0.0      return reconstructIris
+
+Total time: 0.871651 s
+File: main_script.py
+Function: sequential at line 40
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    40                                           @profile
+    41                                           def sequential():
+    42                                               
+    43         1         17.0     17.0      0.0      start_time = timeit.default_timer()
+    44                                               #i = 1
+    45        11        313.0     28.5      0.0      for image in dataFrame.image:
+    46                                                   
+    47        10     871279.0  87127.9    100.0          featureVec = iris_proc(image)
+    48                                                   #print("feature extracted")        
+    49                                                   #featureVector.append(featureVec)
+    50                                                    
+    51                                                   #print(len(featureVector))
+    52                                                   #print("Image ",i, "out of ",dataFrame.image.size,"done")
+    53                                                   #i = i + 1
+    54                                               
+    55                                               #print ("FINISHED Sequencial")
+    56         1         42.0     42.0      0.0      print(timeit.default_timer() - start_time) # 250.1482454747301

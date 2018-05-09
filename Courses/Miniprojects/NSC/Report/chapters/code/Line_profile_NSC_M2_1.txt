@@ -1,0 +1,96 @@
+Timer unit: 1e-06 s
+
+Total time: 0.375491 s
+File: NSC_miniproject_2.py
+Function: equalisehistogram at line 5
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     5                                           @profile
+     6                                           def equalisehistogram(reconstructIris,LimitValue):
+     7                                           
+     8         1          1.0      1.0      0.0      numberOfBins=256
+     9         1        961.0    961.0      0.3      histE, bin_edgesE=np.histogram(reconstructIris,numberOfBins,range=(0,256),density=False)#create histogram
+    10         1          2.0      2.0      0.0      imageDim=reconstructIris.shape 
+    11         1         37.0     37.0      0.0      Equalised=np.zeros(imageDim) #create an output array with the same dimensions as input array 
+    12         1          1.0      1.0      0.0      lowVal = 255.0
+    13         1          1.0      1.0      0.0      higVal = 0.0
+    14                                           
+    15       257        153.0      0.6      0.0      for i in range(0,numberOfBins): #find the lowest and highest bin values where the frequency is higher than a specified LimitValue 
+    16       256        237.0      0.9      0.1          if histE[i]>LimitValue:
+    17        59         52.0      0.9      0.0              if bin_edgesE[i]<lowVal:
+    18         1          1.0      1.0      0.0                  lowVal=bin_edgesE[i]
+    19        59         47.0      0.8      0.0              if bin_edgesE[i]>higVal:
+    20        59         43.0      0.7      0.0                  higVal=bin_edgesE[i]
+    21                                           
+    22        65         41.0      0.6      0.0      for p in range(0,imageDim[0]):#for all pixels in input image stretch the histogram and make sure that the values beyond the possible pixel values are set equal 0 or 255
+    23     32832      23807.0      0.7      6.3           for c in range(0,imageDim[1]):
+    24     32768     223746.0      6.8     59.6                temp=(reconstructIris[p][c]-lowVal)*(255/(higVal-lowVal))
+    25     32768      51311.0      1.6     13.7                Equalised[p][c]=temp
+    26     32768      42131.0      1.3     11.2                if temp<0:
+    27       187        251.0      1.3      0.1                    Equalised[p][c]=0 
+    28     32768      32326.0      1.0      8.6                if temp>255:
+    29       257        341.0      1.3      0.1                    Equalised[p][c]=255 
+    30         1          1.0      1.0      0.0      return Equalised
+
+Total time: 1.77187 s
+File: NSC_miniproject_2.py
+Function: noiseremover at line 37
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    37                                           @profile
+    38                                           def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
+    39                                           
+    40         1        226.0    226.0      0.0      numberOfBins=256
+    41         1       3619.0   3619.0      0.2      hist, bin_edges=np.histogram(sourceimage,numberOfBins,range=(0,255),density=False)
+    42         1          3.0      3.0      0.0      lowVal = 255.0
+    43         1          1.0      1.0      0.0      higVal = 0.0
+    44       257        275.0      1.1      0.0      for i in range(0,numberOfBins):#find the lowest and highest bin values where the frequency is higher than a specified RecognitionValue
+    45       256        465.0      1.8      0.0          if hist[i]>RecognitionValue:
+    46        59         98.0      1.7      0.0              if bin_edges[i]<lowVal:
+    47         1          1.0      1.0      0.0                  lowVal=bin_edges[i]
+    48        59         96.0      1.6      0.0              if bin_edges[i]>higVal:
+    49        59         79.0      1.3      0.0                  higVal=bin_edges[i]
+    50         1          5.0      5.0      0.0      ThresVal=lowVal+HistoFrac*(higVal-lowVal);
+    51         1         87.0     87.0      0.0      reconstructIris=copy.deepcopy(sourceimage)
+    52         1          3.0      3.0      0.0      imageDim=sourceimage.shape
+    53         1         16.0     16.0      0.0      ref=np.empty(imageDim, dtype=bool)
+    54         1        178.0    178.0      0.0      ref = sourceimage < ThresVal
+    55         1        812.0    812.0      0.0      Coordinates = np.where(ref==True)
+    56         1         45.0     45.0      0.0      processMap=copy.deepcopy(ref)
+    57         1          3.0      3.0      0.0      NumberofEliminations=len(Coordinates[0])
+    58         1          1.0      1.0      0.0      numberofUneliminatedNeighbors=0
+    59         1          1.0      1.0      0.0      pixelVal=0
+    60         1          1.0      1.0      0.0      SumVal=0
+    61         1         12.0     12.0      0.0      UnprocessedPixels=copy.deepcopy(NumberofEliminations)
+    62                                           
+    63        96        112.0      1.2      0.0      while UnprocessedPixels>0: #While there are still pixels that have not been reconstructed 
+    64    296115     321489.0      1.1     18.1          for ii in range(0,NumberofEliminations): #go through all of the eliminated pixels
+    65    296020    1121963.0      3.8     63.3              if processMap[Coordinates[0][ii]][Coordinates[1][ii]]==True: #if the current pixel still has not been reconstructed then do reconstruction
+    66      7797      16407.0      2.1      0.9                  if Coordinates[0][ii]-1>=0: #look at whether the neighbor pixel exist within the image boundary 
+    67      3008      17116.0      5.7      1.0                      if processMap[Coordinates[0][ii]-1][Coordinates[1][ii]] == False and sourceimage[Coordinates[0][ii]-1][Coordinates[1][ii]] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
+    68      2785      20280.0      7.3      1.1                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]-1][Coordinates[1][ii]] #
+    69      2785       3123.0      1.1      0.2                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    70      7797      15164.0      1.9      0.9                  if Coordinates[0][ii]+1<imageDim[0]:#make sure the neighbor is within the image boundary
+    71      7795      42332.0      5.4      2.4                      if processMap[Coordinates[0][ii]+1][Coordinates[1][ii]] == False and sourceimage[Coordinates[0][ii]+1][Coordinates[1][ii]] is not None:
+    72      5423      37382.0      6.9      2.1                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]+1][Coordinates[1][ii]]
+    73      5423       6142.0      1.1      0.3                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    74      7797      15584.0      2.0      0.9                  if Coordinates[1][ii]-1>=0: #make sure the neighbor is within the image boundary
+    75      7676      39108.0      5.1      2.2                      if processMap[Coordinates[0][ii]][Coordinates[1][ii]-1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii]-1] is not None:
+    76      3000       8420.0      2.8      0.5                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]-1]
+    77      3000       3009.0      1.0      0.2                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    78      7797      15632.0      2.0      0.9                  if Coordinates[1][ii]+1<imageDim[1]:#make sure the neighbor is within the image boundary
+    79      7778      34892.0      4.5      2.0                      if processMap[Coordinates[0][ii]][Coordinates[1][ii]+1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii]+1] is not None: 
+    80       898       2575.0      2.9      0.1                          SumVal=SumVal+reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]+1]
+    81       898        938.0      1.0      0.1                          numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
+    82                                                           #the numbers in the if statement below represents the number of included 
+    83      7797       9799.0      1.3      0.6                  if numberofUneliminatedNeighbors==4 or numberofUneliminatedNeighbors==3 or numberofUneliminatedNeighbors==2:  
+    84      3116       4201.0      1.3      0.2                       pixelVal=SumVal/numberofUneliminatedNeighbors
+    85      3116       7165.0      2.3      0.4                       reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]]=pixelVal
+    86      3116       6034.0      1.9      0.3                       processMap[Coordinates[0][ii]][Coordinates[1][ii]]=False
+    87      3116       3204.0      1.0      0.2                       UnprocessedPixels=UnprocessedPixels-1
+    88      7797       7056.0      0.9      0.4                  SumVal=0
+    89      7797       6710.0      0.9      0.4                  numberofUneliminatedNeighbors=0
+    90         1          1.0      1.0      0.0      return reconstructIris
+
