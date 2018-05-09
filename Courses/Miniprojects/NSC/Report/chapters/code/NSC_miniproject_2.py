@@ -30,7 +30,7 @@ def equalisehistogram(reconstructIris,LimitValue):
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
 
     numberOfBins=256
-    hist, bin_edges=np.histogram(sourceimage,numberOfBins,range=(0,255),density=False)
+    hist, bin_edges=np.histogram(sourceimage, numberOfBins, range=(0,255), density=False)
     lowVal = 255.0
     higVal = 0.0
     for i in range(0,numberOfBins):#find the lowest and highest bin values where the frequency is higher than a specified RecognitionValue
@@ -57,22 +57,22 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
             if processMap[Coordinates[0][ii]][Coordinates[1][ii]]==True: #if the current pixel still has not been reconstructed then do reconstruction
                 if Coordinates[0][ii]-1>=0: #look at whether the neighbor pixel exist within the image boundary 
                     if processMap[Coordinates[0][ii]-1][Coordinates[1][ii]] == False and sourceimage[Coordinates[0][ii]-1][Coordinates[1][ii]] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
-                        SumVal=SumVal+reconstructIris[Coordinates[0][ii]-1][Coordinates[1][ii]] #
+                        SumVal = SumVal + reconstructIris[Coordinates[0][ii] - 1][Coordinates[1][ii]] #
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if Coordinates[0][ii]+1<imageDim[0]:#make sure the neighbor is within the image boundary
                     if processMap[Coordinates[0][ii]+1][Coordinates[1][ii]] == False and sourceimage[Coordinates[0][ii]+1][Coordinates[1][ii]] is not None:
-                        SumVal=SumVal+reconstructIris[Coordinates[0][ii]+1][Coordinates[1][ii]]
+                        SumVal = SumVal + reconstructIris[Coordinates[0][ii] + 1][Coordinates[1][ii]]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if Coordinates[1][ii]-1>=0: #make sure the neighbor is within the image boundary
-                    if processMap[Coordinates[0][ii]][Coordinates[1][ii]-1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii]-1] is not None:
-                        SumVal=SumVal+reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]-1]
+                    if processMap[Coordinates[0][ii]][Coordinates[1][ii] - 1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii] - 1] is not None:
+                        SumVal = SumVal + reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]-1]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
-                if Coordinates[1][ii]+1<imageDim[1]:#make sure the neighbor is within the image boundary
-                    if processMap[Coordinates[0][ii]][Coordinates[1][ii]+1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii]+1] is not None: 
-                        SumVal=SumVal+reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]+1]
+                if Coordinates[1][ii] + 1 < imageDim[1]:#make sure the neighbor is within the image boundary
+                    if processMap[Coordinates[0][ii]][Coordinates[1][ii] + 1] == False and sourceimage[Coordinates[0][ii]][Coordinates[1][ii] + 1] is not None: 
+                        SumVal = SumVal + reconstructIris[Coordinates[0][ii]][Coordinates[1][ii] + 1]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 #the numbers in the if statement below represents the number of included 
-                if numberofUneliminatedNeighbors==4 or numberofUneliminatedNeighbors==3 or numberofUneliminatedNeighbors==2:  
+                if numberofUneliminatedNeighbors == 4 or numberofUneliminatedNeighbors == 3 or numberofUneliminatedNeighbors == 2:  
                      pixelVal=SumVal/numberofUneliminatedNeighbors
                      reconstructIris[Coordinates[0][ii]][Coordinates[1][ii]]=pixelVal
                      processMap[Coordinates[0][ii]][Coordinates[1][ii]]=False
@@ -86,7 +86,7 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
 
 if __name__ == '__main__':
 
-    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg')
+    F=plt.imread( '/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg' )
     HistFrac=0.1
     RecVal=40
     
