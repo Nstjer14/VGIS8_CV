@@ -6,4 +6,4 @@ Unit testing was used to ensure the coded worked as intended during development.
 \item Comparing the noise removal and reconstruction from the naive implementation and optimised implementation
 \end{itemize}
 \noindent
-In all three Numpy was used to compare the values with Numpy.isclose. Ccomparing floats directly using the  $==$ operator can return false because of floating point errors. Since the things being compared were images which are stored as matrices, Numpy.isclose returns a boolean matrix. Numpy.all is then used to check if all the entries are true. If they are all true the test case is accepted.
+In all three Numpy was used to compare the values with Numpy.isclose. Comparing floats directly using the  $==$ operator can return false because of floating point errors. Since the things being compared were images which are stored as matrices, Numpy.isclose returns a boolean matrix. Numpy.all is then used to check if all the entries are true. If they are all true the test case is accepted.
