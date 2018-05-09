@@ -64,10 +64,10 @@ def parallel():
     n_cores = mp.cpu_count()
     pool = mp.Pool(processes=n_cores//2)
     start_time = timeit.default_timer()
-    featureVector = pool.map_async(iris_proc,dataFrame.image).get()
+    featureVector = pool.map_async(iris_proc,dataFrame.image,chunksize = 5).get()
     pool.close()
     pool.join()
-    print("FINISHED parallel")
+    #print("FINISHED parallel")
     print(timeit.default_timer() - start_time) #94.28003701802831
     dataFrame['featureVector'] = featureVector
     dataFrame.to_pickle('pythonDatabase_para')
