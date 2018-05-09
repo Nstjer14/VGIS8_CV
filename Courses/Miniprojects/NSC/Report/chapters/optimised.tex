@@ -1,1 +1,2 @@
 \section{Optimised Implementation}
+In order to optimise the na\"ive implementation the execution time for each line was investigated using line_profiler. The result of running the line_profiler on the na\"ive implementation can be seen in \autoref{AppLinePS1}. As can be seen in \autoref{AppLinePS1} the line that takes the absolute longest to execute per hit are the lines which calls the function which creates the histograms. Therefore, this was first sought to be improved. This was done by utilising the Numpy function for generating histograms.     

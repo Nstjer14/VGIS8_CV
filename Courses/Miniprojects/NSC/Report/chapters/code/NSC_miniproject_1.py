@@ -17,7 +17,7 @@ def customhist(image,numberofbins,ran):
                     hist[pp]=hist[pp]+1
     return hist, binsE 
 
-
+#@profile
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
@@ -33,7 +33,7 @@ def equalisehistogram(reconstructIris,LimitValue):
                 lowVal=bin_edgesE[i]
             if bin_edgesE[i]>higVal:
                 higVal=bin_edgesE[i]
-    print(lowVal)
+
     for p in range(0,imageDim[0]):
          for c in range(0,imageDim[1]):
               temp=(reconstructIris[p][c]-lowVal)*(255/(higVal-lowVal))
@@ -50,9 +50,7 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 
-
-
-
+#@profile
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
 
     numberOfBins=256
@@ -71,7 +69,6 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
                 higVal=bin_edges[i]
 
     ThresVal=lowVal+HistoFrac*(higVal-lowVal);
-    print('Thres:',ThresVal)
     reconstructIris=copy.deepcopy(sourceimage)
     imageDim=sourceimage.shape
     ref=np.empty(imageDim, dtype=bool)
@@ -98,19 +95,19 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
             if processMap[xCord[ii]][yCord[ii]]==True:#if the current pixel still has not been reconstructed then do reconstruction
                 if xCord[ii]-1>=0:#make sure the neighbor is within the image boundary 
                     if processMap[xCord[ii]-1][yCord[ii]] == False and sourceimage[xCord[ii]-1][yCord[ii]] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
-                        SumVal=SumVal+sourceimage[xCord[ii]-1][yCord[ii]] #contribute to current pixel reconstruction 
+                        SumVal=SumVal+reconstructIris[xCord[ii]-1][yCord[ii]] #contribute to current pixel reconstruction 
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if xCord[ii]+1<imageDim[0]:#make sure the neighbor is within the image boundary
                     if processMap[xCord[ii]+1][yCord[ii]] == False and sourceimage[xCord[ii]+1][yCord[ii]] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
-                        SumVal=SumVal+sourceimage[xCord[ii]+1][yCord[ii]]
+                        SumVal=SumVal+reconstructIris[xCord[ii]+1][yCord[ii]]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if yCord[ii]-1>=0: #make sure the neighbor is within the image boundary
                     if processMap[xCord[ii]][yCord[ii]-1] == False and sourceimage[xCord[ii]][yCord[ii]-1] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
-                        SumVal=SumVal+sourceimage[xCord[ii]][yCord[ii]-1]
+                        SumVal=SumVal+reconstructIris[xCord[ii]][yCord[ii]-1]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if yCord[ii]+1<imageDim[1]:#make sure the neighbor is within the image boundary
                     if processMap[xCord[ii]][yCord[ii]+1] == False and sourceimage[xCord[ii]][yCord[ii]+1] is not None: #make sure the neighbor pixel is not none and does not need reconstruction. 
-                        SumVal=SumVal+sourceimage[xCord[ii]][yCord[ii]+1]
+                        SumVal=SumVal+reconstructIris[xCord[ii]][yCord[ii]+1]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 #the numbers in the if statement below represents the number of included neighbors 
                 if numberofUneliminatedNeighbors==4 or numberofUneliminatedNeighbors==3 or numberofUneliminatedNeighbors==2:  
@@ -122,35 +119,5 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
                 numberofUneliminatedNeighbors=0
     return reconstructIris
 
-
-
-
-
-
-##################For Testing###########################
-if __name__ == '__main__':
-#plt.ion()#uncomment if you don't vant to plot stuff
-    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg')
-    HistFrac=0.1
-    RecVal=40
-
-#plt.imshow(F,cmap="gray") #Uncomment to show initial image 
-#plt.show()
-
-K=noiseremover(F,HistFrac,RecVal)
-plt.hist(K.ravel(),256,range=(0,256),density=False)
-plt.title('Pixel Value')
-plt.xlabel("value")
-plt.ylabel("Frequency")
-plt.show()
-L=equalisehistogram(K,40)
-#plt.hist(L.ravel(),256,range=(0,256),density=False)
-#plt.title('Pixel Value')
-#plt.xlabel("value")
-#plt.ylabel("Frequency")
-#plt.show()
-
-#plt.imshow(L,cmap="gray") #Uncomment to show final image 
-#plt.show()
 
 
