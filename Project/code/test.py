@@ -103,11 +103,11 @@ plt.title("Ground Truth : {}".format(label[0]))
 
 #%% Preprocess for cnn
 resized_image = []
-#for image in dataFrame.image:
-#    resized_image.append(cv2.resize(image, (64, 64)))
-#imageVector = np.asarray(resized_image)
-#imageVector = imageVector.reshape(-1, 64,64, 1) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
-imageVector = imageVector.reshape(imageVector.shape[0],1,64,512) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
+for image in dataFrame.image:
+    resized_image.append(cv2.resize(image, (64, 64)))
+imageVector = np.asarray(resized_image)
+imageVector = imageVector.reshape(imageVector.shape[0],1,64,64) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
+#imageVector = imageVector.reshape(imageVector.shape[0],1,64,512) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 imageVector = imageVector.astype('float32') # Rescale it from 255 to 0-1.
 imageVector = imageVector/255.
 print('Training data shape after reshape : ', imageVector.shape)
@@ -136,11 +136,17 @@ x_test = valid_X
 y_train = train_label
 y_test = valid_label
 
+print("Shape of x_train",x_train.shape)
+print("Shape of y_train",y_train.shape)
+print("Shape of x_test",x_test.shape)
+print("Shape of y_test",y_test.shape)
+
+
 input_shape = imageVector[0].shape
 num_classes = NuniqueClasses
 
 model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
+model.add(Conv2D(36, kernel_size=(3, 3),
                  activation='relu',
                  input_shape=input_shape,
                  data_format='channels_first',
@@ -151,13 +157,27 @@ model.add(Conv2D(32,
                  kernel_size=(5, 5),
                  activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(36,
+                 kernel_size=(5, 5),
+                 activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+#model.add(Conv2D(64,
+#                 kernel_size=(5, 5),
+#                 activation='relu'))
+#model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adadelta(),
+#model.compile(loss=keras.losses.categorical_crossentropy,
+#              optimizer=keras.optimizers.Adadelta(),
+#              metrics=['accuracy'])
+learningrate = 1e-2
+adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
+#model.compile(loss='categorical_crossentropy', optimizer=sgd)
+model.compile(loss='categorical_crossentropy',
+              optimizer=adagrad,
               metrics=['accuracy'])
 
 history = model.fit(x_train, y_train,
