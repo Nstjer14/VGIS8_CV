@@ -33,7 +33,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 #import tensorflow as tf
 #from more_itertools import locate
-@profile
+#@profile
 def indices(lst, element):
     result = []
     offset = -1
@@ -176,12 +176,13 @@ plt.xlabel('Number of Neighbors K')
 plt.ylabel('Misclassification Error')
 plt.show()
 
+print("Performing",kf,"Kfold crossvalidation")
 knn2 = KNeighborsClassifier(n_neighbors=optimal_k)
 scores4 = cross_val_score(knn2,TrainData, np.ravel(TrainLabel), cv=kf, scoring='accuracy')
 print("Accuracy for KNN k =",optimal_k," CV: %.2f"%scores4.mean(), "+/-%.2f" % (scores4.std() * 2))
 
 
-print("Performing",kf,"Kfold crossvalidation")
+
 clf = svm.SVC(kernel='linear')
 scores = cross_val_score(clf, TrainData, np.ravel(TrainLabel), cv=kf)
 print("Accuracy for linear CV: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))

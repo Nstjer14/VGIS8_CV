@@ -18,7 +18,7 @@ import os
 def iris_proc (image):
     img_without_noise = noiserm.noiseremover(image,0.1,10)
   #  print("noise removed")
-    equalised_img = noiserm.equalisehistogram(img_without_noise,10)
+    equalised_img = cv2.equalizeHist(img_without_noise)
   #  print("histogram equalised")
     wavelet_results= pywt.wavedec2(equalised_img,'haar',level=3)
     featureVec = wavelet_results[0].reshape(wavelet_results[0].size)

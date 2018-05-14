@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+import cv2
 
 #@profile
 def equalisehistogram(reconstructIris,LimitValue):
@@ -86,12 +87,19 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
 
 if __name__ == '__main__':
 
-    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002right_7-polar.jpg')
+    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002left_13-polar.jpg')
     HistFrac=0.1
     RecVal=40
     
     
-    #K=noiseremover(F,HistFrac,RecVal)
-    #L=equalisehistogram(F,40)
+    K=noiseremover(F,HistFrac,RecVal)
+    #L=cv2.equalizeHist(F)
+    L=equalisehistogram(F,40)
+    plt.hist(L.ravel(),256,range=(0,256),density=False)
+    plt.show()
+   
+
+    plt.imshow(L,cmap="gray") #Uncomment to show initial image 
+    plt.show()
 
 
