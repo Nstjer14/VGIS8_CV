@@ -72,10 +72,10 @@ def parallel():
     print("FINISHED parallel")
     print(timeit.default_timer() - start_time) #94.28003701802831
     dataFrame['featureVector'] = featureVector
-    dataFrame.to_pickle('pythonDatabase_para')
+    dataFrame.to_pickle('pythonDatabase')
     
 
 if __name__ == '__main__':    
-    #parallel()
+    parallel()
     #sequential()
     pass
