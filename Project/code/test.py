@@ -16,7 +16,7 @@ from keras import backend as K
 batch_size = 128
 num_classes = 10
 epochs = 250
-
+'''
 # input image dimensions
 img_rows, img_cols = 28, 28
 
@@ -44,7 +44,7 @@ print(x_test.shape[0], 'test samples')
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
-
+'''
 #%%
 import matplotlib.pyplot as plt
 import load_images_2_python
@@ -146,7 +146,7 @@ input_shape = imageVector[0].shape
 num_classes = NuniqueClasses
 
 model = Sequential()
-model.add(Conv2D(36, kernel_size=(3, 3),
+model.add(Conv2D(6, kernel_size=(3, 3),
                  activation='relu',
                  input_shape=input_shape,
                  data_format='channels_first',
@@ -155,20 +155,26 @@ model.add(MaxPooling2D(pool_size=(2, 2)))
 #model.add(Dropout(0.25))
 model.add(Conv2D(32,
                  kernel_size=(5, 5),
-                 activation='relu'))
+                 activation='relu',
+                 padding = "same"))
 model.add(MaxPooling2D(pool_size=(2, 2)))
+
 model.add(Conv2D(36,
                  kernel_size=(5, 5),
-                 activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-#model.add(Conv2D(64,
-#                 kernel_size=(5, 5),
-#                 activation='relu'))
-#model.add(MaxPooling2D(pool_size=(2, 2)))
+                 activation='relu',
+                 padding = "same"))
+model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
+
+model.add(Conv2D(150,
+                 kernel_size=(5, 5),
+                 activation='relu',
+                 padding = "same"))
+
+#
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(num_classes, activation='softmax'))
+model.add(Dense(num_classes, activation='softmax',))
 
 #model.compile(loss=keras.losses.categorical_crossentropy,
 #              optimizer=keras.optimizers.Adadelta(),
