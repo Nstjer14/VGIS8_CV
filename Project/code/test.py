@@ -15,7 +15,7 @@ from keras import backend as K
 
 batch_size = 128
 num_classes = 10
-epochs = 2
+epochs = 250
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -166,8 +166,8 @@ history = model.fit(x_train, y_train,
           verbose=1,
           validation_split=0.1)
 score = model.evaluate(x_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+print('Test loss:', score[0]*100)
+print('Test accuracy:', score[1]*100)
 
 
 #%%
