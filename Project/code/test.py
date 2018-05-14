@@ -12,8 +12,6 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
-import matplotlib.pyplot as plt
-
 
 batch_size = 128
 num_classes = 10
@@ -145,10 +143,14 @@ model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
                  activation='relu',
                  input_shape=input_shape,
-                 data_format='channels_first'))
-model.add(Conv2D(64, (3, 3), activation='relu'))
+                 data_format='channels_first',
+                 padding = "same"))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+#model.add(Dropout(0.25))
+model.add(Conv2D(32,
+                 kernel_size=(5, 5),
+                 activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.5))
@@ -167,7 +169,8 @@ score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
-##%
+
+#%%
 print(history)
 fig1, ax_acc = plt.subplots()
 plt.plot(history.history['acc'])
