@@ -255,6 +255,7 @@ AAUsimpletheme.pdf
 *.mp3
 *.wav
 *.pyc
+*.h5
 
 warsaw/
 IITD_Database/
@@ -263,3 +264,4 @@ database.mat
 database_segmented.mat
 normalised_iris/
 
+Project/code/saved_models/iris_cnn_test.h5

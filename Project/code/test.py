@@ -12,10 +12,14 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+import os
+import random as rd
 
-batch_size = 128
+
+
+rd.seed(42)
 num_classes = 10
-epochs = 250
+
 
 def calculateConvOutputDims(width,filter_size,stride,padding):
     # W = input size of image
@@ -42,6 +46,9 @@ from sklearn.preprocessing import OneHotEncoder
 
 import cv2
 
+save_dir = os.path.join(os.getcwd(), 'saved_models')
+pic_save_dir = os.path.join(os.getcwd(), 'saved_graphs')
+model_name = 'iris_cnn_test.h5'
 dataFrame = pd.read_pickle("pythonDatabase")
 
 # Dropping classes with less than 10 images
@@ -118,6 +125,9 @@ x_test = valid_X
 y_train = train_label
 y_test = valid_label
 
+batch_size = 128
+epochs = 250
+
 print("Shape of x_train",x_train.shape)
 print("Shape of y_train",y_train.shape)
 print("Shape of x_test",x_test.shape)
@@ -142,21 +152,21 @@ model.add(Conv2D(32,
                  data_format='channels_first'))
 model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
 
-model.add(Conv2D(36,
+model.add(Conv2D(64,
                  kernel_size=(5, 5),
                  activation='relu',
                  padding = "same",
                  data_format='channels_first'))
 model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
 
-model.add(Conv2D(150,
+model.add(Conv2D(256,
                  kernel_size=(5, 5),
                  activation='relu',
                  padding = "same",
                  data_format='channels_first'))
 
 model.add(Flatten())
-model.add(Dense(128, activation='relu'))
+model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax',))
 
@@ -172,16 +182,29 @@ model.compile(loss='categorical_crossentropy',
               optimizer=adagrad,
               metrics=['accuracy'])
 model.summary()
-'''
+
 history = model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
           verbose=1,
           validation_split=0.1)
-'''
+"""
+if not os.path.isdir(save_dir):
+    os.makedirs(save_dir)
+model_path = os.path.join(save_dir, model_name)
+model.save(model_path)
+print('Saved trained model at %s ' % model_path)
+"""
+
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1]*100)
+
+if not os.path.isdir(save_dir):
+    os.makedirs(save_dir)
+model_path = os.path.join(save_dir, model_name)
+model.save(model_path)
+print('Saved trained model at %s ' % model_path)
 
 
 #%%
@@ -193,6 +216,13 @@ plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 plt.title('Model - Accuracy')
 plt.legend(['Training', 'Validation'], loc='lower right')
+
+if not os.path.isdir(pic_save_dir):
+    os.makedirs(pic_save_dir)
+pic_path = os.path.abspath(pic_save_dir)
+plt.savefig(pic_path + '/acc.pdf')
+print('Saved graphs at %s ' % pic_path)
+
 plt.show()
 
 # Loss
@@ -203,4 +233,14 @@ plt.title('Model- Loss')
 plt.legend(['Training', 'Validation'], loc='upper right')
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
+plt.legend(['Training', 'Validation'], loc='lower right')
+
+if not os.path.isdir(pic_save_dir):
+    os.makedirs(pic_save_dir)
+pic_path = os.path.abspath(pic_save_dir)
+print(pic_path)
+plt.savefig(pic_path + '/loss.pdf')
+print('Saved graphs at %s ' % pic_path)
+
 plt.show()
+
