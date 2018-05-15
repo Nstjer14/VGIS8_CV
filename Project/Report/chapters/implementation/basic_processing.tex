@@ -1,6 +1,6 @@
 \section{Basic Methods}
 \label{BasicM}
-In order to get some basic understanding of the methods commonly used for iris classification the work presented in an article is implemented. The work implemented is the work of \cite{Khan2017a} described in \citep{Khan2017a}. In the work visible light images of the iris obtained by smartphones are processed and used to train different classifiers. The processing consists of a sequence of steps. The steps included are
+In order to get some basic understanding of the methods commonly used for iris classification the work presented in an article is implemented. The work implemented is the work of \cite{Khan2017a} described in \citep{Khan2017a}.\todo{make sure references read right} In the work \gls{vl} images of the iris obtained by smartphones are processed and used to train different classifiers. The processing consists of a sequence of steps. The steps included are
 
 \begin{itemize}
 \item Iris Detection
@@ -11,7 +11,7 @@ In order to get some basic understanding of the methods commonly used for iris c
 \item Feature Extraction
 \item Training and Classification
 \end{itemize}
-\autoref{fig:ExWars} shows an example of an image from the database. Before the first step some simple preprocessing was done. The red channel is preserved and the other two other colour channels are neglected. This is done because this simulates the use of NIR light. The result is a greyscale image based on the red channel. In the following sections the implementation of each of the steps will be elaborated. 
+\autoref{fig:ExWars} shows an example of an image from the database. Before the first step some simple preprocessing was done. The red channel is preserved and the other two other colour channels are neglected. This is done because this simulates the use of \gls{nir} light. The result is a greyscale image based on the red channel. In the following sections the implementation of each of the steps will be elaborated. 
 
 \begin{figure}[h]
 \centering
@@ -66,8 +66,9 @@ Though the article uses several well known methods that are commonly used in pro
 Because the information about the exact approach used in the article is inadequate, an adaptive algorithm was created. The algorithm implemented identifies a threshold value based on the histogram. This is done by first identifying the highest and lowest bin-value, which has a frequency of more than a specified "recognition value", which was set to 10 in this project. The recognition value is introduced to make sure outliers are not defining for the threshold. Afterwards the threshold is calculated by the formula in \autoref{eq:pix_threshold}, where "Fraction" is a parameter set manually defining how large a part of the identified pixel value range has to me thresholded. During the processing in this project "Fraction" was set to be equal $0.1$. 
 
 \begin{equation}\label{eq:pix_threshold}
-	\text{Threshold}=(\text({owVal})+\text{Fraction}\cdot\text{higVal-lowVal}
+	\text{Threshold}=\text{Low~Value}+\text{Fraction}\cdot(\text{High~Value}-\text{Low~Value})
 \end{equation}
+
 
 After the threshold has been found it is applied to all pixels in the image. The pixels lower than the threshold are eliminated and have to be reconstructed from neighbouring pixels. Also here the article provides very limited information about the algorithm applied. Therefore an algorithm was implemented, which restores pixels from non-occluded neighbour regions. A part of the algorithm identifies the pixels with values lower than the threshold and saves the pixel coordinates of the pixels. The saved pixels are  reconstructed iteratively from neighbouring pixels following the 4-connectivity principle. The pixels are reconstructed when there are at least 2 neighbour pixels they can be reconstructed from. They are only reconstructed from pixels above the threshold, this can be pixels that initially were above the threshold, or it can be pixels that have already been reconstructed. The pixels are reconstructed by assigning the average of the neighbours with values above the threshold as the new pixel value. Once all thresholded pixels have been reconstructed the reconstructed image is returned.
 
@@ -78,34 +79,64 @@ Because the eliminated pixels are reconstructed only from pixels with a value hi
 \caption{The histogram of the image after reconstruction of pixels.}
 \label{fig:histSpill}
 \end{figure}
-As can be seen there is a peak as expected, however, there seem to be a "spill over" across the threshold to the lower values. By closer examination of the code it was discovered that this was caused due to a programming mistake. The mistake was that the values used for reconstruction were obtained from the original image and not from the reconstructed image. Once this mistake was corrected the histogram was as expected as shown in \autoref{fig:histFine}. 
+As can be seen there is a small peak as expected, however, there seem to be a "spill over" across the threshold to the lower values. By closer examination of the code it was discovered that this was caused due to a programming mistake. The mistake was that the values used for reconstruction were obtained from the original image and not from the reconstructed image. Once this mistake was corrected the histogram was as expected as shown in \autoref{fig:histFine}. 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.7\textwidth]{hist_nicespacing.png}
-\caption{The histogram of the image after applying the noise corrected remover function.}
+\caption{The histogram of the image after applying the corrected noise remover function.}
 \label{fig:histFine}
 \end{figure}
-In relation to the reconstruction of pixels it should be noted that it could have been done with 8-connectivity, and the iterative process could be split up so more steps, such that pixels are always constructed from as many neighbours as possible. This may give a better reconstruction, however, this has not been investigated. 
-\subsection{Histogram Equalisation}
-The histogram Equalisation
-
-\begin{equation}\label{eq:hist_stretch}
-	\text{New~pixelValue} (\text{pixelValue-lowVal})\cdot\frac{255}{\text{higVal-lowVal}}
-\end{equation}
-
-
+In relation to the reconstruction of pixels it should be noted that it could have been done with 8-connectivity, and the iterative process could be split up to more steps, such that pixels are always constructed from as many neighbours as possible. This may give a better reconstruction, however, this has not been investigated. 
+Furthermore, small tests showed that the adaptive threshold is difficult to define in an optimal way. If the threshold is too low the eyelash might be reconstructed from edge pixels of the eyelash creating just a lighter eyelash, which is still darker than the iris in the background. If the threshold is higher, it might eliminate the eyelashes, but also be destructive to darker parts of the iris. Maybe this could also be solved if the reconstruction happened based on the neighbourhood and not just the most adjacent neighbour pixels.
+ 
+During implementation the histograms were frequently inspected in order to ensure the results were as expected. \autoref{fig:HistEli} show a histogram with some eliminated pixel values. It turns out that the function used for generating histograms in python by default takes the range of the pixel values and splits that into as many bins as specified. As a result some of the bins cover a range of values that is entirely between two integer values and thus do not count any instances of pixel values as they are always integers between 0 and 225. This was solved by passing a specific range (0:256) as an argument and then the histogram was as described in \autoref{fig:histFine}.   
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.7\textwidth]{hist_equal.png}
-\caption{The histogram of the image after applying the equalise histogram function.}
-\label{fig:histEq}
+\includegraphics[width=0.7\textwidth]{hist_troublespacing.png}
+\caption{The histogram of the reconstructed image with eliminated values.}
+\label{fig:HistEli}
+\end{figure} 
+
+\subsection{Histogram Equalisation}
+The histogram equalisation is applied to increase contrast. This is necessary to enhance the structures in the iris. This was implemented manually. Just as in the noise removal the lowest and highest bin values with more instances than a specified value are found. Based on the found values the histogram is stretched using the formula in \autoref{eq:hist_stretch}.
+\begin{equation}\label{eq:hist_stretch}
+	\text{New~Pixel~Value}=(\text{Pixel~Value}-\text{Low~Value})\cdot\frac{255}{\text{High~Value}-\text{Low~Value}}
+\end{equation}
+The pixels  resulting image can be seen in \autoref{fig:irisST}, while \autoref{fig:histST} shows the histogram after applying the formula to each pixel.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Stretch_iris.jpg}
+\caption{The image of the iris after applying the initial "equalise histogram" function.}
+\label{fig:irisST}
 \end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{Stretch_hist.png}
+\caption{The histogram of the image after applying the initial "equalise histogram" function.}
+\label{fig:histST}
+\end{figure}
+However, it was discovered that the implemented method was actually histogram stretching which was mistakenly taken as the same as histogram equalisation. Though the two methods have somewhat the same effects histogram equalisation is better at ensuring a uniform spreading of the pixels across the histogram. 
+This is done by identifying a transform of the bin values which causes the \gls{cdf} of the histogram to be as linear as possible, and apply it to the grey levels or bin values. The result of the histogram equalisation can be seen in \autoref{fig:irisEQ} and \autoref{fig:histEQ}.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Equal_iris.jpg}
+\caption{The image of the iris after applying the real equalisation of the histogram.}
+\label{fig:irisEQ}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{Equal_hist.png}
+\caption{The histogram of the image after applying the real equalisation of the histogram.}
+\label{fig:histEQ}
+\end{figure}
+When comparing the two images of the iris after applying the two different contrast adjustment methods it can be concluded that the histogram equalisation does indeed result in better contrast and a more enhanced and out spoken appearance of the structures in the iris than the histogram stretching does. Testing also showed that using the equalisation rather than the stretching increased the accuracy, however, this will be further addressed in \autoref{MachineLearnClassification}. 
 
 \subsection{Feature extraction}
 
 
 \subsection{Training and Classification}
-For classification different classifiers were tested. 
+\label{MachineLearnClassification}
+For classification different classifiers were tested. The investigated classifiers are the \gls{knn}, \gls{lda}, as well as a \gls{svm} with linear or quadratic kernel.  
 
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+import cv2
 
 
 def customhist(image,numberofbins,ran):
@@ -21,7 +22,7 @@ def customhist(image,numberofbins,ran):
 def equalisehistogram(reconstructIris,LimitValue):
 
     numberOfBins=256
-    histE, bin_edgesE=customhist(reconstructIris,numberOfBins,(0,256))
+    histE,bin_edgesE=np.histogram(reconstructIris,numberOfBins,range=(0,256),density=False)
     imageDim=reconstructIris.shape
     Equalised=np.zeros(imageDim)
     lowVal = 255.0
@@ -54,11 +55,17 @@ def equalisehistogram(reconstructIris,LimitValue):
 
 
 def noiseremover(sourceimage,HistoFrac,RecognitionValue): 
-
+    reconstructIris=copy.deepcopy(sourceimage)
+    print(sourceimage[10][120])
     numberOfBins=256
-    hist, bin_edges=customhist(sourceimage,numberOfBins,(0,256))
+    hist, bin_edges=np.histogram(sourceimage,numberOfBins,range=(0,256),density=False)
     #plt.hist(sourceimage.ravel(),256)
     #plt.show()
+    plt.hist(sourceimage.ravel(),256,range=(0,256),density=False)
+    plt.title('Pixel Value')
+    plt.xlabel("value")
+    plt.ylabel("Frequency")
+    plt.show()
 
     lowVal = 255.0
     higVal = 0.0
@@ -72,7 +79,7 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
 
     ThresVal=lowVal+HistoFrac*(higVal-lowVal);
     print('Thres:',ThresVal)
-    reconstructIris=copy.deepcopy(sourceimage)
+    #reconstructIris=copy.deepcopy(sourceimage)
     imageDim=sourceimage.shape
     ref=np.empty(imageDim, dtype=bool)
     xCord=[]
@@ -86,6 +93,8 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
             else:
                 ref[h][s]=False
     processMap=copy.deepcopy(ref)
+    plt.imshow(ref,cmap="gray") #Uncomment to show final image 
+    plt.show()
     NumberofEliminations=len(xCord)
     numberofUneliminatedNeighbors=0
     pixelVal=0
@@ -98,19 +107,19 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
             if processMap[xCord[ii]][yCord[ii]]==True:#if the current pixel still has not been reconstructed then do reconstruction
                 if xCord[ii]-1>=0:#make sure the neighbor is within the image boundary 
                     if processMap[xCord[ii]-1][yCord[ii]] == False and sourceimage[xCord[ii]-1][yCord[ii]] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
-                        SumVal=SumVal+sourceimage[xCord[ii]-1][yCord[ii]] #contribute to current pixel reconstruction 
+                        SumVal=SumVal+reconstructIris[xCord[ii]-1][yCord[ii]] #contribute to current pixel reconstruction 
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if xCord[ii]+1<imageDim[0]:#make sure the neighbor is within the image boundary
                     if processMap[xCord[ii]+1][yCord[ii]] == False and sourceimage[xCord[ii]+1][yCord[ii]] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
-                        SumVal=SumVal+sourceimage[xCord[ii]+1][yCord[ii]]
+                        SumVal=SumVal+reconstructIris[xCord[ii]+1][yCord[ii]]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if yCord[ii]-1>=0: #make sure the neighbor is within the image boundary
                     if processMap[xCord[ii]][yCord[ii]-1] == False and sourceimage[xCord[ii]][yCord[ii]-1] is not None: #make sure the neighbor pixel is not none and does not need reconstruction.
-                        SumVal=SumVal+sourceimage[xCord[ii]][yCord[ii]-1]
+                        SumVal=SumVal+reconstructIris[xCord[ii]][yCord[ii]-1]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 if yCord[ii]+1<imageDim[1]:#make sure the neighbor is within the image boundary
                     if processMap[xCord[ii]][yCord[ii]+1] == False and sourceimage[xCord[ii]][yCord[ii]+1] is not None: #make sure the neighbor pixel is not none and does not need reconstruction. 
-                        SumVal=SumVal+sourceimage[xCord[ii]][yCord[ii]+1]
+                        SumVal=SumVal+reconstructIris[xCord[ii]][yCord[ii]+1]
                         numberofUneliminatedNeighbors = numberofUneliminatedNeighbors+1
                 #the numbers in the if statement below represents the number of included neighbors 
                 if numberofUneliminatedNeighbors==4 or numberofUneliminatedNeighbors==3 or numberofUneliminatedNeighbors==2:  
@@ -120,6 +129,7 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
                      UnprocessedPixels=UnprocessedPixels-1 #decrease the counter of pixels still to be processed
                 SumVal=0
                 numberofUneliminatedNeighbors=0
+    print(reconstructIris[10][120])
     return reconstructIris
 
 
@@ -130,18 +140,20 @@ def noiseremover(sourceimage,HistoFrac,RecognitionValue):
 ##################For Testing###########################
 if __name__ == '__main__':
 #plt.ion()#uncomment if you don't vant to plot stuff
-    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0002left_13-polar.jpg')
-    HistFrac=0.1
-    RecVal=40
+    F=plt.imread('/Users/Marike/Documents/MATLAB/iriscode/diagnostics/0001left_11-polar.jpg')
+    HistFrac=0.30
+    RecVal=50
 
-#plt.imshow(F,cmap="gray") #Uncomment to show initial image 
-#plt.show()
+plt.imshow(F,cmap="gray") #Uncomment to show initial image 
+plt.show()
 
 K=noiseremover(F,HistFrac,RecVal)
-plt.hist(K.ravel(),256,range=(0,256),density=False)
-plt.title('Pixel Value')
-plt.xlabel("value")
-plt.ylabel("Frequency")
+#plt.hist(K.ravel(),256,range=(0,256),density=False)
+#plt.hist(K.ravel(),256)
+#plt.title('Pixel Value')
+#plt.xlabel("value")
+#plt.ylabel("Frequency")
+plt.imshow(K,cmap="gray")
 plt.show()
 L=equalisehistogram(K,40)
 #plt.hist(L.ravel(),256,range=(0,256),density=False)
@@ -150,7 +162,7 @@ L=equalisehistogram(K,40)
 #plt.ylabel("Frequency")
 #plt.show()
 
-#plt.imshow(L,cmap="gray") #Uncomment to show final image 
-#plt.show()
+plt.imshow(L,cmap="gray") #Uncomment to show final image 
+plt.show()
 
 
