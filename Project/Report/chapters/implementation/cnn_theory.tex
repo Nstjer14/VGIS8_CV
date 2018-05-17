@@ -48,8 +48,12 @@ Pooling is an operation aften added after a convolutional layer. Like a convolut
 \label{fig:maxpool_example}
 \end{figure}
 \subsection{Classification}
-Why do we use fully connected layers for classifications
-
+To use the features extracted from the convolutional layer one or more \gls{fc} layers are added at the end of a network. In a gls{fc} layer all the neurons from the previous layer are connected to all of the neurons in current layer. This relationship is described in \autoref{eq:fully_connected_layer}. $l$ denotes the current layer and $l-1$ is the previous layer. $y^{l}(j)$ is the output of neuron $j$ at \gls{fc} layer $l$. It is a linear combination of the weights and biases from the previous layer put into an activation function $f^l$. $ y^{l-1}(i).w^{l}(i,j)$ is the weight from neuron $j$ in the previous layer $l-1$ to the neuron $j$ in current layer $l$
+This creates many more weights to train compared to the weights of a kernel. \todo{diskuter om vi måske skulle bruge subscript i den her ligning, selvom de ikke gør det i artiklen}
+\begin{eqnarray}
+\label{eq:fully_connected_layer}
+y^{l}(j)=f^{l}(\sum\limits_{i=1}^{N^{l-1}} y^{l-1}(i).w^{l}(i,j)+b^{l}(j)(3))
+\end{eqnarray}
 
 \subsection{IrisConv structure}
 What and why. What is their structure? How did we implement it(python/keras)
