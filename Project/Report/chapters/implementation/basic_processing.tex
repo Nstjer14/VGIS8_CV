@@ -102,7 +102,7 @@ The histogram equalisation is applied to increase contrast. This is necessary to
 \begin{equation}\label{eq:hist_stretch}
 	\text{New~Pixel~Value}=(\text{Pixel~Value}-\text{Low~Value})\cdot\frac{255}{\text{High~Value}-\text{Low~Value}}
 \end{equation}
-The pixels  resulting image can be seen in \autoref{fig:irisST}, while \autoref{fig:histST} shows the histogram after applying the formula to each pixel.
+The pixels, which have values above $ 255 $ or below $ 0 $ after the formula is applied are set to $ 255 $ or $ 0 $ respectively. The resulting image can be seen in \autoref{fig:irisST}, while \autoref{fig:histST} shows the histogram after applying the formula to each pixel.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{Stretch_iris.jpg}
@@ -116,7 +116,7 @@ The pixels  resulting image can be seen in \autoref{fig:irisST}, while \autoref{
 \label{fig:histST}
 \end{figure}
 However, it was discovered that the implemented method was actually histogram stretching which was mistakenly taken as the same as histogram equalisation. Though the two methods have somewhat the same effects histogram equalisation is better at ensuring a uniform spreading of the pixels across the histogram. 
-This is done by identifying a transform of the bin values which causes the \gls{cdf} of the histogram to be as linear as possible, and apply it to the grey levels or bin values. The result of the histogram equalisation can be seen in \autoref{fig:irisEQ} and \autoref{fig:histEQ}.
+This is done by identifying a transform of the bin values which causes the \gls{cdf} of the histogram to be as linear as possible, and apply it to the grey levels or bin values. The result of the histogram equalisation is showed in \autoref{fig:irisEQ} and \autoref{fig:histEQ}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{Equal_iris.jpg}
@@ -132,16 +132,39 @@ This is done by identifying a transform of the bin values which causes the \gls{
 When comparing the two images of the iris after applying the two different contrast adjustment methods it can be concluded that the histogram equalisation does indeed result in better contrast and a more enhanced and out spoken appearance of the structures in the iris than the histogram stretching does. Testing also showed that using the equalisation rather than the stretching increased the accuracy, however, this will be further addressed in \autoref{MachineLearnClassification}. 
 
 \subsection{Feature extraction}
+As it is difficult to extract all the complex structures in the iris the work presented uses the iris image as input. However, because the image in full will result in to large amounts of data to handle during feature extraction is done. Feature vectors are extracted using Haar wavelets in a wavelet decomposition. 
 
+Haar wavelets are an fast and simple way to obtain wavelets. In Haar wavelets the decomposition is done by calculating the average of neighbouring pixels as well as half the difference between neighbouring pixels. Due to the way the method works the image is lowpass or hi-pass filtered two times in each of the possible combinations. The image of the greatest interest in this case is the one that has been lowpass filtered in both horizontal and vertical direction, this is referred to at LL. This image will be a compressed version of the original image, showing an approximation or the tendency of the original image. The other images created in one stage are HH, HL, LH all of which contain detail coefficients. HH is representing the diagonal detail, while HL presents horizontal detail and LH presents vertical detail. The LL will naturally appear in the upper left corner of the output matrix. 
+
+In order to compress the image sufficiently three stages or passes of Haar wavelet decomposition was carried out. The result is showed \autoref{fig:haar3}. 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{haar_3.jpg}
+\caption{The result of the three level haar wavelet decomposition. Note that the small light image in the upper left corner is the LL3, which is used onwards.}
+\label{fig:haar3}
+\end{figure}
+The resulting matrix of LL3 coefficients is then put into a feature vector, which is used for training the classifiers described in \autoref{MachineLearnClassification}.
 
 \subsection{Training and Classification}
 \label{MachineLearnClassification}
-For classification different classifiers were tested. The investigated classifiers are the \gls{knn}, \gls{lda}, as well as a \gls{svm} with linear or quadratic kernel.  
+For classification different classifiers were tested. The investigated classifiers are the \gls{knn}, \gls{lda}, as well as a \gls{svm} with linear or quadratic kernel. In the section the theory behind the different classifiers will
+
+\subsubsection*{K-Nearest Neighbour}
+ \gls{knn} is one of the most simple supervised classification methods. It is a non-parametric method. This means that the train data is used "raw" and there are no parameters that are deducted from the data in order to form a model. 
+ 
+ The way \gls{knn} 
+\subsubsection*{Linear Discriminant Analysis}
+\subsubsection*{Support Vector Mashines}
+
+\subsubsection*{Cross Validation}
 
 
 
 
-Cross validation
+
+
+
+
 
 
 
