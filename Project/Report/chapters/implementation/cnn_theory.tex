@@ -48,12 +48,35 @@ Pooling is an operation aften added after a convolutional layer. Like a convolut
 \label{fig:maxpool_example}
 \end{figure}
 \subsection{Classification}
-To use the features extracted from the convolutional layer one or more \gls{fc} layers are added at the end of a network. In a gls{fc} layer all the neurons from the previous layer are connected to all of the neurons in current layer. This relationship is described in \autoref{eq:fully_connected_layer}. $l$ denotes the current layer and $l-1$ is the previous layer. $y^{l}(j)$ is the output of neuron $j$ at \gls{fc} layer $l$. It is a linear combination of the weights and biases from the previous layer put into an activation function $f^l$. $ y^{l-1}(i).w^{l}(i,j)$ is the weight from neuron $j$ in the previous layer $l-1$ to the neuron $j$ in current layer $l$
-This creates many more weights to train compared to the weights of a kernel. \todo{diskuter om vi måske skulle bruge subscript i den her ligning, selvom de ikke gør det i artiklen}
-\begin{eqnarray}
+To use the features extracted from the convolutional layer one or more \gls{fc} layers are added at the end of a network. In a gls{fc} layer all the neurons from the previous layer are connected to all of the neurons in current layer. This relationship is described in \autoref{eq:fully_connected_layer}. The output of a single neuron is the sum of the all the previous weights $w_i$ and their bias $b$ put through some activation function $f$.
+\begin{equation}
 \label{eq:fully_connected_layer}
-y^{l}(j)=f^{l}(\sum\limits_{i=1}^{N^{l-1}} y^{l-1}(i).w^{l}(i,j)+b^{l}(j)(3))
-\end{eqnarray}
+f\left(\sum_{i}w_{i}x_{i}+b\right)
+\end{equation}
+To classify $N$ number of classes the last \gls{fc} layer usually has the same amount of neurons as classes. A common activation function for multi class categorisation is the softmax function. It is a normalised exponential function that calculates the probability of each class over all possible classes. The outputs is in a range of $0 - 1$ and the sum of all class probabilities is 1. The function is described in \autoref{eq:softmax_activation_function} where $Z$ is a vector of weights from the previous layer, $j$ is the output class and $K$ is the total amount of classes.
+\begin{equation}
+\label{eq:softmax_activation_function}
+\sigma(Z)_{j} = \frac{e^{Z_j}}{\sum_{k=1}^{K}e^{Z_k}}
+\end{equation}
+
+A common loss function that is used to optimise the softmax function is a cross-entropy loss function. Cross-entropy is defined as \autoref{eq:cross_entropy_function} where $q$ is the is the estimated distribution and $p$ is the actual distribution. In other words it's a measurement of how far the estimated classes are from the true classes.
+\begin{equation}
+\label{eq:cross_entropy_function}
+H(p,q) = -\sum_{x}p(x)log(q(x))
+\end{equation}
+The estimated classes are softmax function, in other words $q = \sigma(Z)_{j} $. The loss function that is optimised is then \autoref{eq:cross_entropy_loss_function}.
+\begin{equation}
+\label{eq:cross_entropy_loss_function}
+J(\theta) = -\frac{1}{m}\left[ \sum_{i=1}^{m}\sum_{j=1}^{K} 1\{y_i=j\}  log\left( \frac{e^{\theta_j}}{\sum_{k=1}^{K}e^{\theta_k}} \right)\right] + \frac{\lambda}{2} \sum_{i=1}^{K} \sum_{j=0}^{n} \theta_{ij}^{2}
+\end{equation}
+$\theta$ are the weights that are randomly set and are learned through back propagation. $K$ is the number of classes and $n$ is the number of labelled training samples. $y_i$ is the label and $1{\cdot}$ is a function that is 1 when the input is true and 0 when it is not. The second term is weight decay regularization term that reduces the magnitudes of weights and prevents it from overfitting.
+
+%$l$ denotes the current layer and $l-1$ is the previous layer. $y^{l}(j)$ is the output of neuron $j$ at \gls{fc} layer $l$. It is a linear combination of the weights and biases from the previous layer put into an activation function $f^l$. $ y^{l-1}(i).w^{l}(i,j)$ is the weight from neuron $j$ in the previous layer $l-1$ to the neuron $j$ in current layer $l$
+%This creates many more weights to train compared to the weights of a kernel. \todo{diskuter om vi måske skulle bruge subscript i den her ligning, selvom de ikke gør det i artiklen}
+%\begin{eqnarray}
+%\label{eq:fully_connected_layer}
+%y^{l}(j)=f^{l}(\sum\limits_{i=1}^{N^{l-1}} y^{l-1}(i).w^{l}(i,j)+b^{l}(j)(3))
+%\end{eqnarray}
 
 \subsection{IrisConv structure}
 What and why. What is their structure? How did we implement it(python/keras)
