@@ -159,11 +159,23 @@ The resulting matrix of LL3 coefficients is then put into a feature vector, whic
 For classification different classifiers were tested. The investigated classifiers are the \gls{knn}, \gls{lda}, as well as a \gls{svm} with linear or quadratic kernel. In the section the theory behind the different classifiers will
 
 \subsubsection*{K-Nearest Neighbour}
- \gls{knn} is one of the most simple supervised classification methods. It is a non-parametric method. This means that the train data is used "raw" and there are no parameters that are deducted from the data in order to form a model. 
+\gls{knn} is one of the most simple supervised classification methods. It is a non-parametric method. This means that the train data is used "raw" and there are no parameters that are deducted from the data in order to form a model. 
  
- The way \gls{knn} 
+\gls{knn} utilises Bayes theorem in order to determine the probability of a sample belonging to a certain class. The probability of the sample belonging to different classes is found by looking at the density of datapoint belonging to the different classes among the $k$ nearest neighbours. The probability of a class given the sample can be estimated by the formula in \autoref{eq:classProb}.
+ 
+ \begin{equation}\label{eq:classProb}
+	p(C_k|\text{x}|=\frac{K_k}{K}
+\end{equation}
+Where $C_k$ is a given class, $\text{x}$ is the sample, $K$ is the number of neighbours considered, and $K_k$ is the amount of data points among the $K$ neighbours belonging to the class $C_k$.
+
+Finally, a class is assigned to the sample based on which class has the highest conditional probability.
+ 
 \subsubsection*{Linear Discriminant Analysis}
-\subsubsection*{Support Vector Mashines}
+
+
+
+
+\subsubsection*{Support Vector Machines}
 
 \subsubsection*{Cross Validation}
 
