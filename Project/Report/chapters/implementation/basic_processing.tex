@@ -3,7 +3,7 @@
 In order to get some basic understanding of the methods commonly used for iris classification the work presented in an article is implemented. The work implemented is the work of \cite{Khan2017a} described in \citep{Khan2017a}.\todo{make sure references read right} In the work \gls{vl} images of the iris obtained by smartphones are processed and used to train different classifiers. The processing consists of a sequence of steps. The steps included are
 
 \begin{itemize}
-\item Iris Detection
+\item Iris Location
 \item Eyelid Suppression
 \item Iris Normalisation
 \item Noise Removal
@@ -28,25 +28,54 @@ In order to get some basic understanding of the methods commonly used for iris c
 \caption{The eye marked with the identified edges of the iris.}
 \label{fig:MarkedI}
 \end{subfigure}
+
+\begin{subfigure}{.47\textwidth}
+\centering
+\includegraphics[width=0.9\textwidth]{Eyelid_002_l_13_2.jpg}
+\caption{The eye with the eyelid suppression applied.}
+\label{fig:IrisSup}
+\end{subfigure}
+\caption{The original image before and after different steps of processing.}
 \end{figure}
 
 
 
-\subsection{Iris Detection}
-The first step of processing is locating the iris. For this purpose Daugman's Integro-differential operator was used. The operator identifies the circular contour, which has the greatest change in intensity by varying the three parameters defining the circle. \autoref{fig:MarkedI} shows an example of the identified edges of the iris.
+\subsection{Iris Location}
+The first step of processing is locating the iris. For this purpose Daugman's Integro-differential operator was used. The operator identifies the circular contour, which has the greatest change in intensity, by varying the three parameters defining the circle $(r,x_0,y_0$. \
+
+
+
+\begin{equation}\label{eq:integro_diff}
+	\text{Threshold}=\text{Low~Value}+\text{Fraction}\cdot(\text{High~Value}-\text{Low~Value})
+\end{equation}
+
+
+
+\autoref{fig:MarkedI} shows an example of the identified edges of the iris. 
 
 
 
 \subsection{Eyelid Suppression}
+The annulus identified by the iris location as the area of the iris might not only contain the iris. The subject might in some cases not open the eyelids fully or the angle of the camera will be such that parts of the iris will be covered by the eyelids. Therefore an algorithm is used which eliminates the eyelids. 
+The algorithm is detecting applied on the image cutout of the original image which has the boundary box of the identified iris as edges. The small image is divided into an upper and a lower part which are searched for the upper and the lower eyelid respectively. The search is done by using the  
+
+
+
+
+
+
 
 \subsection{Iris Normalisation}
 For the normalisation Daugman's rubber sheet model is used. The purpose is to get a rectangular image of the iris, which corresponds to taking the annulus covered by the iris region, cutting it open and unfolding or stretching it to a rectangular shape. 
 
-The model does this by mapping from polar coordinates based on radius and angle in the annulus to a rectangle where the angle is on the x-axis and the radius is on the y-axis of the image. 
-This was implemented using a function in the library crated my Libor Masek.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{Daugmans-Rubber-Sheet-Model.png}
+\caption{Daugman's Rubber Sheet Model. \citep{Misztal2012}}
+\label{fig:DaugSheet}
+\end{figure}
 
-
-
+The model does this by mapping the iris from the original image to a rectangular image. The mapping is done based on polar coordinates radius and angle, $(r,\vartheta)$, where $r\in[0,1]$ and $\vartheta\in[0,2\pi]$. In the rectangular image angle $\vartheta$ is on the x-axis and the radius $r$ is on the y-axis of the image. \autoref{fig:DaugSheet} shows the mapping of the method. This was implemented using a function in the library crated my Libor Masek \citep{LiborMasek2003}. The resolution of the resulting image is dependent on arguments. The image of the normalised iris is shown in \autoref{fig:SimPolar}. 
 
 \begin{figure}[h]
 \centering
@@ -156,7 +185,7 @@ The resulting matrix of LL3 coefficients is then put into a feature vector, whic
 
 \subsection{Training and Classification}
 \label{MachineLearnClassification}
-For classification different classifiers were tested. The investigated classifiers are the \gls{knn}, \gls{lda}, as well as a \gls{svm} with linear or quadratic kernel. In the section the theory behind the different classifiers will
+For classification different classifiers were tested. The best of the investigated classifiers are the \gls{knn}, \gls{lda}, as well as a \gls{svm} with linear or quadratic kernel. In the following sections the theory behind the different classifiers will briefly be described
 
 \subsubsection*{K-Nearest Neighbour}
 \gls{knn} is one of the most simple supervised classification methods. It is a non-parametric method. This means that the train data is used "raw" and there are no parameters that are deducted from the data in order to form a model. 
@@ -166,11 +195,13 @@ For classification different classifiers were tested. The investigated classifie
  \begin{equation}\label{eq:classProb}
 	p(C_k|\text{x}|=\frac{K_k}{K}
 \end{equation}
+
 Where $C_k$ is a given class, $\text{x}$ is the sample, $K$ is the number of neighbours considered, and $K_k$ is the amount of data points among the $K$ neighbours belonging to the class $C_k$.
 
 Finally, a class is assigned to the sample based on which class has the highest conditional probability.
  
 \subsubsection*{Linear Discriminant Analysis}
+\gls{lda} is a parametric method which is trained by supervised learning. \gls{lda} is a classifier in which linear decision boundaries are learned based on training data. It is part of a more general group of linear discriminant functions. The decision boundary is found such that interclass variance is maximised while intra class variance is minimised. There are a range of possibilities for identifying the equation for the linear decision border eg. using SVD or EVD. The main principle that separates LDA from Principal component analysis (PCA) is the   
 
 
 
@@ -178,7 +209,7 @@ Finally, a class is assigned to the sample based on which class has the highest 
 \subsubsection*{Support Vector Machines}
 
 \subsubsection*{Cross Validation}
-
+Just as in the article 
 
 
 
