@@ -1,9 +1,9 @@
 \section{What is a Convolutional Nerual Network}
 \label{sec:cnn_theory}
-This section describes what a \gls{cnn} is and what structure was used for creating the iris recognition \gls{cnn}. The section is based mainly on \cite{Karpathy2016a} and \cite{Nielsen2015}.
+This section describes what a \gls{cnn} is and what structure is used for creating the iris recognition \gls{cnn}. The section is based mainly on \cite{Karpathy2016a} and \cite{Nielsen2015}.
 
 \subsection{Convolution}
-A \gls{cnn} is type of Nerual Network that is especially good for image recognition. Instead of the input being fully connected it operates by using a kernel instead. A kernel can be seen as a small window which moves through the input image. It performs an operation known as a convolution where the coefficients, also known as weights, of the kernel are multiplied with the pixel it is covering and summing the value. A 1D example of this is shown in \autoref{fig:kernel_convolution_example} where a kernel of size 3 with weights $\begin{bmatrix} 1 & 0 & -1 \end{bmatrix}$ are convolved through bottom rows which produces the top rows. Two other concepts are also shown in the example; stride and zero padding. Stride is the amount the kernel moves each time. The left example has a stride of $1$ and the right example has a stride of $3$. Zero padding is when pixels with value $0$ are added at the edge of the image. This is done to ensure that the convolution can actually be made on all pixel because otherwise only one convolution would be possible in the example with a stride of 3. It also has the benefit of keeping the dimensions of the input image and output image the same when the stride is 1, as convolution otherwise shrinks the image. 
+A \gls{cnn} is type of Nerual Network that is especially good for image recognition. Instead of the input being fully connected it operates by using a kernel instead. A kernel can be seen as a small window which moves through the input image. It performs an operation known as a convolution where the coefficients, also known as weights, of the kernel are multiplied with the pixel it is covering and summing the value. A 1D example of this is shown in \autoref{fig:kernel_convolution_example} where a kernel of size 3 with weights $\begin{bmatrix} 1 & 0 & -1 \end{bmatrix}$ are convolved through bottom rows which produces the top rows. Two other concepts are also shown in the example; stride and zero padding. Stride is the amount the kernel moves each time. The left example has a stride of $1$ and the right example has a stride of $3$. Zero padding is when pixels with value $0$ are added at the edge of the image. This is done to ensure that the convolution can actually be made on all pixels, otherwise only one convolution would be possible in the example with a stride of 3. It also has the benefit of keeping the dimensions of the input image and output image the same when the stride is 1, as convolution otherwise shrinks the image. 
 
 \begin{figure}[h]
 \centering
@@ -12,25 +12,30 @@ A \gls{cnn} is type of Nerual Network that is especially good for image recognit
 \label{fig:kernel_convolution_example}
 \end{figure}
 
-The output of the convolution creates a new image. This image becomes the input of an activation function. An activation can be though of as how much should the neuron fire, e.g how active is it. A common activation function for \gls{cnn} is the \gls{relu}, \autoref{eq:ReluFunction}, that gives an output of $x$ if the $x$ is positive and 0 otherwise. This activation function has proved to be consistently better and faster for deep neural networks than the previously popular sigmoid activation function.  
-\begin{eqnarray}
+The output of the convolution creates a new image. This image becomes the input of an activation function. An activation can be thought of as how much should the neuron fire, e.g how active is it. A common activation function for \gls{cnn} is the \gls{relu}, shown in \autoref{eq:ReluFunction}, which gives an output of $x$ if the $x$ is positive and 0 otherwise. This activation function has proved to be consistently better and faster for deep neural networks than the previously popular sigmoid activation function.
+
+\begin{equation}
 \label{eq:ReluFunction}
 f(x) = max(0,x)
-\end{eqnarray}
+\end{equation}
 
 \subsection{Activation function/feature maps}
-The output of the convolution is the hidden layer and is called a feature map. An example is shown in \autoref{fig:cnn_kernal_illustration} where a kernel of $5x5$ is used on a input image of $28x28$ to produce a feature map of $24x24$. The dimensions can be calculated by using \autoref{eq:feature_map_size}  where $W_2$ is the width of the feature map, $W_1$ is the width of the input image, $F$ is the size of the kernel and $P$ is the amount of padding.  
-\begin{eqnarray}
+The output of the convolution is the hidden layer and is called a feature map. An example is shown in \autoref{fig:cnn_kernal_illustration} where a kernel of $5\times5$ is used on a input image of $28\times28$ to produce a feature map of $24\times24$. The dimensions can be calculated by using \autoref{eq:feature_map_size}  where $W_2$ is the width of the feature map, $W_1$ is the width of the input image, $F$ is the size of the kernel and $P$ is the amount of padding.  
+
+\begin{equation}
 \label{eq:feature_map_size}
 W_2 = \frac{(W_1-F+2P)}{S} +1
-\end{eqnarray}
-The weights of the kernel is what is being learned by the network. The kernel has what is known as shared weights and biases, as its the same weights that convolve through the whole image. This is shown in \autoref{eq:shared_weights} which is how a single neuron of the feature map in example \autoref{fig:cnn_kernal_illustration} is computed. $\sigma$ is an activation function, $b$ is the shared bias,  $w$ are the weights of the kernel with $l,m$ being their position and $a$ is the input pixel at the $j,kth$.
-\begin{eqnarray}
+\end{equation}
+
+The weights of the kernel is what is being learned by the network. The kernel has what is known as shared weights and biases, as its the same weights that convolve through the whole image. This is shown in \autoref{eq:shared_weights} which is how a single neuron of the feature map in \autoref{fig:cnn_kernal_illustration} is computed. $\sigma$ is an activation function, $b$ is the shared bias,  $w$ are the weights of the kernel with $l,m$ being their position and $a$ is the input pixel at the $j,k$th position
+.
+\begin{equation}
 \label{eq:shared_weights}
 \sigma(b+\sum\limits_{l=0}^4 \sum\limits_{m=0}^4 w_{l,m}*a_{j+l,k+m})
-\end{eqnarray}
-\noindent
-In other words the kernel learns to detect a feature that can be found in the image, e.g. straight lines. As a single feature is not enough for recognition, multiple kernels are used to make multiple feature maps. These new feature maps become the input of another convolution layer that can learn higher level feature, e.g. combining the vertical and horizontal feature to create a kernel that detects edges. Each convolution adds a new level of abstraction.
+\end{equation}
+
+
+In other words the kernel learns to detect a feature that can be found in the image, e.g. straight lines. As a single feature is not enough for recognition, multiple kernels are used to make multiple feature maps. These new feature maps become the input of another convolution layer that can learn higher level features, e.g. combining the vertical and horizontal features to create a kernel that detects edges. Each convolution adds a new level of abstraction.
 
 \begin{figure}[h]
 \centering
@@ -38,28 +43,33 @@ In other words the kernel learns to detect a feature that can be found in the im
 \caption{Example of a kernel in a \gls{cnn} \citep{Nielsen2015}}
 \label{fig:cnn_kernal_illustration}
 \end{figure}
-\subsection{Pooling}
-Pooling is an operation aften added after a convolutional layer. Like a convolution a small windows moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s. An example of maxpooling with a windows of size $2x2$ and stride 2  is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
 
-\begin{figure}[h]
+\subsection{Pooling}
+Pooling is an operation often added after a convolutional layer. Like a convolution, a small windows moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s. An example of maxpooling with a window of size $2\times2$ and stride 2  is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
+
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.90\textwidth]{maxpool_example.jpeg}
 \caption{Example of maxpooling with size $2x2$ and stride 2 \citep{Karpathy2016a}}
 \label{fig:maxpool_example}
 \end{figure}
+
 \subsection{Classification}
-To use the features extracted from the convolutional layer one or more \gls{fc} layers are added at the end of a network. In a gls{fc} layer all the neurons from the previous layer are connected to all of the neurons in current layer. This relationship is described in \autoref{eq:fully_connected_layer}. The output of a single neuron is the sum of the all the previous weights $w_i$ and their bias $b$ put through some activation function $f$.
+To use the features extracted from the convolutional layer one or more \gls{fc} layers are added at the end of a network. In a \gls{fc} layer all the neurons from the previous layer are connected to all of the neurons in current layer. This relationship is shown in \autoref{eq:fully_connected_layer}. The output of a single neuron is the sum of all the previous weights $w_i$ and their bias $b$ put through some activation function $f$.
+
 \begin{equation}
 \label{eq:fully_connected_layer}
 f\left(\sum_{i}w_{i}x_{i}+b\right)
 \end{equation}
-To classify $N$ number of classes the last \gls{fc} layer usually has the same amount of neurons as classes. A common activation function for multi class categorisation is the softmax function. It is a normalised exponential function that calculates the probability of each class over all possible classes. The outputs is in a range of $0 - 1$ and the sum of all class probabilities is 1. The function is described in \autoref{eq:softmax_activation_function} where $Z$ is a vector of weights from the previous layer, $j$ is the output class and $K$ is the total amount of classes.
+
+To classify $N$ number of classes the last \gls{fc} layer usually has the same amount of neurons as classes. A common activation function for multi class categorisation is the softmax function. It is a normalised exponential function that calculates the probability of each class over all possible classes. The outputs are in a range of $0 - 1$ and the sum of all class probabilities is 1. The function is described in \autoref{eq:softmax_activation_function} where $Z$ is a vector of weights from the previous layer, $j$ is the output class and $K$ is the total amount of classes.
+
 \begin{equation}
 \label{eq:softmax_activation_function}
 \sigma(Z)_{j} = \frac{e^{Z_j}}{\sum_{k=1}^{K}e^{Z_k}}
 \end{equation}
 
-A common loss function that is used to optimise the softmax function is a cross-entropy loss function. Cross-entropy is defined as \autoref{eq:cross_entropy_function} where $q$ is the is the estimated distribution and $p$ is the actual distribution. In other words it's a measurement of how far the estimated classes are from the true classes.
+A common loss function that is used to optimise the softmax function is a cross-entropy loss function. Cross-entropy is defined as \autoref{eq:cross_entropy_function} where $q$ is the estimated distribution and $p$ is the actual distribution. In other words it's a measurement of how far the estimated classes are from the true classes.
 \begin{equation}
 \label{eq:cross_entropy_function}
 H(p,q) = -\sum_{x}p(x)log(q(x))
@@ -69,7 +79,7 @@ The estimated classes are softmax function, in other words $q = \sigma(Z)_{j} $.
 \label{eq:cross_entropy_loss_function}
 J(\theta) = -\frac{1}{m}\left[ \sum_{i=1}^{m}\sum_{j=1}^{K} 1\{y_i=j\}  log\left( \frac{e^{\theta_j}}{\sum_{k=1}^{K}e^{\theta_k}} \right)\right] + \frac{\lambda}{2} \sum_{i=1}^{K} \sum_{j=0}^{n} \theta_{ij}^{2}
 \end{equation}
-$\theta$ are the weights that are randomly set and are learned through back propagation. $K$ is the number of classes and $n$ is the number of labelled training samples. $y_i$ is the label and $1{\cdot}$ is a function that is 1 when the input is true and 0 when it is not. The second term is weight decay regularization term that reduces the magnitudes of weights and prevents it from overfitting.
+$\theta$ is the weights that are randomly set and are learned through back propagation. $K$ is the number of classes and $n$ is the number of labelled training samples. $y_i$ is the label and $1{\cdot}$ is a function that is 1 when the input is true and 0 when it is not. The second term is weight decay regularization term that reduces the magnitudes of weights and prevents it from overfitting.
 
 %$l$ denotes the current layer and $l-1$ is the previous layer. $y^{l}(j)$ is the output of neuron $j$ at \gls{fc} layer $l$. It is a linear combination of the weights and biases from the previous layer put into an activation function $f^l$. $ y^{l-1}(i).w^{l}(i,j)$ is the weight from neuron $j$ in the previous layer $l-1$ to the neuron $j$ in current layer $l$
 %This creates many more weights to train compared to the weights of a kernel. \todo{diskuter om vi måske skulle bruge subscript i den her ligning, selvom de ikke gør det i artiklen}

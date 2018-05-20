@@ -170,7 +170,7 @@ model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax',))
 
-#model.get_config()
+#print(model.get_config())
 
 #model.compile(loss=keras.losses.categorical_crossentropy,
 #              optimizer=keras.optimizers.Adadelta(),
@@ -199,6 +199,7 @@ print('Saved trained model at %s ' % model_path)
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1]*100)
+
 
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
