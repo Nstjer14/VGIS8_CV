@@ -126,7 +126,7 @@ y_train = train_label
 y_test = valid_label
 
 batch_size = 128
-epochs = 2
+epochs = 200
 
 print("Shape of x_train",x_train.shape)
 print("Shape of y_train",y_train.shape)

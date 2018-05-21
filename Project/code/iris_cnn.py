@@ -158,14 +158,14 @@ model.add(MaxPooling2D(pool_size=(2,2)))
 model.add(Conv2D(filters = 64, kernel_size=(5, 5),activation='relu')) # padding = "same" is zero padding
 
 model.add(Flatten())
-model.add(Dense(num_classes, activation='relu'))
+model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='relu'))
 
 	
 #Parameters
 batch_size = 150
-epochs = 2
+epochs = 100
 learningrate = 0.03#1e-3
 
 adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0000)
