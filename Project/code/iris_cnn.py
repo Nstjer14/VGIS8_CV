@@ -12,10 +12,12 @@ print(sess.run(hello))
 
 import matplotlib.pyplot as plt
 import load_images_2_python
+import imageBatchGenerator5_module as batchGen
 import pandas as pd
 from collections import Counter
 import numpy as np
 from sklearn.model_selection import train_test_split
+from keras.preprocessing.image import ImageDataGenerator
 
 from numpy import array
 from numpy import argmax
@@ -67,17 +69,44 @@ plt.title("Ground Truth : {}".format(label[0]))
 
 #%% Preprocess for cnn
 resized_image = []
-#for image in dataFrame.image:
-#    resized_image.append(cv2.resize(image, (64, 64)))
-#imageVector = np.asarray(resized_image)
-#imageVector = imageVector.reshape(-1, 64,64, 1) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
-imageVector = imageVector.reshape(-1, 64,512, 1) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
+for image in dataFrame.image:
+    resized_image.append(cv2.resize(image, (64, 64)))
+
+batchImages = []
+batchLabels = []
+for i in range(0,len(resized_image)):
+    batchesInTupples = batchGen.imageBatchGenerator5(resized_image[i])
+    for j in batchesInTupples:
+        #plt.imshow(j, cmap='gray')
+        batchImages.append(j)
+        batchLabels.append(label[i])
+        batchImages.append(cv2.flip(j,0)) # adding horisontal flip
+        batchLabels.append(label[i])
+        
+reshapeDims = batchImages[1].shape
+imageVector = np.asarray(batchImages)
+imageVector = imageVector.reshape(imageVector.shape[0],1,58,58) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
+#imageVector = imageVector.reshape(-1, 64,512, 1) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
+imageVector = imageVector.astype('float32') # Rescale it from 255 to 0-1.
+imageVector = imageVector/255.
+
+#datagen = ImageDataGenerator(horizontal_flip=True)
+#a,y = datagen.flow(imageVector,batchLabels)
+print('Training data shape after reshape : ', imageVector.shape)
+
+'''
+resized_image2 = []
+for image in dataFrame.image:
+    resized_image2.append(cv2.resize(image, (64, 64)))
+imageVector2 = np.asarray(resized_image2)
+imageVector2 = imageVector.reshape(imageVector.shape[0],1,64,64) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
+#imageVector = imageVector.reshape(imageVector.shape[0],1,64,512) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 imageVector = imageVector.astype('float32') # Rescale it from 255 to 0-1.
 imageVector = imageVector/255.
 print('Training data shape after reshape : ', imageVector.shape)
-
-
-
+''' 
+    
+label = batchLabels
 # integer encode
 label_encoder = LabelEncoder()
 integer_encoded = label_encoder.fit_transform(label)
@@ -149,20 +178,40 @@ model.add(Dropout(0.5))
 model.add(Dense(10, activation='softmax'))
 '''
 model = Sequential()
-model.add(Conv2D(filters = 6, kernel_size=(3, 3),activation='softmax',input_shape=(img_shape),padding='same')) # padding = "same" is zero padding
-model.add(MaxPooling2D(pool_size=(2,2),padding="same"))
-model.add(Conv2D(filters = 32, kernel_size=(5, 5),activation='relu')) # padding = "same" is zero padding
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Conv2D(filters = 36, kernel_size=(5, 5),activation='relu')) # padding = "same" is zero padding
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Conv2D(filters = 64, kernel_size=(5, 5),activation='relu')) # padding = "same" is zero padding
+model.add(Conv2D(6, kernel_size=(3, 3),
+                 activation='relu',
+                 input_shape=img_shape,
+                 data_format='channels_first',
+                 padding = "same"))
+model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
+#model.add(Dropout(0.25))
+model.add(Conv2D(32,
+                 kernel_size=(5, 5),
+                 activation='relu',
+                 padding = "same",
+                 data_format='channels_first'))
+model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
+
+model.add(Conv2D(64,
+                 kernel_size=(5, 5),
+                 activation='relu',
+                 padding = "same",
+                 data_format='channels_first'))
+model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
+
+model.add(Conv2D(256,
+                 kernel_size=(5, 5),
+                 activation='relu',
+                 padding = "same",
+                 data_format='channels_first'))
 
 model.add(Flatten())
 model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(num_classes, activation='relu'))
+model.add(Dense(num_classes, activation='softmax',))
 
-	
+model.summary()
+#print(model.get_config())	
 #Parameters
 batch_size = 150
 epochs = 100

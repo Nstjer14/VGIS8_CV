@@ -14,6 +14,9 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 import os
 import random as rd
+from keras.preprocessing.image import ImageDataGenerator
+import imageBatchGenerator5_module as batchGen
+
 
 
 
@@ -94,13 +97,26 @@ plt.title("Ground Truth : {}".format(label[0]))
 resized_image = []
 for image in dataFrame.image:
     resized_image.append(cv2.resize(image, (64, 64)))
-imageVector = np.asarray(resized_image)
-imageVector = imageVector.reshape(imageVector.shape[0],1,64,64) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
+
+batchImages = []
+batchLabels = []
+for i in range(0,len(resized_image)):
+    batchesInTupples = batchGen.imageBatchGenerator5(resized_image[i])
+    for j in batchesInTupples:
+        #plt.imshow(j, cmap='gray')
+        batchImages.append(j)
+        batchLabels.append(label[i])
+        batchImages.append(cv2.flip(j,0)) # adding horisontal flip
+        batchLabels.append(label[i])
+        
+reshapeDims = batchImages[1].shape
+imageVector = np.asarray(batchImages)
+imageVector = imageVector.reshape(imageVector.shape[0],1,58,58) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 #imageVector = imageVector.reshape(imageVector.shape[0],1,64,512) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 imageVector = imageVector.astype('float32') # Rescale it from 255 to 0-1.
 imageVector = imageVector/255.
 print('Training data shape after reshape : ', imageVector.shape)
-
+label = batchLabels # set labels to be the batchLabels. This is a quick and dirty
 
 
 # integer encode
