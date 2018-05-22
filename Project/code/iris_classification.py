@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import load_images_2_python
 import pandas as pd
 from collections import Counter
+import random as rd
 
 # Machine learning models
 from sklearn.model_selection import KFold # import KFold
@@ -25,6 +26,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
+rd.seed(42)
 # Ignore warnings from sklearn because they fill up the console
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
@@ -206,7 +208,7 @@ size_of_train_for_model = 0.7
 size_of_test=0.5
 X_train, X_temp, y_train, y_temp = train_test_split(featureVector, label, train_size=size_of_train_for_model,stratify=label,random_state=42)
 
-X_test, X_validation, y_test, y_validation = train_test_split(X_temp, y_temp, train_size=size_of_test,stratify=label,random_state=42)
+X_test, X_validation, y_test, y_validation = train_test_split(X_temp, y_temp, train_size=size_of_test,stratify=y_temp,random_state=42)
 
 print("Amount of data being used training: %.2f" % size_of_train_for_model, "and %.2f" % (1-size_of_train_for_model), "for validation")
 

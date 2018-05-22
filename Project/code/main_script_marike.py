@@ -19,14 +19,15 @@ import numpy as np
 def iris_proc (image):
     img_without_noise = noiserm.noiseremover(image,0.1,10)
   #  print("noise removed")
-    equalised_img = cv2.equalizeHist(img_without_noise)
+    #equalised_img = cv2.equalizeHist(img_without_noise)
+    equalised_img = noiserm.equalisehistogram(img_without_noise,10)
   #  print("histogram equalised")
     wavelet_results= pywt.wavedec2(equalised_img,'haar',level=3)
-    haar_image=np.vstack((np.hstack((np.vstack((np.hstack((np.vstack((np.hstack((wavelet_results[0],wavelet_results[1][0])),np.hstack((wavelet_results[1][1],wavelet_results[1][2])))),wavelet_results[2][0])),np.hstack((wavelet_results[2][1],wavelet_results[2][2])))),wavelet_results[3][0])),np.hstack((wavelet_results[3][1],wavelet_results[3][2]))))
-    print(haar_image.shape)
-    print(haar_image)
-    plt.imshow(haar_image,cmap="gray")
-    plt.show()
+    #haar_image=np.vstack((np.hstack((np.vstack((np.hstack((np.vstack((np.hstack((wavelet_results[0],wavelet_results[1][0])),np.hstack((wavelet_results[1][1],wavelet_results[1][2])))),wavelet_results[2][0])),np.hstack((wavelet_results[2][1],wavelet_results[2][2])))),wavelet_results[3][0])),np.hstack((wavelet_results[3][1],wavelet_results[3][2]))))
+    #print(haar_image.shape)
+    #print(haar_image)
+    #plt.imshow(haar_image,cmap="gray")
+    #plt.show()
     featureVec = wavelet_results[0].reshape(wavelet_results[0].size)
     pid = os.getpid ()
     print("Feature Extracted by: process  id:   {:7d}".format(pid))
@@ -40,9 +41,11 @@ dataFrame = load_images_2_python.dataFrame
     
 #dataFrame = dataFrame.iloc[range(224),:]
 #dataFrame = dataFrame.drop(dataFrame.index[224]) 3-polar.jpg 0005left
-discardList = ['0005left_3-polar.jpg','0014right_2-polar.jpg'] # 
-#dataFrame = dataFrame[~dataFrame['full_path'].isin(discardList)]
-dataFrame = dataFrame[dataFrame['full_path'].isin(['0002left_13-polar.jpg'])]
+discardList = ['0005left_3-polar.jpg','0014right_2-polar.jpg','0037right_2-polar.jpg'] # 
+#used for full dataset
+dataFrame = dataFrame[~dataFrame['full_path'].isin(discardList)]
+#used to access only one image 
+#dataFrame = dataFrame[dataFrame['full_path'].isin(['0002left_13-polar.jpg'])]
 print("The following images have been dropped because the iris localisation was not good enough: ", discardList)    
 
 #%%
@@ -51,8 +54,8 @@ def sequential():
     
     start_time = timeit.default_timer()
     i = 1
+    
     for image in dataFrame.image:
-        
         featureVec = iris_proc(image)
         print("feature extracted")        
         featureVector.append(featureVec)
@@ -64,7 +67,7 @@ def sequential():
     print ("FINISHED Sequencial")
     print(timeit.default_timer() - start_time) # 250.1482454747301
     dataFrame['featureVector'] = featureVector
-    dataFrame.to_pickle('pythonDatabase_seq')
+    dataFrame.to_pickle('pythonDatabase')
     
 #@profile    
 def parallel():
