@@ -184,6 +184,8 @@ model.add(Conv2D(256,
 model.add(Flatten())
 model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.5))
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax',))
 
 #print(model.get_config())
