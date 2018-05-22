@@ -1,0 +1,4 @@
+\section{Network Fusion}
+To be able to combine iris- and face verification, a combination of the results of the two networks must be made. Because of time constraints it was not possible to implement this functionality. Instead, the theory of network fusion is presented in this section.
+
+To make this two-stream \gls{cnn} the networks are first training individually and can then be connected using a dense fully connected layers connecting the streams from the two networks. After the fully connected layer a classification is necessary. This can be done using a softmax layer after the dense layer \citep{Eitel2015}. This should in theory increase the accuracy in ID verification in a potential instance where verification is required. The idea of this design is shown in \autoref{fig:net_fusion}
