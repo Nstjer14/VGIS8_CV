@@ -202,14 +202,20 @@ Here we train the model with the actual models.
 '''
 print("Actual models")
 
-size_of_train_for_model = 0.8
-X_train, X_test, y_train, y_test = train_test_split(featureVector, label, train_size=size_of_train_for_model,stratify=label,random_state=42)
+size_of_train_for_model = 0.7
+size_of_test=0.5
+X_train, X_temp, y_train, y_temp = train_test_split(featureVector, label, train_size=size_of_train_for_model,stratify=label,random_state=42)
+
+X_test, X_validation, y_test, y_validation = train_test_split(X_temp, y_temp, train_size=size_of_test,stratify=label,random_state=42)
+
 print("Amount of data being used training: %.2f" % size_of_train_for_model, "and %.2f" % (1-size_of_train_for_model), "for validation")
 
 # If y_train is givis prolems try using np.ravel(y_train) instead.
+#linear SVM
 clf_model = svm.SVC(kernel='linear').fit(X_train,y_train)
-predicted_data = clf_model.predict(X_test)
-print("Accuracy of validation on linear SVM: %.2f" % accuracy_score(y_test, predicted_data))
+print("Train Accuracy of linear SVM: %.2f" % accuracy_score(y_train, clf_model.predict(X_train)))
+print("Test Accuracy of linear SVM: %.2f" % accuracy_score(y_test, clf_model.predict(X_test)))
+print("Validation Accuracy of linear SVM: %.2f" % accuracy_score(y_validation, clf_model.predict(X_validation)))
 
 
 # This is to manually calcuate the accuracy instead of using the accuracy_score functionallity which does the same.
@@ -219,12 +225,26 @@ print("Accuracy of validation on linear SVM: %.2f" % accuracy_score(y_test, pred
 #SVM_accuracy=PredictionCorrectness_SVM.sum()/len(y_test)#calculate accuracy
 #print('SVM accuracy:',SVM_accuracy)
 
-
+#quadratic SVM
 clf2_model = svm.SVC(kernel='poly').fit(X_train,y_train)
-print("Accuracy of validation on quadratic SVM: %.2f" % accuracy_score(y_test, clf2_model.predict(X_test)))
+#print("Accuracy of validation on quadratic SVM: %.2f" % accuracy_score(y_test, clf2_model.predict(X_test)))
+print("Train Accuracy of quadratic SVM: %.2f" % accuracy_score(y_train, clf2_model.predict(X_train)))
+print("Test Accuracy of quadratic SVM: %.2f" % accuracy_score(y_test, clf2_model.predict(X_test)))
+print("Validation Accuracy of quadratic SVM: %.2f" % accuracy_score(y_validation, clf2_model.predict(X_validation)))
 
+
+#LDA
 lda_model = LinearDiscriminantAnalysis().fit(X_train,y_train)
-print("Accuracy of validation on LDA: %.2f" % accuracy_score(y_test, lda_model.predict(X_test)))
+#print("Accuracy of validation on LDA: %.2f" % accuracy_score(y_test, lda_model.predict(X_test)))
+print("Train Accuracy of LDA: %.2f" % accuracy_score(y_train, lda_model.predict(X_train)))
+print("Test Accuracy of LDA: %.2f" % accuracy_score(y_test, lda_model.predict(X_test)))
+print("Validation Accuracy of LDA: %.2f" % accuracy_score(y_validation, lda_model.predict(X_validation)))
 
+
+#KNN
 knn_model = KNeighborsClassifier(n_neighbors=optimal_k).fit(X_train,y_train)
 print("Accuracy of validation on KNN k =",optimal_k,": %.2f" % accuracy_score(y_test, knn_model.predict(X_test)))
+
+print("Train Accuracy of KNN: %.2f" % accuracy_score(y_train, knn_model.predict(X_train)))
+print("Test Accuracy of KNN: %.2f" % accuracy_score(y_test, knn_model.predict(X_test)))
+print("Validation Accuracy of KNN: %.2f" % accuracy_score(y_validation, knn_model.predict(X_validation)))

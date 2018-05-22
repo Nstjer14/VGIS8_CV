@@ -41,29 +41,17 @@ In order to get some basic understanding of the methods commonly used for iris c
 
 
 \subsection{Iris Location}
-The first step of processing is locating the iris. For this purpose Daugman's Integro-differential operator was used. The operator identifies the circular contour, which has the greatest change in intensity, by varying the three parameters defining the circle $(r,x_0,y_0$. \
-
-
+The first step of processing is locating the iris. For this purpose Daugman's Integro-differential operator was used. The operator identifies the circular contour, which has the greatest change in intensity, by varying the three parameters defining the circle $(r,x_0,y_0)$, radius, and centre coordinates. The operator is defined by the formula in \autoref{eq:integro_diff}.
 
 \begin{equation}\label{eq:integro_diff}
-	\text{Threshold}=\text{Low~Value}+\text{Fraction}\cdot(\text{High~Value}-\text{Low~Value})
+	\max(r,x_{0},y_{0}){\left|G_{\sigma}{(r)*}{\partial\over \partial_{r}}{\oint_{r,x_{0},y_{0}}}{{I(x,y)\over 2\pi r}d_{S}}\right|}
 \end{equation}
-
-
-
-\autoref{fig:MarkedI} shows an example of the identified edges of the iris. 
-
-
+Where $I(x,y)$ is the intensity or grey level of the image at the coordinates (x,y), $S$ is the circle, $G_{\sigma}{(r)}$ is a gaussian smoothing function.
+The method is also used to find the edge between the pupil and the iris. The two identified endges are marked on the input image. \autoref{fig:MarkedI} shows an example of the identified edges of the iris. 
 
 \subsection{Eyelid Suppression}
 The annulus identified by the iris location as the area of the iris might not only contain the iris. The subject might in some cases not open the eyelids fully or the angle of the camera will be such that parts of the iris will be covered by the eyelids. Therefore an algorithm is used which eliminates the eyelids. 
-The algorithm is detecting applied on the image cutout of the original image which has the boundary box of the identified iris as edges. The small image is divided into an upper and a lower part which are searched for the upper and the lower eyelid respectively. The search is done by using the  
-
-
-
-
-
-
+The algorithm is detecting applied on the image cutout of the original image which has the boundary box of the identified iris as edges. The small image is divided into an upper and a lower part which are searched for the upper and the lower eyelid respectively. The search is done by using a method with some similarities to Daugman's Integro-differential operator shown in \autoref{eq:integro_diff}, however it applies radon transform. Through the output of the radon transform the lines marking the two eyelids are found and the pixels above or below the two lines is eliminated. The resulting image is shown in \autoref{fig:IrisSup}.
 
 \subsection{Iris Normalisation}
 For the normalisation Daugman's rubber sheet model is used. The purpose is to get a rectangular image of the iris, which corresponds to taking the annulus covered by the iris region, cutting it open and unfolding or stretching it to a rectangular shape. 
@@ -94,7 +82,7 @@ Though the article uses several well known methods which are commonly used in pr
 	\label{fig:histBif}
 \end{figure}
 
-As the information about the exact approach used in the article is inadequate, an adaptive algorithm is created. The algorithm implemented identifies a threshold value based on the histogram. This is done by first identifying the highest and lowest bin-value, which has a frequency of more than a specified "recognition value", which was set to 10 in this project. The recognition value is introduced to make sure outliers are not defining for the threshold. Afterwards the threshold is calculated by the formula in \autoref{eq:pix_threshold}, where "Fraction" \todo[author=Niclas]{Skal vi evt lave variable fra ligninger skråskrift i stedet?} is a parameter set manually defining how large a part of the identified pixel value range has to me thresholded. During the processing in this project "Fraction" was set to be equal $0.1$. 
+As the information about the exact approach used in the article is inadequate, an adaptive algorithm is created. The algorithm implemented identifies a threshold value based on the histogram. This is done by first identifying the highest and lowest bin-value, which has a frequency of more than a specified "recognition value", which was set to 10 in this project. The recognition value is introduced to make sure outliers are not defining for the threshold. Afterwards the threshold is calculated by the formula in \autoref{eq:pix_threshold}, where \textit{Fraction} is a parameter set manually defining how large a part of the identified pixel value range has to me thresholded. During the processing in this project "Fraction" was set to be equal $0.1$. 
 
 \begin{equation}\label{eq:pix_threshold}
 	\text{Threshold}=\text{Low~Value}+\text{Fraction}\cdot(\text{High~Value}-\text{Low~Value})
@@ -134,6 +122,7 @@ During implementation the histograms were frequently inspected in order to ensur
 \end{figure} 
 
 \subsection{Histogram Equalisation}
+\label{sec:HistEq}
 The histogram equalisation is applied to increase contrast. This is necessary to enhance the structures in the iris. This was implemented manually. Just as in the noise removal the lowest and highest bin values with more instances than a specified value are found. Based on the values found the histogram is stretched using the formula in \autoref{eq:hist_stretch}.
 
 \begin{equation}\label{eq:hist_stretch}
@@ -170,15 +159,14 @@ This is done by identifying a transform of the bin values which causes the \gls{
 When comparing the two images of the iris after applying the two different contrast adjustment methods it can be concluded that the histogram equalisation does indeed result in better contrast and a more enhanced and out spoken appearance of the structures in the iris than the histogram stretching does. Testing also showed that using the equalisation rather than the stretching increased the accuracy, this is further addressed in \autoref{MachineLearnClassification}. 
 
 \subsection{Feature extraction}
-As it is difficult to extract all the complex structures in the iris the work presented uses the iris image as input. However, because the image in full will result in too large amounts of data to handle during feature extraction is done. Feature vectors are extracted using Haar wavelets in a wavelet decomposition. \todo[author=Niclas]{Der mangler noget i det afsnit her.}
-
+As it is difficult to extract all the complex structures in the iris the work presented uses the iris image as input. However, because the image in full will result in too large amounts of data to handle during classification feature extraction is done. Feature vectors are extracted using Haar wavelets in a wavelet decomposition. 
 Haar wavelets are a fast and simple way to obtain wavelets. In Haar wavelets the decomposition is done by calculating the average of neighbouring pixels as well as half the difference between neighbouring pixels. Due to the way the method works the image is lowpass or hi-pass filtered two times in each of the possible combinations. The image of the greatest interest in this case is the one that has been lowpass filtered in both horizontal and vertical direction, this is referred to at LL. This image will be a compressed version of the original image, showing an approximation or the tendency of the original image. The other images created in one stage are HH, HL, LH all of which contain detail coefficients. HH is representing the diagonal detail, while HL presents horizontal detail and LH presents vertical detail. The LL will naturally appear in the upper left corner of the output matrix. 
 
 In order to compress the image sufficiently three stages or passes of Haar wavelet decomposition was carried out. The result is showed \autoref{fig:haar3}. 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{haar_3.jpg}
-\caption{The result of the three level haar wavelet decomposition. Note that the small light image in the upper left corner is the LL3, which is used onwards.}
+\caption{The result of the three level Haar wavelet decomposition. Note that the small light image in the upper left corner is the LL3, which is used onwards.}
 \label{fig:haar3}
 \end{figure}
 The resulting matrix of LL3 coefficients is then put into a feature vector, which is used for training the classifiers described in \autoref{MachineLearnClassification}.
@@ -191,7 +179,7 @@ For classification different classifiers were tested. The best of the investigat
 \gls{knn} is one of the most simple supervised classification methods. It is a non-parametric method. This means that the train data is used "raw" and there are no parameters that are deducted from the data in order to form a model. 
  
 \gls{knn} utilises Bayes theorem in order to determine the probability of a sample belonging to a certain class. The probability of the sample belonging to different classes is found by looking at the density of datapoint belonging to the different classes among the $k$ nearest neighbours. The probability of a class given the sample can be estimated by the formula in \autoref{eq:classProb}.
- 
+
  \begin{equation}\label{eq:classProb}
 	p(C_k|\text{x}|=\frac{K_k}{K}
 \end{equation}
@@ -199,17 +187,52 @@ For classification different classifiers were tested. The best of the investigat
 Where $C_k$ is a given class, $\text{x}$ is the sample, $K$ is the number of neighbours considered, and $K_k$ is the amount of data points among the $K$ neighbours belonging to the class $C_k$.
 
 Finally, a class is assigned to the sample based on which class has the highest conditional probability.
- 
+
+The value $K$ greatly influences the way the classifier performs. Therefore it is important to determine an optimal value of $K$. This may depend on the performance but also the amount of data that has to be compared with. In this project was found by determining which value of $K$ for $K\in[1,30]$ results in the best performance. This is done by training on a test set of five images and evaluating the train error. \autoref{fig:misclassK} shows the misclassification error dependent on the value of $K$. As can be seen 
+ \begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{kgraph.png}
+\caption{The misclassification error for the \gls{knn} as a result of the number of neighbours $K$ used for the classifier.}
+\label{fig:misclassK}
+\end{figure}
 \subsubsection*{Linear Discriminant Analysis}
-\gls{lda} is a parametric method which is trained by supervised learning. \gls{lda} is a classifier in which linear decision boundaries are learned based on training data. It is part of a more general group of linear discriminant functions. The decision boundary is found such that interclass variance is maximised while intra class variance is minimised. There are a range of possibilities for identifying the equation for the linear decision border eg. using SVD or EVD. The main principle that separates LDA from Principal component analysis (PCA) is the   
-
-
-
+\gls{lda} is a parametric method which is trained by supervised learning. \gls{lda} is a classifier in which linear decision boundaries are learned based on training data. It is part of a more general group of linear discriminant functions. The decision boundary is found such that interclass variance is maximised while intra class variance is minimised. There are a range of possibilities for identifying the equation for the linear decision border eg. by using SVD or EVD.    
 
 \subsubsection*{Support Vector Machines}
 
+
+
+
 \subsubsection*{Cross Validation}
-Just as in the article 
+In this project the above mentioned classification methods were implemented. Just as in the work described in the article cross validation was carried out in order to test the performance of the classifiers. Five images per class were used for the cross validation. The cross validation done was a five fold cross validation. However, since some classes had too few images those classes were neglected. As mentioned in \autoref{sec:HistEq} changing from histogram stretching to histogram equalisation affects the performance of the classifiers. In \autoref{tab:fiveFoldClas} the accuracies as well as the precision of the classifiers in both the case with histogram stretching and histogram equalisation is showed.  
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\cline{2-5}
+\multicolumn{1}{c|}{}&\multicolumn{2}{c|}{Histogram Stretching}&\multicolumn{2}{c|}{Histogram Equalisation}\\
+\hline
+Classifier&MA&$2\sigma$&MA&$2\sigma$\\
+\hline
+KNN (k=1)&0.79&$\pm$0.06&0.91&$\pm$0.06\\
+\hline
+LDA&0.93&$\pm$0.04&0.94&$\pm$0.03\\
+\hline
+SVM (Linear)&0.85&$\pm$0.05&0.91&$\pm$0.03\\
+\hline
+SVM (quadratic)&0.75&$\pm$0.10&0.92&$\pm$0.04\\
+\hline
+\end{tabular}
+\caption{Performance of the different classifiers evaluated by five-fold cross validation. MA is for Mean Accuracy, and $\sigma$ is the standard deviation}
+\label{tab:fiveFoldClas}
+\end{table} 
+Considering the results for the \gls{knn} shown in \autoref{tab:fiveFoldClas} there seem to be a significant increase in the accuracy of the classifier. However, since it is based on such a limited amount of measurements it is probably more representative and valuable to consider the general trends. When comparing the two accuracies across all of the classifiers there seem to be evidence for an increase in accuracy when the histogram equalisation is used rather than the histogram stretching. Therefore the histogram equalisation is used from this point on 
+
+
+\subsection{Challenges}
+During the implementation of the work described in this chapter several issues were encountered. This section elaborates on some of the issues. 
+
+\subsubsection{} 
 
 
 
