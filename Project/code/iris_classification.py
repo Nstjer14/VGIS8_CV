@@ -243,10 +243,28 @@ print("Test Accuracy of LDA: %.2f" % accuracy_score(y_test, lda_model.predict(X_
 print("Validation Accuracy of LDA: %.2f" % accuracy_score(y_validation, lda_model.predict(X_validation)))
 
 
+
 #KNN
 knn_model = KNeighborsClassifier(n_neighbors=optimal_k).fit(X_train,y_train)
-print("Accuracy of validation on KNN k =",optimal_k,": %.2f" % accuracy_score(y_test, knn_model.predict(X_test)))
-
+#print("Accuracy of validation on KNN k =",optimal_k,": %.2f" % accuracy_score(y_test, knn_model.predict(X_test)))
 print("Train Accuracy of KNN: %.2f" % accuracy_score(y_train, knn_model.predict(X_train)))
 print("Test Accuracy of KNN: %.2f" % accuracy_score(y_test, knn_model.predict(X_test)))
 print("Validation Accuracy of KNN: %.2f" % accuracy_score(y_validation, knn_model.predict(X_validation)))
+
+
+
+#myList = list(range(1,25)) # Number of K's we try to check for
+#neighbors = list(filter(lambda x: x % 2 != 0, myList)) # Get odd number K's
+#new_scores = []
+#for kk in neighbors:
+    #knn_model = KNeighborsClassifier(n_neighbors=kk).fit(X_train,y_train)
+    #new_scores.append(accuracy_score(y_test, knn_model.predict(X_test)))
+    #print("Train Accuracy of KNN: %.2f" % accuracy_score(y_train, knn_model.predict(X_train)))
+    #print("Test Accuracy of KNN: %.2f" % accuracy_score(y_test, knn_model.predict(X_test)))
+    #print("Validation Accuracy of KNN: %.2f" % accuracy_score(y_validation, knn_model.predict(X_validation)))
+#optimal_k = neighbors[new_scores.index(max(new_scores))]
+#print ("The optimal number of neighbors is %d" % optimal_k)
+#plt.plot(neighbors, new_scores)
+#plt.xlabel('Number of Neighbors K')
+plt.ylabel('Accuracy')
+plt.show()

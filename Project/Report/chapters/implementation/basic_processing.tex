@@ -181,7 +181,7 @@ For classification different classifiers were tested. The best of the investigat
 \gls{knn} utilises Bayes theorem in order to determine the probability of a sample belonging to a certain class. The probability of the sample belonging to different classes is found by looking at the density of datapoint belonging to the different classes among the $k$ nearest neighbours. The probability of a class given the sample can be estimated by the formula in \autoref{eq:classProb}.
 
  \begin{equation}\label{eq:classProb}
-	p(C_k|\text{x}|=\frac{K_k}{K}
+	p(C_k|\text{x})=\frac{K_k}{K}
 \end{equation}
 
 Where $C_k$ is a given class, $\text{x}$ is the sample, $K$ is the number of neighbours considered, and $K_k$ is the amount of data points among the $K$ neighbours belonging to the class $C_k$.
@@ -214,19 +214,42 @@ In this project the above mentioned classification methods were implemented. Jus
 \hline
 Classifier&MA&$2\sigma$&MA&$2\sigma$\\
 \hline
-KNN (k=1)&0.79&$\pm$0.06&0.91&$\pm$0.06\\
+KNN (k=1)&$0.7$9&$\pm0.06$&$0.91$&$\pm0.04$\\
 \hline
-LDA&0.93&$\pm$0.04&0.94&$\pm$0.03\\
+LDA&$0.94$&$\pm0.02$&$0.95$&$\pm0.03$\\
 \hline
-SVM (Linear)&0.85&$\pm$0.05&0.91&$\pm$0.03\\
+SVM (Linear)&$0.85$&$\pm0.08$&$0.92$&$\pm0.02$\\
 \hline
-SVM (quadratic)&0.75&$\pm$0.10&0.92&$\pm$0.04\\
+SVM (quadratic)&$0.77$&$\pm0.08$&$0.92$&$\pm0.04$\\
 \hline
 \end{tabular}
 \caption{Performance of the different classifiers evaluated by five-fold cross validation. MA is for Mean Accuracy, and $\sigma$ is the standard deviation}
 \label{tab:fiveFoldClas}
 \end{table} 
 Considering the results for the \gls{knn} shown in \autoref{tab:fiveFoldClas} there seem to be a significant increase in the accuracy of the classifier. However, since it is based on such a limited amount of measurements it is probably more representative and valuable to consider the general trends. When comparing the two accuracies across all of the classifiers there seem to be evidence for an increase in accuracy when the histogram equalisation is used rather than the histogram stretching. Therefore the histogram equalisation is used from this point on 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\cline{2-3}
+\multicolumn{1}{c|}{}&\multicolumn{2}{c|}{Cross Validation Accuracy}\\
+\cline{2-3}
+\multicolumn{1}{c|}{}&Replicated&\cite{Khan2017a}\\
+\hline
+KNN (k=1)&0.91&0.951\\
+\hline
+LDA&0.95&0.9428\\
+\hline
+SVM (Linear)&0.92&0.9646\\
+\hline
+SVM (quadratic)&0.92&0.97\\
+\hline
+\end{tabular}
+\caption{Comparison of the Performance of the different classifiers evaluated by five-fold cross validation. MA is for Mean Accuracy, and $\sigma$ is the standard deviation}
+\label{tab:fiveFoldClas}
+\end{table} 
+
+
 
 
 \subsection{Challenges}
