@@ -16,6 +16,7 @@ import os
 import random as rd
 from keras.preprocessing.image import ImageDataGenerator
 import imageBatchGenerator5_module as batchGen
+import datetime
 
 
 
@@ -51,7 +52,6 @@ import cv2
 
 save_dir = os.path.join(os.getcwd(), 'saved_models')
 pic_save_dir = os.path.join(os.getcwd(), 'saved_graphs')
-model_name = 'iris_cnn_test.h5'
 dataFrame = pd.read_pickle("pythonDatabase")
 
 # Dropping classes with less than 10 images
@@ -204,6 +204,7 @@ model.summary()
 history = model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
+          shuffle=True,
           verbose=1,
           validation_split=0.1)
 """
@@ -218,6 +219,10 @@ score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1]*100)
 
+acc_round = str(round(score[1]*100,2))
+timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+namestamp = timestamp + 'acc_' + acc_round 
+model_name = namestamp + '_iris_cnn_test.h5'
 
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
@@ -239,7 +244,7 @@ plt.legend(['Training', 'Validation'], loc='lower right')
 if not os.path.isdir(pic_save_dir):
     os.makedirs(pic_save_dir)
 pic_path = os.path.abspath(pic_save_dir)
-plt.savefig(pic_path + '/acc.pdf')
+plt.savefig(pic_path + '/'+namestamp+'acc.pdf')
 print('Saved graphs at %s ' % pic_path)
 
 plt.show()
@@ -258,7 +263,7 @@ if not os.path.isdir(pic_save_dir):
     os.makedirs(pic_save_dir)
 pic_path = os.path.abspath(pic_save_dir)
 print(pic_path)
-plt.savefig(pic_path + '/loss.pdf')
+plt.savefig(pic_path + '/'+namestamp+'loss.pdf')
 print('Saved graphs at %s ' % pic_path)
 
 plt.show()
