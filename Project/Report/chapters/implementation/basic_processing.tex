@@ -199,9 +199,10 @@ The value $K$ greatly influences the way the classifier performs. Therefore it i
 \gls{lda} is a parametric method which is trained by supervised learning. \gls{lda} is a classifier in which linear decision boundaries are learned based on training data. It is part of a more general group of linear discriminant functions. The decision boundary is found such that interclass variance is maximised while intra class variance is minimised. There are a range of possibilities for identifying the equation for the linear decision border eg. by using SVD or EVD.    
 
 \subsubsection*{Support Vector Machines}
+\gls{svm} identifies the optimal linear hyperplane as the decision boundary. The decision borders are found for linearly separable data. A separating hyperplane is not necessarily unique, however, the optimal hyperplane should be unique. The way the optimal linear decision boundary is found is by identifying the hyperplane, which has the maximal margin around it not intersecting with any data points is the training set.
+Pin practice the hyperplane is found based on a subset of data points that lie close to the separating plane, those are called the support vectors.    
 
-
-
+However, in some cases the data is not linearly separable. For those cases Kernel Functions can be applied before identifying the the optimal hyperplane. The kernel function maps the original data from into a new space where it can be linearly separated.  
 
 \subsubsection*{Cross Validation}
 In this project the above mentioned classification methods were implemented. Just as in the work described in the article cross validation was carried out in order to test the performance of the classifiers. Five images per class were used for the cross validation. The cross validation done was a five fold cross validation. However, since some classes had too few images those classes were neglected. As mentioned in \autoref{sec:HistEq} changing from histogram stretching to histogram equalisation affects the performance of the classifiers. In \autoref{tab:fiveFoldClas} the accuracies as well as the precision of the classifiers in both the case with histogram stretching and histogram equalisation is showed.  
@@ -272,19 +273,22 @@ SVM (quadratic)&100&98&98\\
 
 In order to examine the performance of the systems implemented in this work when trained on more data a test was conducted. During the test the classifiers were trained on 70\% of the data and were tested on 15\% of the data. Finally they were validated by testing on the remaining 15\% of the data. The results are shown in \autoref{tab:ClasAccMachine}. As the table shows the train accuracies for all the classifiers are 100\%, which means the models are fitted perfectly to the train data. As can be expected the test and validation accuracies are lower than the train accuracy. It is worth noting that the accuracies are higher than the accuracies obtained in the cross validation based on only a smaller amount of data. Furthermore the training om more data results in accuracies higher than the ones obtained in cross validation in the original work. However, this test seemingly confirms the statement of the original work that the quadratic \gls{svm} performs best.
 
-Though the achieved accuracies are quite high, the performance of these machine learning methods still cannot compete with the state of the art accuracies within iris classification and general biometric identification methods as described in \autoref{} \todo{Tilfoej sektions label naar sektionen er lavet}. Therefore, another method, \gls{cnn}, is investigated for iris classification in order to explore whether this method can classify with accuracies closer to the state of the art performances. The work on the implementation of a \gls{cnn} for iris classification is described in \autoref{sec:cnn_theory}.\todo{Er det den rette sektion at referere til?} 
+Though the achieved accuracies are quite high, the performance of these machine learning methods still cannot compete with the state of the art accuracies within iris classification and general biometric identification methods as described in \autoref{ch:req}. Therefore, another method, \gls{cnn}, is investigated for iris classification in order to explore whether this method can classify with accuracies closer to the state of the art performances and comply with the requirement of an accuracy higher than 99\%. The work on the implementation of a \gls{cnn} for iris classification is described in \autoref{sec:cnn_theory}.\todo{Er det den rette sektion at referere til?} 
 
 \subsection{Challenges}
 \label{sec:ChallDatabase}
 As mentioned previously several issues were encountered during the implementation of the work described in this chapter. This section elaborates on a few of the issues. 
 
 \subsubsection{Algorithm Description} 
-Some 
-
+Though overall steps of the processing algorithm are presented in the article by \cite{Khan2017a}, there are a lot of unclear details when considering the descriptions of the individual steps of the processing. This makes it difficult to replicate the work conducted in the article, and it results in a parts of the code being implemented based on the best knowledge supplemented with ideas, while other things based on the indications from tests.
 
 \subsubsection{Processing Issues}
+Once the algorithm was implemented it had to be applied in order to process the entire database consisting of 3192 images of irises obtained from 70 subjects. The handling and processing of this amount of data proved quite troublesome. First of all the processing of one image using the implemented MATLAB libraries takes quite some time. The time of cause depends on the resources of the computer, however, it took a few minutes per. image. Also the process sometimes reported that it was too demanding for the laptops used. Therefore, the processing was moved to be carried out by a stationary computer with more power. This was a shared computer borrowed through an internet connection using TeamViewer, which meant that it was only accessible sometimes when it was free. 
 
-91 classes 
+Another issue was the variation in the images being processed. Though the algorithm is implemented in a way that is somewhat flexible, which automatically identifies the areas of interest, it does sometimes fail. In some cases the algorithm is unable to identify the wanted area or it falsely identifies the wrong area as the area of interest. In those cases the algorithm would break or get stuck, which required manual restart or continuation of the processing. 
+
+The combination of the algorithm not running continuously and the fact that accessing the running processing was only possible sometimes made it difficult to ensure that the algorithm was running, and the process would waste large amounts of time being stuck on a single image. Therefore, processing of the full database was not successful, however, 2086 images in 91 classes of the full 140 classes were processed and used for the development and testing in this section. 
+
 
 
 
