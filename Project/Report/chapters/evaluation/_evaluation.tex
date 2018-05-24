@@ -1,0 +1,6 @@
+\chapter{Evaluation}
+The evaluation is done in regards to the final networks created and their fulfilment of the requirements. As stated in \autoref{ch:req}, the networks must have a precision of $99\%$ or higher to be comparable to the state of the art networks being used now.
+
+For iris classification the first try of using regular machine learning, it was not possible to reach as high an accuracy. Because of this and the objective of the project, deep learning was taken into consideration as a solution. A \gls{cnn} consisting of 14 layers in total is implemented and managed to reach an accuracy of $99.7\%$ which satisfies the requirement. The design of this is shown in \autoref{ch:implementation}.
+
+The face recognition \gls{cnn} is based on the VGG16 network and uses the \gls{lfw} database for testing. By using the pre-trained weights from ImageNet trained on 2000 classes it is possible to reach an accuracy of $99.35\%$. The design of this is shown in \autoref{ch:implementation}.
