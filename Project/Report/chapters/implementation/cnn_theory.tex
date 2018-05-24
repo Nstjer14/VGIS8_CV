@@ -158,7 +158,14 @@ The results achieved with this network is an accuracy of $99.7\%$. This is achie
 To make a face recognition \gls{cnn} an already well known model is used. The network is based on the VGG16 model, including the weights pre-trained on the ImageNet database with 2000 classes. The model is split into five blocks. The input size of the images are $64\times64\times3$ and are from the \gls{lfw} database. The network is made and well known for image classification, and with the pre-trained weights from ImageNet, it is a suitable solution for face recognition \citep{Simonyan2015}.
 An overview of the network is shown \autoref{fig:vgg16} and a more detailed setup description is shown in \autoref{tab:vgg16}.
 
-\begin{table}[]
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{vgg16_overview}
+	\caption{Overview of the VGG16 \gls{cnn} used for face recognition. Only the depth of the layers is known and noted.}
+	\label{fig:vgg16}
+\end{figure}
+
+\begin{table}[H]
 	\centering
 	\caption{Detailed description of VGG16 design. The input is $64\times64\times3$ images.}
 	\label{tab:vgg16}
