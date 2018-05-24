@@ -1,4 +1,4 @@
-\section{What is a Convolutional Nerual Network}
+\section{Convolutional Nerual Networks}
 \label{sec:cnn_theory}
 This section describes what a \gls{cnn} is and what structure is used for creating the iris recognition \gls{cnn}. The section is based mainly on \cite{Karpathy2016a} and \cite{Nielsen2015}.
 
@@ -6,10 +6,10 @@ This section describes what a \gls{cnn} is and what structure is used for creati
 A \gls{cnn} is type of Nerual Network that is especially good for image recognition. Instead of the input being fully connected it operates by using a kernel instead. A kernel can be seen as a small window which moves through the input image. It performs an operation known as a convolution where the coefficients, also known as weights, of the kernel are multiplied with the pixel it is covering and summing the value. A 1D example of this is shown in \autoref{fig:kernel_convolution_example} where a kernel of size 3 with weights $\begin{bmatrix} 1 & 0 & -1 \end{bmatrix}$ are convolved through bottom rows which produces the top rows. Two other concepts are also shown in the example; stride and zero padding. Stride is the amount the kernel moves each time. The left example has a stride of $1$ and the right example has a stride of $3$. Zero padding is when pixels with value $0$ are added at the edge of the image. This is done to ensure that the convolution can actually be made on all pixels, otherwise only one convolution would be possible in the example with a stride of 3. It also has the benefit of keeping the dimensions of the input image and output image the same when the stride is 1, as convolution otherwise shrinks the image. 
 
 \begin{figure}[h]
-\centering
-\includegraphics[width=0.90\textwidth]{kernel_convolution_example.jpeg}
-\caption{Example of a kernel in a \gls{cnn} \citep{Karpathy2016a}}
-\label{fig:kernel_convolution_example}
+	\centering
+	\includegraphics[width=0.90\textwidth]{kernel_convolution_example.jpeg}
+	\caption{Example of a kernel in a \gls{cnn} \citep{Karpathy2016a}}
+	\label{fig:kernel_convolution_example}
 \end{figure}
 
 The output of the convolution creates a new image. This image becomes the input of an activation function. An activation can be thought of as how much should the neuron fire, e.g how active is it. A common activation function for \gls{cnn} is the \gls{relu}, shown in \autoref{eq:ReluFunction}, which gives an output of $x$ if the $x$ is positive and 0 otherwise. This activation function has proved to be consistently better and faster for deep neural networks than the previously popular sigmoid activation function.
