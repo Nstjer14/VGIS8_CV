@@ -103,6 +103,7 @@ patchLabels = []
 for i in range(0,len(resized_image)):#For all images create 5 basix patches
     patchesInTupples = patchGen.imagePatchGenerator5(resized_image[i])
     for j in patchesInTupples:#For all patches from one image add the original patch and a mirrored version to a list as well as the labels 
+        #plt.figure(figsize=[3,3])
         #plt.imshow(j, cmap='gray')
         #plt.show()
         patchImages.append(j)
