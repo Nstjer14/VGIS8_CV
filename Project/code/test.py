@@ -15,7 +15,7 @@ from keras import backend as K
 import os
 import random as rd
 from keras.preprocessing.image import ImageDataGenerator
-import imageBatchGenerator5_module as batchGen
+import imagePatchGenerator5_module as patchGen
 import datetime
 
 
@@ -84,9 +84,9 @@ uniqueClasses=np.unique(label)
 NuniqueClasses=len(uniqueClasses)
 print("Number of classes: ",NuniqueClasses)
 
-plt.figure(figsize=[8,64])
+plt.figure(figsize=[8,2])
 
-plt.subplot(121)
+plt.subplot(111)
 plt.imshow(imageVector[0,:,:], cmap='gray')
 plt.title("Ground Truth : {}".format(label[0]))
 
@@ -96,27 +96,37 @@ plt.title("Ground Truth : {}".format(label[0]))
 #%% Preprocess for cnn
 resized_image = []
 for image in dataFrame.image:
-    resized_image.append(cv2.resize(image, (64, 64)))
+    resized_image.append(cv2.resize(image, (64, 64)))#resize images and add them to an list 
 
-batchImages = []
-batchLabels = []
-for i in range(0,len(resized_image)):
-    batchesInTupples = batchGen.imageBatchGenerator5(resized_image[i])
-    for j in batchesInTupples:
+patchImages = []
+patchLabels = []
+for i in range(0,len(resized_image)):#For all images create 5 basix patches
+    patchesInTupples = patchGen.imagePatchGenerator5(resized_image[i])
+    for j in patchesInTupples:#For all patches from one image add the original patch and a mirrored version to a list as well as the labels 
         #plt.imshow(j, cmap='gray')
-        batchImages.append(j)
-        batchLabels.append(label[i])
-        batchImages.append(cv2.flip(j,0)) # adding horisontal flip
-        batchLabels.append(label[i])
+        #plt.show()
+        patchImages.append(j)
+        patchLabels.append(label[i])
+        patchImages.append(cv2.flip(j,1)) # adding horisontal flip
+        patchLabels.append(label[i])
+        #if i==3:
+        #    fig=plt.figure()
+        #    columns = 2
+        #    rows = 1
+        #    fig.add_subplot(rows, columns, 1)
+        #    plt.imshow(j)
+        #    fig.add_subplot(rows, columns, 2)
+        #    plt.imshow(cv2.flip(j,1))
+        #    plt.show()
         
-reshapeDims = batchImages[1].shape
-imageVector = np.asarray(batchImages)
+reshapeDims = patchImages[1].shape
+imageVector = np.asarray(patchImages)
 imageVector = imageVector.reshape(imageVector.shape[0],1,58,58) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 #imageVector = imageVector.reshape(imageVector.shape[0],1,64,512) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 imageVector = imageVector.astype('float32') # Rescale it from 255 to 0-1.
 imageVector = imageVector/255.
 print('Training data shape after reshape : ', imageVector.shape)
-label = batchLabels # set labels to be the batchLabels. This is a quick and dirty
+label = patchLabels # set labels to be the batchLabels. This is a quick and dirty
 
 
 # integer encode
