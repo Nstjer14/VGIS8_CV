@@ -15,7 +15,7 @@ from keras import backend as K
 import os
 import random as rd
 from keras.preprocessing.image import ImageDataGenerator
-import imageBatchGenerator5_module as batchGen
+import imagePatchGenerator5_module as patchGen
 import datetime
 
 
@@ -101,7 +101,7 @@ for image in dataFrame.image:
 batchImages = []
 batchLabels = []
 for i in range(0,len(resized_image)):
-    batchesInTupples = batchGen.imageBatchGenerator5(resized_image[i])
+    batchesInTupples = patchGen.imagePatchGenerator5(resized_image[i])
     for j in batchesInTupples:
         #plt.imshow(j, cmap='gray')
         batchImages.append(j)
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     #model.compile(loss=keras.losses.categorical_crossentropy,
     #              optimizer=keras.optimizers.Adadelta(),
     #              metrics=['accuracy'])
-    learningrate = 1e-2
+    learningrate = 1e-3
     adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
     #model.compile(loss='categorical_crossentropy', optimizer=sgd)
     model.compile(loss='categorical_crossentropy',

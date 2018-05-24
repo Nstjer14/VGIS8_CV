@@ -23,7 +23,7 @@ from keras.layers import Input, Flatten, Dense
 from keras.models import Model
 import datetime
 import cv2
-import imageBatchGenerator5_module as batchGen
+import imagePatchGenerator5_module as patchGen
 
 
 #%%
@@ -70,7 +70,7 @@ X = X/255.
 batchImages = []
 batchLabels = []
 for i in range(0,len(X)):
-    batchesInTupples = batchGen.imageBatchGenerator5(X[i])
+    batchesInTupples = patchGen.imagePatchGenerator5(X[i])
     for j in batchesInTupples:
         #plt.imshow(j, cmap='gray')
         batchImages.append(j)

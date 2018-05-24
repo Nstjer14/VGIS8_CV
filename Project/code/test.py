@@ -204,7 +204,7 @@ model.add(Dense(num_classes, activation='softmax',))
 #model.compile(loss=keras.losses.categorical_crossentropy,
 #              optimizer=keras.optimizers.Adadelta(),
 #              metrics=['accuracy'])
-learningrate = 1e-2
+learningrate = 1e-3
 adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
 #model.compile(loss='categorical_crossentropy', optimizer=sgd)
 model.compile(loss='categorical_crossentropy',
