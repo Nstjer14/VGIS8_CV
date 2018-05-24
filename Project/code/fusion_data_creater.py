@@ -16,7 +16,7 @@ for iris_name,value in counts.items():
         discardList.append(iris_name)
 dataFrame_iris = dataFrame_iris[~dataFrame_iris['label'].isin(discardList)]
 print("Classes' with less than %.f images discarded in total are %.f : " % (minNumOfImages,len(discardList)),discardList)
-
+print("Amount of classes now:", len(Counter(dataFrame_iris.label)))
 temp_for_reshape = dataFrame_iris.image.values
 img_dim = temp_for_reshape[1].shape
 iris_imageVector = []
@@ -50,25 +50,59 @@ unique_iris = list(unique_iris)
 unique_face = set(face_label)
 unique_face = list(unique_face)
 
-col_names =  ['iris', 'face', 'label']
-fusionDataframe = pd.DataFrame(columns=col_names)
+#col_names =  ['iris', 'face', 'label']
+#fusionDataframe = pd.DataFrame(columns=col_names)
 fusionData = []
+from matplotlib.pyplot import imshow, pause
 for i in range(0,len(unique_iris)):
     current_label =  unique_iris[i]
+    face_label = unique_face[i]
+    #print('current_label: ',current_label)
+    #print('i:',i)
     iris_temp = dataFrame_iris[dataFrame_iris['label']==unique_iris[i]]
     iris_temp = iris_temp.reset_index()
+#    for iris in iris_temp.image:
+#        plt.figure(figsize=[20,12])
+#        plt.gca().set_title(current_label)
+#        plt.imshow(iris, cmap='gray')
+        
     face_temp =dataFrame_face[dataFrame_face['label']==unique_face[i]]
     face_temp = face_temp.reset_index()
+#    for face in face_temp.image:
+#        plt.figure()
+#        plt.gca().set_title(face_label)
+#        plt.imshow(face.astype(np.uint8))
     iris_temp_length = len(iris_temp)
     face_temp_length = len(face_temp)
     number_of_samples = min(iris_temp_length,face_temp_length)
+    #print('n samples: ',number_of_samples)
     #label = np.empty(number_of_samples)
     #label.fill(i)
     for j in range(0,number_of_samples):
-        fusionData.append({'iris':iris_temp.image[j],'face':face_temp.image[j],'label':i})
+        #print('i that becomes class', i)
+        #print('j', j)
+        fusionData.append({'iris':iris_temp.image[j],'face':face_temp.image[j],'label':i,'iris_label':current_label,'face_label':face_label})
     #fusionDataframe.append(iris_temp[0:number_of_samples],face_temp[0:number_of_samples],label)
 
 fusionDataframe = pd.DataFrame(fusionData)
+
+'''
+print("this is new")
+for i in range(100,140):
+    
+    plt.figure()#figsize=[20,12])
+    plt.subplot(1, 2, 1)
+    plt.gca().set_title('Iris')
+    plt.imshow(fusionDataframe.iris[i], cmap='gray')
+    plt.subplot(1, 2, 2)
+    plt.gca().set_title('Face')
+    plt.imshow(fusionDataframe.face[i].astype(np.uint8))
+    
+    print(fusionDataframe.label[i], )
+    #axs.imshow(test_image.astype(np.uint8), interpolation='nearest')
+    #print(i)
+'''
+    
     
 #temp = fusionDataframe.face[10]
 #plt.imshow(temp.astype(np.uint8), interpolation='nearest')
