@@ -81,6 +81,12 @@ J(\theta) = -\frac{1}{m}\left[ \sum_{i=1}^{m}\sum_{j=1}^{K} 1\{y_i=j\}  log\left
 \end{equation}
 $\theta$ is the weights that are randomly set and are learned through back propagation. $K$ is the number of classes and $n$ is the number of labelled training samples. $y_i$ is the label and $1{\cdot}$ is a function that is 1 when the input is true and 0 when it is not. The second term is weight decay regularization term that reduces the magnitudes of weights and prevents it from overfitting.
 
+
+\subsection{Network Construction}
+To construct and train the networks, Keras is used with Tensorflow as a backend. Keras is an API written in Python, able to run on three different backends. With a high level of modularity by having separate models added on top of each other construction and overview of a network is simplified. By using Tensorflow with Keras it is possible to utilise a Conda compatible \gls{gpu} which decreases the training greatly from using only a \gls{cpu}. Keras has several example programs from which inspiration and techniques can be gathered, but also contains well known specific models to implement and configure in a new network. This includes the VGG16 network including weights trained on the ImageNet database with 2000 different classes.
+
+
+
 %$l$ denotes the current layer and $l-1$ is the previous layer. $y^{l}(j)$ is the output of neuron $j$ at \gls{fc} layer $l$. It is a linear combination of the weights and biases from the previous layer put into an activation function $f^l$. $ y^{l-1}(i).w^{l}(i,j)$ is the weight from neuron $j$ in the previous layer $l-1$ to the neuron $j$ in current layer $l$
 %This creates many more weights to train compared to the weights of a kernel. \todo{diskuter om vi måske skulle bruge subscript i den her ligning, selvom de ikke gør det i artiklen}
 %\begin{eqnarray}
