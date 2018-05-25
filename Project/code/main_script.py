@@ -61,7 +61,7 @@ def sequential():
     
 #@profile    
 def parallel():
-    
+    '''
     __spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
     n_cores = mp.cpu_count()
     pool = mp.Pool(processes=n_cores//2)
@@ -72,6 +72,7 @@ def parallel():
     print("FINISHED parallel")
     print(timeit.default_timer() - start_time) #94.28003701802831
     dataFrame['featureVector'] = featureVector
+    '''
     dataFrame.to_pickle('pythonDatabase')
     
 
