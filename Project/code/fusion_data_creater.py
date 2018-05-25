@@ -15,7 +15,7 @@ for iris_name,value in counts.items():
     if value<=minNumOfImages:
         discardList.append(iris_name)
 dataFrame_iris = dataFrame_iris[~dataFrame_iris['label'].isin(discardList)]
-print("Classes' with less than %.f images discarded in total are %.f : " % (minNumOfImages,len(discardList)),discardList)
+print("Classes ' with less than %.f images discarded in total are %.f : " % (minNumOfImages,len(discardList)),discardList)
 print("Amount of classes now:", len(Counter(dataFrame_iris.label)))
 temp_for_reshape = dataFrame_iris.image.values
 img_dim = temp_for_reshape[1].shape

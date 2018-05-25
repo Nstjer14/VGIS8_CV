@@ -75,7 +75,7 @@ for i in range(0,len(X)):
         #plt.imshow(j, cmap='gray')
         batchImages.append(j)
         batchLabels.append(y[i])
-        batchImages.append(cv2.flip(j,0)) # adding horisontal flip
+        batchImages.append(cv2.flip(j,1)) # adding horisontal flip
         batchLabels.append(y[i])
 batchImages = np.asarray(batchImages)
 batchLabels = np.asarray(batchLabels)

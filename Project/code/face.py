@@ -109,7 +109,7 @@ model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.25))
 model.add(Dense(num_classes, activation='softmax',))
 
-learningrate = 1e-2
+learningrate = 1e-3
 adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
 #model.compile(loss='categorical_crossentropy', optimizer=sgd)
 model.compile(loss='categorical_crossentropy',

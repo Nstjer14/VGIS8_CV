@@ -10,6 +10,8 @@ import random as rd
 from keras.preprocessing.image import ImageDataGenerator
 import imagePatchGenerator5_module as patchGen
 import datetime
+import iris_face_merge_cnn_data_splitter as getData
+
 
 
 
@@ -45,6 +47,7 @@ import cv2
 
 save_dir = os.path.join(os.getcwd(), 'saved_models')
 pic_save_dir = os.path.join(os.getcwd(), 'saved_graphs')
+'''
 dataFrame = pd.read_pickle("pythonDatabase")
 
 # Dropping classes with less than 10 images
@@ -71,7 +74,7 @@ imageVector = np.asarray(imageVector)
 label = dataFrame.label
 label = label.tolist() # The list coming from dataFrame is already in the correct format.
 
-#%% Explore data
+#% Explore data
 print('Training data shape : ', imageVector.shape)
 uniqueClasses=np.unique(label)
 NuniqueClasses=len(uniqueClasses)
@@ -86,7 +89,7 @@ plt.title("Ground Truth : {}".format(label[0]))
 
 
 
-#%% Preprocess for cnn
+#% Preprocess for cnn
 resized_image = []
 for image in dataFrame.image:
     resized_image.append(cv2.resize(image, (64, 64)))#resize images and add them to an list 
@@ -134,8 +137,20 @@ integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
 onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
 label_onehot = onehot_encoded
 print("Normalised pixels to be 0-1 and one hot encoding done:",label_onehot.shape)
+'''
 
-train_X,valid_X,train_label,valid_label = train_test_split(imageVector, label_onehot, test_size=0.2, random_state=13)
+train_X =  getData.train_iris_X
+train_label =  getData.train_label
+
+test_iris_X =  getData.test_iris_X
+test_label =  getData.test_label
+
+valid_X =  getData.validation_iris_X
+valid_label =  getData.validation_label
+
+NuniqueClasses = len(np.unique(getData.label))
+
+#train_X,valid_X,train_label,valid_label = train_test_split(imageVector, label_onehot, test_size=0.2, random_state=13)
 
 
 #%%
@@ -154,7 +169,7 @@ print("Shape of x_test",x_test.shape)
 print("Shape of y_test",y_test.shape)
 
 
-input_shape = imageVector[0].shape
+input_shape = x_train[0].shape
 num_classes = NuniqueClasses
 #from keras.layers.merge import concatenate
 from keras.models import Model
@@ -192,11 +207,13 @@ conv4 = Conv2D(256,
                  data_format='channels_first')(max3)
 
 
-flat = Flatten()(conv1)
+flat = Flatten()(conv4)
 dense1 = Dense(1024, activation='relu')(flat)
-dense2 = Dense(1024, activation='relu')(dense1)
+drop1 = Dropout(0.5)(dense1)
+dense2 = Dense(1024, activation='relu')(drop1)
+drop2 = Dropout(0.5)(dense2)
 
-iris_out = Dense(num_classes, activation='softmax')(flat)
+iris_out = Dense(num_classes, activation='softmax')(drop2)
 model = Model(iris_model_in,iris_out)
 
 learningrate = 1e-3
@@ -212,7 +229,7 @@ history = model.fit(x_train, y_train,
           epochs=epochs,
           shuffle=True,
           verbose=1,
-          validation_split=0.1)
+          validation_data=(valid_X,valid_label))
 """
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
