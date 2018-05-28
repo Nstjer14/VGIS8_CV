@@ -165,10 +165,11 @@ The results achieved with this network is an accuracy of $99.7\%$. This is achie
 	\caption{Accuracy and loss progression for the iris recognition \gls{cnn}.}
 	\label{fig:iris_graphs}
 \end{figure}
+\todo[inline]{Add bridge to face recognition - why are we going there now?}
 
 \section{Face Recognition}
 To make a face recognition \gls{cnn} an already well known model is used. The network is based on the VGG16 model, including the weights pre-trained on the ImageNet database with 2000 classes. The model is split into five blocks. The input size of the images are $64\times64\times3$ and are from the \gls{lfw} database. The network is made and well known for image classification, and with the pre-trained weights from ImageNet, it is a suitable solution for face recognition \citep{Simonyan2015}.
-An overview of the network is shown \autoref{fig:vgg16} and a more detailed setup description is shown in \autoref{tab:vgg16}. The network gets an accuracy of $99.35\%$ on the \gls{lfw} database. \autoref{fig:vgg_graphs} shows the accuracy and loss progression.
+An overview of the network is shown in \autoref{fig:vgg16} and a more detailed setup description is shown in \autoref{tab:vgg16}. The network gets an accuracy of $99.35\%$ on the \gls{lfw} database. \autoref{fig:vgg_graphs} shows the accuracy and loss progression.
 
 \begin{figure}[H]
 	\centering
@@ -194,28 +195,28 @@ An overview of the network is shown \autoref{fig:vgg16} and a more detailed setu
 		Conv2D                  & $128$                     & $3\times3$                & ReLU                &                \\
 		Conv2D                  & $128$                     & $3\times3$                & ReLU                &                \\
 		\rowcolor{lightGrey}  
-		MaxPooling2D            & $2\times2$                & $5\times5$                & ReLU                &                \\
+		MaxPooling2D            &                       &    $2\times2$             & ReLU                &                \\
 		\textbf{Block 3}        &                           &                           &                     &                \\
 		\rowcolor{lightGrey}  
 		Conv2D                  & $256$                     & $3\times3$                & ReLU                &                \\
 		Conv2D                  & $256$                     & $3\times3$                & ReLU                &                \\
 		\rowcolor[HTML]{EFEFEF} 
 		Conv2D                  & $256$                     & $3\times3$                & ReLU                &                \\
-		MaxPooling2D            & $2\times2$                &                           &                     &                \\
+		MaxPooling2D            &               &          $2\times2$                  &                     &                \\
 		\textbf{Block 4}        &                           &                           &                     &                \\
 		\rowcolor{lightGrey}  
 		Conv2D                  & $512$                     & $3\times3$                & ReLU                &                \\
 		Conv2D                  & $512$                     & $3\times3$                & ReLU                &                \\
 		\rowcolor{lightGrey}  
 		Conv2D                  & $512$                     & $3\times3$                & ReLU                &                \\
-		MaxPooling2D            & $2\times2$                &                           &                     &                \\
+		MaxPooling2D            &             &          $2\times2$                  &                     &                \\
 		\textbf{Block 5}        &                           &                           &                     &                \\
 		\rowcolor{lightGrey}  
 		Conv2D                  & $512$                     & $3\times3$                & ReLU                &                \\
 		Conv2D                  & $512$                     & $3\times3$                & ReLU                &                \\
 		\rowcolor{lightGrey}  
 		Conv2D                  & $512$                     & $3\times3$                & ReLU                &                \\
-		MaxPooling2D            & $2\times2$                & $3\times3$                & ReLU                &                \\
+		MaxPooling2D            &               &        $2\times2$        & ReLU                &                \\
 		\textbf{Classification} &                           &                           &                     &                \\
 		\rowcolor{lightGrey}  
 		Flatten                 &                           &                           &                     &                \\
@@ -246,4 +247,3 @@ An overview of the network is shown \autoref{fig:vgg16} and a more detailed setu
 	\caption{Accuracy and loss progression for the face recognition VGG16 \gls{cnn}.}
 	\label{fig:vgg_graphs}
 \end{figure}
-\todo[inline]{Add bridge to face recognition - why are we going there now?}
