@@ -1,4 +1,4 @@
-\section{Basic Methods}
+\section{Processing of Iris Images}
 \label{BasicM}
 In order to get some basic understanding of the methods commonly used for iris classification the work presented in an article is implemented. The work implemented is the work of \cite{Khan2017a} described in \textit{Iris Recognition using Machine Learning from Smartphones Captured Images in Visible Light}. In the work the database Warsaw-BioBase, containing 3192 \gls{vl} images of the iris obtained by smartphones, is processed and used to train different classifiers. The images of this database comply with the requirements set for this work mentioned in \autoref{ch:req}. The processing consists of a sequence of steps. The steps included are
 
@@ -176,12 +176,26 @@ In order to compress the image sufficiently three stages or passes of Haar wavel
 \label{fig:haar3}
 \end{figure}
 The resulting matrix of LL3 coefficients is then put into a feature vector, which is used for training the classifiers described in \autoref{MachineLearnClassification}.
+\subsection{Challenges}
+\label{sec:ChallDatabase}
+As mentioned previously several issues were encountered during the implementation of the work described in this chapter. This section elaborates on a few of the issues. 
 
-\subsection{Training and Classification}
+\subsubsection{Algorithm Description} 
+Although overall steps of the processing algorithm are presented in the article by \cite{Khan2017a}, there are a lot of unclear details when considering the descriptions of the individual steps of the processing. This makes it difficult to replicate the work conducted in the article, and it results in parts of the code being implemented based on the best knowledge supplemented with ideas, while other things are based on the indications from tests.
+
+\subsubsection{Processing Issues}
+Once the algorithm was implemented it had to be applied in order to process the entire Warsaw-Biobase database consisting of 3192 images of irises obtained from 70 subjects used as 140 classes. The handling and processing of this amount of data proved quite troublesome. First of all, the processing of one image using the implemented MATLAB libraries takes quite some time. The time of course depends on the resources of the computer, however, it took a few minutes per image. Furthermore, the process sometimes reported that it was too demanding for the laptops used. Therefore, the processing was moved to be carried out by a desktop PC with more computational power. This was a shared computer borrowed through an internet connection using TeamViewer, which meant that it was only accessible sometimes. 
+
+Another issue was the variation in the images being processed. Though the algorithm is implemented in a way that is somewhat flexible, which automatically identifies the areas of interest, it does sometimes fail. In some cases the algorithm is unable to identify the wanted area or it falsely identifies the wrong area as the area of interest. In those cases the algorithm would break or get stuck, which required manual restart or continuation of the processing. 
+
+The combination of the algorithm not running continuously, and the fact that accessing the running processing was only possible sometimes, made it difficult to ensure that the algorithm was running, and as a result the process would waste large amounts of time being stuck on a single image. Therefore, processing of the full database was not completed, however, 2086 images in 91 classes of the full 140 classes were processed and used for the development and testing in the project work. 
+
+
+\section{Machine Learning Based Iris Classification}
 \label{MachineLearnClassification}
 In the work described in the article different classifiers were tested. The best of the investigated classifiers are the \gls{knn}, \gls{lda}, as well as \gls{svm} with linear or quadratic kernel. In the following sections the theory behind the different classifiers is briefly described.
 
-\subsubsection*{K-Nearest Neighbour}
+\subsection{K-Nearest Neighbour}
 \gls{knn} is one of the most simple supervised classification methods. It is a non-parametric method. This means that the training data is used "raw" and there are no parameters that are deducted from the data in order to form a model. 
  
 \gls{knn} utilises Bayes' theorem in order to determine the probability of a sample belonging to a certain class. The probability of the sample belonging to different classes is found by examining the density of datapoints belonging to the different classes among the $k$ nearest neighbours. The probability of a class given the sample can be estimated by the formula in \autoref{eq:classProb}.
@@ -199,16 +213,16 @@ The value $K$ greatly influences the way the classifier performs. Therefore it i
 \caption{The misclassification error for the \gls{knn} as a result of the number of neighbours $K$ used for the classifier.}
 \label{fig:misclassK}
 \end{figure}
-\subsubsection*{Linear Discriminant Analysis}
+\subsection{Linear Discriminant Analysis}
 \gls{lda} is a parametric method, which is trained by supervised learning. \gls{lda} is a classifier in which linear decision boundaries are learned based on training data. It is part of a more general group of linear discriminant functions. The decision boundary is found such that interclass variance is maximised while intra class variance is minimised. There are a range of possibilities for identifying the equation for the linear decision border eg. by using SVD or EVD.    
 
-\subsubsection*{Support Vector Machines}
+\subsection{Support Vector Machines}
 \gls{svm} identifies the optimal linear hyperplane as the decision boundary. The decision borders are found for linearly separable data. A separating hyperplane is not necessarily unique, however, the optimal hyperplane should be unique. The optimal linear decision boundary is found by identifying the hyperplane, which has the maximal margin around it not intersecting with any data points in the training set.
 In practice the hyperplane is found based on a subset of data points that lie close to the separating plane, those are called the support vectors.    
 
 However, in some cases the data is not linearly separable. For those cases Kernel Functions can be applied before identifying the optimal hyperplane. The kernel function maps the original data from the original space into a new space, where it can be linearly separated.  
 
-\subsubsection*{Cross Validation}
+\subsection{Cross Validation}
 In this project the above mentioned classification methods are implemented. Just as in the work described in the article, cross validation is carried out in order to test the performance of the classifiers. Five images per class are used for the cross validation. The cross validation done is a five fold cross validation. However, since some classes have too few images those classes are neglected. As mentioned in \autoref{sec:HistEq} changing from histogram stretching to histogram equalisation affects the performance of the classifiers. In \autoref{tab:fiveFoldClas} the accuracies as well as the precision of the classifiers in both the case with histogram stretching and histogram equalisation are shown.  
 
 \begin{table}[H]
@@ -280,19 +294,6 @@ In order to examine the performance of the systems implemented in this work when
 
 Though the achieved accuracies are quite high, the performance of these machine learning methods still cannot compete with the state of the art accuracies within iris classification and general biometric identification methods as described in \autoref{ch:req}. Therefore, another method, deep learning, is investigated for iris classification in order to explore, whether, this method can classify with accuracies comparable to the state of the art performances and comply with the requirement of an accuracy higher than 99\%. The work on the implementation of a \gls{cnn} for iris classification is described in \autoref{sec:cnn_iris_rec}.
 
-\subsection{Challenges}
-\label{sec:ChallDatabase}
-As mentioned previously several issues were encountered during the implementation of the work described in this chapter. This section elaborates on a few of the issues. 
-
-\subsubsection{Algorithm Description} 
-Although overall steps of the processing algorithm are presented in the article by \cite{Khan2017a}, there are a lot of unclear details when considering the descriptions of the individual steps of the processing. This makes it difficult to replicate the work conducted in the article, and it results in parts of the code being implemented based on the best knowledge supplemented with ideas, while other things are based on the indications from tests.
-
-\subsubsection{Processing Issues}
-Once the algorithm was implemented it had to be applied in order to process the entire Warsaw-Biobase database consisting of 3192 images of irises obtained from 70 subjects used as 140 classes. The handling and processing of this amount of data proved quite troublesome. First of all, the processing of one image using the implemented MATLAB libraries takes quite some time. The time of course depends on the resources of the computer, however, it took a few minutes per image. Furthermore, the process sometimes reported that it was too demanding for the laptops used. Therefore, the processing was moved to be carried out by a desktop PC with more computational power. This was a shared computer borrowed through an internet connection using TeamViewer, which meant that it was only accessible sometimes. 
-
-Another issue was the variation in the images being processed. Though the algorithm is implemented in a way that is somewhat flexible, which automatically identifies the areas of interest, it does sometimes fail. In some cases the algorithm is unable to identify the wanted area or it falsely identifies the wrong area as the area of interest. In those cases the algorithm would break or get stuck, which required manual restart or continuation of the processing. 
-
-The combination of the algorithm not running continuously, and the fact that accessing the running processing was only possible sometimes, made it difficult to ensure that the algorithm was running, and as a result the process would waste large amounts of time being stuck on a single image. Therefore, processing of the full database was not completed, however, 2086 images in 91 classes of the full 140 classes were processed and used for the development and testing in the project work. 
 
 
 
