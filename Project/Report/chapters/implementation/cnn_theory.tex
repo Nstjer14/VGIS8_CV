@@ -165,9 +165,11 @@ The results achieved with this network is an accuracy of $99.7\%$. This is achie
 	\label{fig:iris_graphs}
 \end{figure}
 
-As stated in \autoref{ch:projecspec} a face recognition network must be implemented. This is to take advantage of the theoretical accuracy increase from a multimodal system. This is done by making a face recognition network to combine with the iris recognition. 
+\hl{As stated in} \autoref{ch:projecspec} a face recognition method should be implemented in order to investigate what performance can be achieved for identity verification when using this method. In general \gls{cnn}s are commonly used for face recognition, therefore a face recognition network is implemented as described in \autoref{sec:faceimplement}. Furthermore, this is used for the implementation of the information fusion in order to investigate the increase in accuracy gained by a multimodal system.
+%This is done by making a face recognition network to combine with the iris recognition. 
 
 \section{Face Recognition}
+\label{sec:faceimplement}
 To make a face recognition \gls{cnn} an already well known model is used. The network is based on the VGG16 model, including the weights pre-trained on the ImageNet database with 2000 classes. The model is split into five blocks. The input size of the images are $64\times64\times3$ and are from the \gls{lfw} database. The network is made and well known for image classification, and with the pre-trained weights from ImageNet, it is a suitable solution for face recognition \citep{Simonyan2015}.
 An overview of the network is shown in \autoref{fig:vgg16} and a more detailed setup description is shown in \autoref{tab:vgg16}. The network gets an accuracy of $99.35\%$ on the \gls{lfw} database. \autoref{fig:vgg_graphs} shows the accuracy and loss progression.
 
