@@ -26,12 +26,7 @@ import cv2
 import imagePatchGenerator5_module as patchGen
 import iris_face_merge_cnn_data_splitter as getData
 
-
-
 #%%
-
-
-
 rd.seed(42)
 
 save_dir = os.path.join(os.getcwd(), 'saved_models')

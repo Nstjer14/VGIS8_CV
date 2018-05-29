@@ -15,7 +15,6 @@ from keras import backend as K
 import os
 import random as rd
 from keras.preprocessing.image import ImageDataGenerator
-import imageBatchGenerator5_module as batchGen
 import imagePatchGenerator5_module as patchGen
 import iris_face_merge_cnn_data_splitter as getData
 from sklearn.utils import shuffle
