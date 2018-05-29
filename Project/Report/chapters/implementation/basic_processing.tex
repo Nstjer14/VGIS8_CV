@@ -1,6 +1,6 @@
 \section{Basic Methods}
 \label{BasicM}
-In order to get some basic understanding of the methods commonly used for iris classification the work presented in an article is implemented. The work implemented is the work of \cite{Khan2017a} described in \textit{Iris Recognition using Machine Learning from Smartphones Captured Images in Visible Light}. In the work the database Warsaw-BioBase containing \gls{vl} images of the iris obtained by smartphones are processed and used to train different classifiers. The images of this database comply with the requirements set for this work mentioned in \autoref{ch:req}. The processing consists of a sequence of steps. The steps included are
+In order to get some basic understanding of the methods commonly used for iris classification the work presented in an article is implemented. The work implemented is the work of \cite{Khan2017a} described in \textit{Iris Recognition using Machine Learning from Smartphones Captured Images in Visible Light}. In the work the database Warsaw-BioBase containing \gls{vl} images of the iris obtained by smartphones are processed and used to train different classifiers. The images of this database comply with the requirements set for this work mentioned in \autoref{ch:req}.\todo[author=Niclas]{Angiv database størrelse og evt. billedeopløsning.} The processing consists of a sequence of steps. The steps included are
 
 \begin{itemize}
 \item Iris Location
@@ -76,7 +76,7 @@ The model does this by mapping the iris from the original image to a rectangular
 \subsection{Noise Removal}
 Though the article uses several well known methods, which are commonly used in processing of images of irises, the descriptions of the methods are quite inadequate. The description of the noise removal is an example hereof. After obtaining the normalised iris, the next step applied is noise removal. The purpose of the noise remover function is to remove noise occurring in the form of eyelashes covering parts of the iris. Usually the pixels showing the lashes will be among the darkest pixels. Since every image of an iris is different and how dark the iris is also varies, a threshold has to be identified adaptively. The article does not describe in depth how this is implemented, it simply states that some histogram analysis is done in order to obtain the lowest pixel values. \autoref{fig:histBif} shows the histogram of the normalised image before any noise removal. 
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_before.png}
 	\caption{The histogram before applying the functions.}
@@ -94,7 +94,7 @@ After the threshold has been found it is applied to all pixels in the image. The
 
 Because the eliminated pixels are reconstructed only from pixels with a value higher than the threshold there are certain traits that can be expected in the histogram of the reconstructed image. One of the traits is that there is a flatline from 0 to the threshold value. A second trait is that a peak close to the threshold is likely to occur because the eliminated values are reconstructed from neighbours, which are likely to be close to the value of the eliminated pixels. However, the plotted histogram after reconstruction is as shown in \autoref{fig:histSpill}.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_spill.png}
 	\caption{The histogram of the image after reconstruction of pixels.}
@@ -103,7 +103,7 @@ Because the eliminated pixels are reconstructed only from pixels with a value hi
 
 As can be seen there is a small peak as expected, however, there seem to be a "spill over" across the threshold to the lower values. By closer examination of the code it was discovered that this was caused due to a programming mistake. The mistake was that the values used for reconstruction were obtained from the original image and not from the reconstructed image. Once this mistake was corrected the histogram was as expected as shown in \autoref{fig:histFine}. 
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_nicespacing.png}
 	\caption{The histogram of the image after applying the corrected noise remover function.}
@@ -115,7 +115,7 @@ Furthermore, small tests showed that the adaptive threshold is difficult to defi
  
 During implementation the histograms were frequently inspected in order to ensure the results were as expected. \autoref{fig:HistEli} shows a histogram with some eliminated pixel values. It turns out that the function used for generating histograms in python by default takes the range of the pixel values and splits that into as many bins as specified. As a result some of the bins cover a range of values that is entirely between two integer values and thus do not count any instances of pixel values as they are always integers between 0 and 225. This was solved by passing a specific range $[0,256]$ as an argument and then the histogram was as displayed in \autoref{fig:histFine}.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_troublespacing.png}
 	\caption{The histogram of the reconstructed image with eliminated values.}
@@ -132,14 +132,16 @@ The histogram equalisation is applied to increase contrast. This is necessary to
 
 The pixels, which have values above $ 255 $ or below $ 0 $ after the formula is applied, are set to $ 255 $ or $ 0 $ respectively. The resulting image is shown in \autoref{fig:irisST}, while \autoref{fig:histST} shows the histogram after applying the formula to each pixel.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{Stretch_hist.png}
 \caption{The histogram of the image after applying the initial "equalise histogram" function.}
 \label{fig:histST}
 \end{figure}
+
 However, it was discovered that the implemented method was actually histogram stretching, which was mistakenly taken as the same as histogram equalisation. Though the two methods have somewhat the same effects, histogram equalisation is better at ensuring a uniform spreading of the pixels across the histogram. 
 This is done by identifying a transform of the bin values which causes the \gls{cdf} of the histogram to be as linear as possible, and apply it to the grey levels or bin values. The result of the histogram equalisation is showed in \autoref{fig:irisEQ} and \autoref{fig:histEQ}.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{Stretch_iris.jpg}
@@ -158,6 +160,7 @@ This is done by identifying a transform of the bin values which causes the \gls{
 \caption{The histogram of the image after applying the real equalisation of the histogram.}
 \label{fig:histEQ}
 \end{figure}
+
 When comparing the two images of the iris, after applying the two different contrast adjustment methods, it can be concluded that the histogram equalisation does indeed result in better contrast and a more enhanced and out spoken appearance of the structures in the iris than the histogram stretching does. Testing also showed that using the equalisation rather than the stretching increased the accuracy, this is further addressed in \autoref{MachineLearnClassification}. 
 
 \subsection{Feature extraction}
@@ -165,7 +168,8 @@ As it is difficult to extract all the complex structures in the iris, the work p
 Haar wavelets are a fast and simple way to obtain wavelets. In Haar wavelets, the decomposition is done by calculating the average of neighbouring pixels as well as half the difference between neighbouring pixels. Due to the way the method works the image is lowpass or hi-pass filtered two times in each of the possible combinations. The image of the greatest interest in this case is the one that has been lowpass filtered in both horizontal and vertical direction, this is referred to as LL. This image will be a compressed version of the original image, showing an approximation or the tendency of the original image. The other images created in one stage are HH, HL, LH all of which contain detail coefficients. HH is representing the diagonal detail, while HL presents horizontal detail and LH presents vertical detail. The LL will naturally appear in the upper left corner of the output matrix. 
 
 In order to compress the image sufficiently three stages or passes of Haar wavelet decomposition was carried out. The result is shown in \autoref{fig:haar3}. 
-\begin{figure}[h]
+
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{haar_3.jpg}
 \caption{The result of the three level Haar wavelet decomposition. Note that the small light image in the upper left corner is the LL3, which is used onwards.}
@@ -191,7 +195,7 @@ Where $C_k$ is a given class, $\text{x}$ is the sample, $K$ is the number of nei
 Finally, a class is assigned to the sample based on which class has the highest conditional probability.
 
 The value $K$ greatly influences the way the classifier performs. Therefore it is important to determine an optimal value of $K$. This may depend on the performance but also the amount of data that has to be compared with. In this project $K$ is found by determining which value of $K$ for $K\in[1,30]$ results in the best performance. This is done by training on a test set of five images and evaluating the train error. \autoref{fig:misclassK} shows the misclassification error dependent on the value of $K$. As seen in the figure $K=1$ results in the lowest misclassification error, therefore this is used going forth in the project work.  
- \begin{figure}[h]
+ \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{kgraph.png}
 \caption{The misclassification error for the \gls{knn} as a result of the number of neighbours $K$ used for the classifier.}
@@ -207,9 +211,9 @@ In practice the hyperplane is found based on a subset of data points that lie cl
 However, in some cases the data is not linearly separable. For those cases Kernel Functions can be applied before identifying the optimal hyperplane. The kernel function maps the original data from the original space into a new space, where it can be linearly separated.  
 
 \subsubsection*{Cross Validation}
-In this project the above mentioned classification methods are implemented. Just as in the work described in the article cross validation is carried out in order to test the performance of the classifiers. Five images per class are used for the cross validation. The cross validation done is a five fold cross validation. However, since some classes have too few images those classes are neglected. As mentioned in \autoref{sec:HistEq} changing from histogram stretching to histogram equalisation affects the performance of the classifiers. In \autoref{tab:fiveFoldClas} the accuracies as well as the precision of the classifiers in both the case with histogram stretching and histogram equalisation are shown.  
+In this project the above mentioned classification methods are implemented. Just as in the work described in the article, cross validation is carried out in order to test the performance of the classifiers. Five images per class are used for the cross validation. The cross validation done is a five fold cross validation. However, since some classes have too few images those classes are neglected. As mentioned in \autoref{sec:HistEq} changing from histogram stretching to histogram equalisation affects the performance of the classifiers. In \autoref{tab:fiveFoldClas} the accuracies as well as the precision of the classifiers in both the case with histogram stretching and histogram equalisation are shown.  
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|c|}
 \cline{2-5}
@@ -230,7 +234,7 @@ SVM (quadratic)&$77$&$\pm8$&$92$&$\pm4$\\
 \label{tab:fiveFoldClas}
 \end{table} 
 Considering the results for the \gls{knn} and the quadratic \gls{svm} shown in \autoref{tab:fiveFoldClas} there seems to be a significant increase in the accuracy of the two classifiers. However, since it is based on such a limited amount of measurements it is probably more representative and valuable to consider the general trends. When comparing the two accuracies across all of the classifiers there seems to be evidence for an increase in accuracy when the histogram equalisation is used rather than the histogram stretching. Therefore the histogram equalisation is used from this point on. 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \cline{2-4}
@@ -253,7 +257,7 @@ SVM (quadratic)&\textbf{97}&92&92\\
 
 In \autoref{tab:fiveFoldClasCompare} the accuracies achieved by the work of \cite{Khan2017a} are compared with the accuracies achieved in the replication of the work when conducting five-fold cross-validation on a set of 5 images from each class. The comparison reveals that the replication does not achieve the same accuracies. In general the original work seems to acquire higher accuracies, however, the original work does not present the variance of the mean accuracy calculated in relation to the cross validation. Therefore, it is impossible to verify how precise the classifiers in the original work are. Another thing to note is the fact that the quadratic \gls{svm} is the one that performs best according to the original work, while the replicated work suggests that the \gls{lda} classifier gives the highest accuracy. There are several factors that might contribute to the difference between the results presented in the original work and the result obtained through replication. One factor might be the amount of data. Though the amount of data samples used per class is the same, the amount of classes is not the same. Due to some issues with processing of the database, which are described in \autoref{sec:ChallDatabase}, only a part of the database was available for testing. First only 55 classes were available and after a while 91 classes of the total 140 classes in the database. Some tests were done with both 55 and 91 classes and the results show that the amount of classes does influence the accuracies as is shown in \autoref{tab:fiveFoldClasCompare}. Another factor that might cause different results is the fact that some steps of the processing are described quite briefly, thus the replication of the work might not be entirely aligned with the original work. 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \cline{2-4}
@@ -286,7 +290,7 @@ As mentioned previously several issues were encountered during the implementatio
 Although overall steps of the processing algorithm are presented in the article by \cite{Khan2017a}, there are a lot of unclear details when considering the descriptions of the individual steps of the processing. This makes it difficult to replicate the work conducted in the article, and it results in parts of the code being implemented based on the best knowledge supplemented with ideas, while other things are based on the indications from tests.
 
 \subsubsection{Processing Issues}
-Once the algorithm was implemented it had to be applied in order to process the entire Warsaw-Biobase database consisting of 3192 images of irises obtained from 70 subjects. The handling and processing of this amount of data proved quite troublesome. First of all, the processing of one image using the implemented MATLAB libraries takes quite some time. The time of course depends on the resources of the computer, however, it took a few minutes per image. Furthermore, the process sometimes reported that it was too demanding for the laptops used. Therefore, the processing was moved to be carried out by a desktop PC with more computational power. This was a shared computer borrowed through an internet connection using TeamViewer, which meant that it was only accessible sometimes. 
+Once the algorithm was implemented it had to be applied in order to process the entire Warsaw-Biobase database consisting of 3192 images of irises obtained from 70 subjects used as 140 classes. The handling and processing of this amount of data proved quite troublesome. First of all, the processing of one image using the implemented MATLAB libraries takes quite some time. The time of course depends on the resources of the computer, however, it took a few minutes per image. Furthermore, the process sometimes reported that it was too demanding for the laptops used. Therefore, the processing was moved to be carried out by a desktop PC with more computational power. This was a shared computer borrowed through an internet connection using TeamViewer, which meant that it was only accessible sometimes. 
 
 Another issue was the variation in the images being processed. Though the algorithm is implemented in a way that is somewhat flexible, which automatically identifies the areas of interest, it does sometimes fail. In some cases the algorithm is unable to identify the wanted area or it falsely identifies the wrong area as the area of interest. In those cases the algorithm would break or get stuck, which required manual restart or continuation of the processing. 
 

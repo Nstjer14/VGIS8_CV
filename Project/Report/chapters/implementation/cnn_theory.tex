@@ -3,7 +3,7 @@
 This section describes what a \gls{cnn} is and what structure is used for creating the iris recognition \gls{cnn}. The section is based mainly on \cite{Karpathy2016a} and \cite{Nielsen2015}.
 
 \subsection{Convolution}
-A \gls{cnn} is a type of Nerual Network that is especially good for image recognition. Instead of the input being fully connected it operates by using a kernel instead. A kernel can be seen as a small window which moves through the input image. It performs an operation known as a convolution where the coefficients, also known as weights, of the kernel are multiplied with the pixel it is covering and summing the value. A 1D example of this is shown in \autoref{fig:kernel_convolution_example} where a kernel of size three with weights $\begin{bmatrix} 1 & 0 & -1 \end{bmatrix}$ is convolved through bottom rows which produces the top rows. Two other concepts are also shown in the example; stride and zero padding. Stride is the amount the kernel moves each time. The left example has a stride of one and the right example has a stride of two. Zero padding is when pixels with value $0$ are added at the edge of the image. This is done to ensure that the convolution can actually be made on all pixels, otherwise only two convolutions would be possible in the example with a stride of two. It also has the benefit of keeping the dimensions of the input image and output image the same when the stride is one, as convolution otherwise shrinks the image. 
+A \gls{cnn} is a type of Nerual Network that is especially good for image recognition. Instead of the input being fully connected to a layer it operates by using a kernel instead. A kernel can be seen as a small window which moves through the input image. It performs an operation known as a convolution where the coefficients, also known as weights, of the kernel are multiplied with the pixel it is covering and summing the value. A 1D example of this is shown in \autoref{fig:kernel_convolution_example} where a kernel of size three with weights $\begin{bmatrix} 1 & 0 & -1 \end{bmatrix}$ is convolved through bottom rows which produces the top rows. Two other concepts are also shown in the example; stride and zero padding. Stride is the amount the kernel moves each time. The left example has a stride of one and the right example has a stride of two. Zero padding is when pixels with value $0$ are added at the edge of the image. This is done to ensure that the convolution can actually be made on all pixels, otherwise only two convolutions would be possible in the example with a stride of two. It also has the benefit of keeping the dimensions of the input image and output image the same when the stride is one, as convolution otherwise shrinks the image. 
 
 \begin{figure}[h]
 	\centering
@@ -45,7 +45,7 @@ In other words the kernel learns to detect a feature that can be found in the im
 \end{figure}
 
 \subsection{Pooling}
-Pooling is an operation often added after a convolutional layer. Like a convolution, a small window moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s. An example of maxpooling with a window of size $2\times2$ and stride two is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
+Pooling is an operation often added after a convolutional layer. Like a convolution, a small window moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s, where the output is the value of the largest pixel in the current window. An example of maxpooling with a window of size $2\times2$ and stride two is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
 
 \begin{figure}[H]
 \centering
@@ -116,7 +116,7 @@ A more detailed description of the network is shown in \autoref{tab:iris_cnn}.
 
 \begin{table}[H]
 	\centering
-	\caption{Detailed description of network design and settings}
+	\caption{Detailed description of the iris recognition network design and settings}
 	\label{tab:iris_cnn}
 	\begin{tabular}{lrrrr}
 		\textbf{Layer Type}   & \textbf{Feature Map Size}  & \textbf{Kernel/Pool Size} & \textbf{Activation} & \textbf{Other} \\ \hline
