@@ -1,3 +1,10 @@
+'''Trains a simple convnet on the MNIST dataset.
+
+Gets to 99.25% test accuracy after 12 epochs
+(there is still a lot of margin for parameter tuning).
+16 seconds per epoch on a GRID K520 GPU.
+'''
+
 from __future__ import print_function
 import keras
 from keras.datasets import mnist
@@ -8,10 +15,13 @@ from keras import backend as K
 import os
 import random as rd
 from keras.preprocessing.image import ImageDataGenerator
+import imageBatchGenerator5_module as batchGen
 import imagePatchGenerator5_module as patchGen
-import datetime
 import iris_face_merge_cnn_data_splitter as getData
+from sklearn.utils import shuffle
 
+
+import datetime
 
 
 
@@ -47,8 +57,9 @@ import cv2
 
 save_dir = os.path.join(os.getcwd(), 'saved_models')
 pic_save_dir = os.path.join(os.getcwd(), 'saved_graphs')
-'''
 dataFrame = pd.read_pickle("pythonDatabase")
+dataFrame = shuffle(dataFrame)
+
 
 # Dropping classes with less than 10 images
 counts = Counter(dataFrame.label)
@@ -74,56 +85,45 @@ imageVector = np.asarray(imageVector)
 label = dataFrame.label
 label = label.tolist() # The list coming from dataFrame is already in the correct format.
 
-#% Explore data
+#%% Explore data
 print('Training data shape : ', imageVector.shape)
 uniqueClasses=np.unique(label)
 NuniqueClasses=len(uniqueClasses)
 print("Number of classes: ",NuniqueClasses)
 
-plt.figure(figsize=[8,2])
+plt.figure(figsize=[8,64])
 
-plt.subplot(111)
+plt.subplot(121)
 plt.imshow(imageVector[0,:,:], cmap='gray')
 plt.title("Ground Truth : {}".format(label[0]))
 
 
 
 
-#% Preprocess for cnn
+#%% Preprocess for cnn
 resized_image = []
 for image in dataFrame.image:
-    resized_image.append(cv2.resize(image, (64, 64)))#resize images and add them to an list 
+    resized_image.append(cv2.resize(image, (64, 64)))
 
-patchImages = []
-patchLabels = []
-for i in range(0,len(resized_image)):#For all images create 5 basix patches
-    patchesInTupples = patchGen.imagePatchGenerator5(resized_image[i])
-    for j in patchesInTupples:#For all patches from one image add the original patch and a mirrored version to a list as well as the labels 
-        #plt.figure(figsize=[3,3])
+batchImages = []
+batchLabels = []
+for i in range(0,len(resized_image)):
+    batchesInTupples = patchGen.imagePatchGenerator5(resized_image[i])
+    for j in batchesInTupples:
         #plt.imshow(j, cmap='gray')
-        #plt.show()
-        patchImages.append(j)
-        patchLabels.append(label[i])
-        patchImages.append(cv2.flip(j,1)) # adding horisontal flip
-        patchLabels.append(label[i])
-        #if i==3:
-        #    fig=plt.figure()
-        #    columns = 2
-        #    rows = 1
-        #    fig.add_subplot(rows, columns, 1)
-        #    plt.imshow(j)
-        #    fig.add_subplot(rows, columns, 2)
-        #    plt.imshow(cv2.flip(j,1))
-        #    plt.show()
+        batchImages.append(j)
+        batchLabels.append(label[i])
+        batchImages.append(cv2.flip(j,1)) # adding horisontal flip
+        batchLabels.append(label[i])
         
-reshapeDims = patchImages[1].shape
-imageVector = np.asarray(patchImages)
+reshapeDims = batchImages[1].shape
+imageVector = np.asarray(batchImages)
 imageVector = imageVector.reshape(imageVector.shape[0],1,58,58) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 #imageVector = imageVector.reshape(imageVector.shape[0],1,64,512) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
 imageVector = imageVector.astype('float32') # Rescale it from 255 to 0-1.
 imageVector = imageVector/255.
 print('Training data shape after reshape : ', imageVector.shape)
-label = patchLabels # set labels to be the batchLabels. This is a quick and dirty
+label = batchLabels # set labels to be the batchLabels. This is a quick and dirty
 
 
 # integer encode
@@ -137,7 +137,8 @@ integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
 onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
 label_onehot = onehot_encoded
 print("Normalised pixels to be 0-1 and one hot encoding done:",label_onehot.shape)
-'''
+
+#train_X,valid_X,train_label,valid_label = train_test_split(imageVector, label_onehot, test_size=0.2, random_state=13)
 
 train_X =  getData.train_iris_X
 train_label =  getData.train_label
@@ -150,18 +151,15 @@ valid_label =  getData.validation_label
 
 NuniqueClasses = len(np.unique(getData.label))
 
-#train_X,valid_X,train_label,valid_label = train_test_split(imageVector, label_onehot, test_size=0.2, random_state=13)
-
-
 #%%
 
 x_train = train_X
-x_test = test_iris_X #valid_X
+x_test = valid_X#test_iris_X #
 y_train = train_label
-y_test = test_label #valid_label
+y_test = valid_label#test_label##
 
 batch_size = 128
-epochs = 100
+epochs = 50
 
 print("Shape of x_train",x_train.shape)
 print("Shape of y_train",y_train.shape)
@@ -169,9 +167,44 @@ print("Shape of x_test",x_test.shape)
 print("Shape of y_test",y_test.shape)
 
 
-input_shape = x_train[0].shape
+input_shape = train_X[0].shape
 num_classes = NuniqueClasses
-#from keras.layers.merge import concatenate
+'''
+model = Sequential()
+model.add(Conv2D(6, kernel_size=(3, 3),
+                 activation='relu',
+                 input_shape=input_shape,
+                 data_format='channels_first',
+                 padding = "same"))
+model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
+#model.add(Dropout(0.25))
+model.add(Conv2D(32,
+                 kernel_size=(5, 5),
+                 activation='relu',
+                 padding = "same",
+                 data_format='channels_first'))
+model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
+
+model.add(Conv2D(64,
+                 kernel_size=(5, 5),
+                 activation='relu',
+                 padding = "same",
+                 data_format='channels_first'))
+model.add(MaxPooling2D(pool_size=(2, 2),data_format='channels_first'))
+
+model.add(Conv2D(256,
+                 kernel_size=(5, 5),
+                 activation='relu',
+                 padding = "same",
+                 data_format='channels_first'))
+
+model.add(Flatten())
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='softmax',))
+'''
 from keras.models import Model
 from keras.layers import Input
 
@@ -215,8 +248,12 @@ drop2 = Dropout(0.5)(dense2)
 
 iris_out = Dense(num_classes, activation='softmax')(drop2)
 model = Model(iris_model_in,iris_out)
+#print(model.get_config())
 
-learningrate = 1e-3
+#model.compile(loss=keras.losses.categorical_crossentropy,
+#              optimizer=keras.optimizers.Adadelta(),
+#              metrics=['accuracy'])
+learningrate = 1e-2
 adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
 #model.compile(loss='categorical_crossentropy', optimizer=sgd)
 model.compile(loss='categorical_crossentropy',
@@ -229,7 +266,8 @@ history = model.fit(x_train, y_train,
           epochs=epochs,
           shuffle=True,
           verbose=1,
-          validation_data=(valid_X,valid_label))
+          validation_split=0.1)
+          #validation_data=(valid_X,valid_label)) 
 """
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
@@ -245,7 +283,7 @@ print('Test accuracy:', score[1]*100)
 acc_round = str(round(score[1]*100,2))
 timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 namestamp = timestamp + 'acc_' + acc_round 
-model_name = namestamp + '_iris_cnn_test_refactoed.h5'
+model_name = namestamp + '_iris_cnn_test.h5'
 
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
@@ -267,7 +305,7 @@ plt.legend(['Training', 'Validation'], loc='lower right')
 if not os.path.isdir(pic_save_dir):
     os.makedirs(pic_save_dir)
 pic_path = os.path.abspath(pic_save_dir)
-plt.savefig(pic_path + '/'+model_name+'acc.pdf')
+plt.savefig(pic_path + '/'+namestamp+'acc.pdf')
 print('Saved graphs at %s ' % pic_path)
 
 plt.show()
@@ -286,7 +324,7 @@ if not os.path.isdir(pic_save_dir):
     os.makedirs(pic_save_dir)
 pic_path = os.path.abspath(pic_save_dir)
 print(pic_path)
-plt.savefig(pic_path + '/'+model_name+'loss.pdf')
+plt.savefig(pic_path + '/'+namestamp+'loss.pdf')
 print('Saved graphs at %s ' % pic_path)
 
 plt.show()

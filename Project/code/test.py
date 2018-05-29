@@ -153,7 +153,7 @@ y_train = train_label
 y_test = valid_label
 
 batch_size = 128
-epochs = 200
+epochs = 50
 
 print("Shape of x_train",x_train.shape)
 print("Shape of y_train",y_train.shape)
@@ -255,7 +255,7 @@ plt.legend(['Training', 'Validation'], loc='lower right')
 if not os.path.isdir(pic_save_dir):
     os.makedirs(pic_save_dir)
 pic_path = os.path.abspath(pic_save_dir)
-plt.savefig(pic_path + '/'+namestamp+'acc.pdf')
+plt.savefig(pic_path + '/'+model_name+'acc.pdf')
 print('Saved graphs at %s ' % pic_path)
 
 plt.show()
@@ -274,7 +274,7 @@ if not os.path.isdir(pic_save_dir):
     os.makedirs(pic_save_dir)
 pic_path = os.path.abspath(pic_save_dir)
 print(pic_path)
-plt.savefig(pic_path + '/'+namestamp+'loss.pdf')
+plt.savefig(pic_path + '/'+model_name+'loss.pdf')
 print('Saved graphs at %s ' % pic_path)
 
 plt.show()

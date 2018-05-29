@@ -24,6 +24,8 @@ from keras.models import Model
 import datetime
 import cv2
 import imagePatchGenerator5_module as patchGen
+import iris_face_merge_cnn_data_splitter as getData
+
 
 
 #%%
@@ -35,7 +37,7 @@ rd.seed(42)
 save_dir = os.path.join(os.getcwd(), 'saved_models')
 pic_save_dir = os.path.join(os.getcwd(), 'saved_graphs')
 model_name = 'face_cnn_test.h5'
-
+'''
 # load images for individuals w/ 10+ images and produce centered 64x64 images from orig. 250x250 images
 lfw_people = fetch_lfw_people(min_faces_per_person=10, 
                               slice_ = (slice(61,189),slice(61,189)),
@@ -97,8 +99,19 @@ train_X,test_X,train_y,test_y = train_test_split(data, enc_y, test_size=0.3)
 
 uniqueClasses=np.unique(y)
 NuniqueClasses=len(uniqueClasses)
+'''
+train_face_X =  getData.train_face_X
+train_label =  getData.train_label
 
-img_shape = train_X[0].shape
+test_face_X =  getData.test_face_X
+test_label =  getData.test_label
+
+validation_face_X =  getData.validation_face_X
+validation_label =  getData.validation_label
+
+NuniqueClasses = len(np.unique(getData.label))
+
+img_shape = train_face_X[0].shape
 print('The image shape is: {}'.format(img_shape))
 
 class_amount = NuniqueClasses
@@ -152,14 +165,14 @@ if __name__ == '__main__':
     #              optimizer=adagrad,
     #              metrics=['accuracy'])
     
-    history = model.fit(train_X, train_y,
+    history = model.fit(train_face_X, train_label,
               batch_size=batch_size,
               epochs=epochs,
               verbose=1,
               shuffle=True,
-              validation_split=0.2)
+              validation_data=(validation_face_X,validation_label))
     
-    score = model.evaluate(test_X, test_y, verbose=0)
+    score = model.evaluate(test_face_X, test_label, verbose=0)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1]*100)
     
