@@ -3,7 +3,7 @@ The first computer based face recognition was made in 1973. This was based on a 
 From here three different types of approaches emerged, namely a holistic, feature extraction and a hybrid approach. 
 
 The holistic approach encodes the entirety of a face and then identifies using template-matching, the feature extraction approach extracts a defined amount of features from the face, whereas the hybrid method uses both template-matching and feature extraction \citep{Wechsler2007}.
-In 1990, \gls{pca} was introduced for holistic face recognition. The \gls{pca} approach makes use of eigenfaces, each eigenface represents a principal component in which a face is encoded. But as \cite{Wechsler2007} claims, \gls{lda} is a more effective suitable approach for face identification and authentication. Another holistic approach is using \gls{svm} for face recognition \citep{Wechsler2007}.
+In 1990, \gls{pca} was introduced for holistic face recognition. The \gls{pca} approach makes use of eigenfaces. Each eigenface represents a principal component in which a face is encoded. But as \cite{Wechsler2007} claims, \gls{lda} is a more effective suitable approach for face identification and authentication. Another holistic approach is using \gls{svm} for face recognition \citep{Wechsler2007}.
 
 The feature approach gave way for what is now known as recognition-by-parts, which uses the features and a global structure to link these features. A structure for linking 2D features is the \gls{hmm}. \gls{pca} is also used in this approach, but is used to model shape or texture of the face.
 
@@ -26,7 +26,7 @@ The network is tested using the \gls{lfw} database. This database is images of f
 \end{figure}
 
 \subsection{DeepID2}
-\gls{deepid2} is an expansion upon \gls{deepid} and is a deep \glsentrylong{cnn} used for face identification and verification. This is done by using feature extraction.
+\gls{deepid2} is an expansion upon \gls{deepid} and is a deep \gls{cnn} used for face identification and verification. This is done by using feature extraction.
 
 Just like \gls{deepid}, \gls{deepid2} uses four convolutional layers but only the first three uses max-pooling. It uses 400 face patches instead of 60 \citep{deepID2014,sun2014} and detects 21 landmarks of the face.
 
