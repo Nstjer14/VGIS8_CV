@@ -42,9 +42,9 @@ In other words the kernel learns to detect a feature that can be found in the im
 \caption{Example of a kernel in a \gls{cnn} \citep{Nielsen2015}}
 \label{fig:cnn_kernal_illustration}
 \end{figure}
-\clearpage
+
 \subsection{Pooling}
-\todo{ser det her dumt ud?}Pooling is an operation often added after a convolutional layer. Like a convolution, a small window moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s. An example of maxpooling with a window of size $2\times2$ and stride two is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
+Pooling is an operation often added after a convolutional layer. Like a convolution, a small window moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s. An example of maxpooling with a window of size $2\times2$ and stride two is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
 
 \begin{figure}[H]
 \centering
