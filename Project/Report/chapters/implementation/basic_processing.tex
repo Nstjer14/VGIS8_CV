@@ -18,24 +18,24 @@ In order to get some basic understanding of the methods commonly used for iris c
 \begin{subfigure}{.47\textwidth}
 \centering
 \includegraphics[width=0.90\textwidth]{IMG_1838.jpg}
-\caption{Example of visible light image of an iris from the used database.}
+\caption{Example of visible light image of an iris from the used database \citep{Trokielewicz2016}}
 \label{fig:ExWars}
 \end{subfigure}
 ~
 \begin{subfigure}{.47\textwidth}
 \centering
 \includegraphics[width=0.90\textwidth]{0002left_13-marked.jpg}
-\caption{The eye marked with the identified edges of the iris.}
+\caption{The eye marked with the identified edges of the iris}
 \label{fig:MarkedI}
 \end{subfigure}
 
 \begin{subfigure}{.47\textwidth}
 \centering
 \includegraphics[width=0.9\textwidth]{Eyelid_002_l_13_2.jpg}
-\caption{The eye with the eyelid suppression applied.}
+\caption{The eye with the eyelid suppression applied}
 \label{fig:IrisSup}
 \end{subfigure}
-\caption{The original image before and after different steps of processing.}
+\caption{The original image before and after different steps of processing}
 \end{figure}
 
 
@@ -60,7 +60,7 @@ For the normalisation, Daugman's Rubber Sheet Model is used. The purpose is to g
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{Daugmans-Rubber-Sheet-Model.png}
-\caption{Daugman's Rubber Sheet Model. \citep{Misztal2012}}
+\caption{Daugman's Rubber Sheet Model \citep{Misztal2012}}
 \label{fig:DaugSheet}
 \end{figure}
 
@@ -69,7 +69,7 @@ The model does this by mapping the iris from the original image to a rectangular
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{002polar.jpg}
-\caption{The normalised image of the iris before applying functions.}
+\caption{The normalised image of the iris before applying functions}
 \label{fig:SimPolar}
 \end{figure}
 
@@ -79,7 +79,7 @@ Though the article uses several well known methods, which are commonly used in p
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_before.png}
-	\caption{The histogram before applying the functions.}
+	\caption{The histogram before applying the functions}
 	\label{fig:histBif}
 \end{figure}
 
@@ -97,7 +97,7 @@ Because the eliminated pixels are reconstructed only from pixels with a value hi
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_spill.png}
-	\caption{The histogram of the image after reconstruction of pixels.}
+	\caption{The histogram of the image after reconstruction of pixels}
 	\label{fig:histSpill}
 \end{figure}
 
@@ -106,7 +106,7 @@ Because the eliminated pixels are reconstructed only from pixels with a value hi
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_nicespacing.png}
-	\caption{The histogram of the image after applying the corrected noise remover function.}
+	\caption{The histogram of the image after applying the corrected noise remover function}
 	\label{fig:histFine}
 \end{figure}
 
@@ -118,7 +118,7 @@ During implementation the histograms were frequently inspected in order to ensur
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{hist_troublespacing.png}
-	\caption{The histogram of the reconstructed image with eliminated values.}
+	\caption{The histogram of the reconstructed image with eliminated values}
 	\label{fig:HistEli}
 \end{figure} 
 
@@ -135,29 +135,32 @@ The pixels, which have values above $ 255 $ or below $ 0 $ after the formula is 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{Stretch_hist.png}
-\caption{The histogram of the image after applying the initial "equalise histogram" function.}
+\caption{The histogram of the image after applying the initial \textit{equalise histogram} function.}
 \label{fig:histST}
 \end{figure}
 
-However, it was discovered that the implemented method was actually histogram stretching, which was mistakenly taken as the same as histogram equalisation. Though the two methods have somewhat the same effects, histogram equalisation is better at ensuring a uniform spreading of the pixels across the histogram. 
-This is done by identifying a transform of the bin values which causes the \gls{cdf} of the histogram to be as linear as possible, and apply it to the grey levels or bin values. The result of the histogram equalisation is showed in \autoref{fig:irisEQ} and \autoref{fig:histEQ}.
+
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{Stretch_iris.jpg}
-\caption{The image of the iris after applying the initial "equalise histogram" function.}
+\caption{The image of the iris after applying the initial \textit{equalise histogram} function}
 \label{fig:irisST}
 \end{figure}
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{Equal_iris.jpg}
-\caption{The image of the iris after applying the real equalisation of the histogram.}
+\caption{The image of the iris after applying the real equalisation of the histogram}
 \label{fig:irisEQ}
 \end{figure}
+
+However, it was discovered that the implemented method was actually histogram stretching, which was mistakenly taken as the same as histogram equalisation. Though the two methods have somewhat the same effects, histogram equalisation is better at ensuring a uniform spreading of the pixels across the histogram. 
+This is done by identifying a transform of the bin values which causes the \gls{cdf} of the histogram to be as linear as possible, and apply it to the grey levels or bin values. The result of the histogram equalisation is showed in \autoref{fig:irisEQ} and \autoref{fig:histEQ}.
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.7\textwidth]{Equal_hist.png}
-\caption{The histogram of the image after applying the real equalisation of the histogram.}
+\caption{The histogram of the image after applying the real equalisation of the histogram}
 \label{fig:histEQ}
 \end{figure}
 
@@ -172,7 +175,7 @@ In order to compress the image sufficiently three stages or passes of Haar wavel
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{haar_3.jpg}
-\caption{The result of the three level Haar wavelet decomposition. Note that the small light image in the upper left corner is the LL3, which is used onwards.}
+\caption{The result of the three level Haar wavelet decomposition. Note that the small light image in the upper left corner is the LL3, which is used onwards}
 \label{fig:haar3}
 \end{figure}
 The resulting matrix of LL3 coefficients is then put into a feature vector, which is used for training the classifiers described in \autoref{MachineLearnClassification}.
@@ -210,7 +213,7 @@ The value $K$ greatly influences the way the classifier performs. Therefore it i
  \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{kgraph.png}
-\caption{The misclassification error for the \gls{knn} as a result of the number of neighbours $K$ used for the classifier.}
+\caption{The misclassification error for the \gls{knn} as a result of the number of neighbours $K$ used for the classifier}
 \label{fig:misclassK}
 \end{figure}
 \subsection{Linear Discriminant Analysis}
@@ -263,7 +266,7 @@ SVM (Linear)&96.46&91&92\\
 SVM (quadratic)&\textbf{97}&92&92\\
 \hline
 \end{tabular}
-\caption{Comparison of the performance of the different classifiers achieved by \cite{Khan2017a} and the replicating work in this project. The first column under "Replicated" are accuracies based on data from 55 classes, while the second column is based on data from 91 classes.}
+\caption{Comparison of the performance of the different classifiers achieved by \cite{Khan2017a} and the replicating work in this project. The first column under "Replicated" are accuracies based on data from 55 classes, while the second column is based on data from 91 classes}
 \label{tab:fiveFoldClasCompare}
 \end{table} 
 
@@ -286,7 +289,7 @@ SVM (Linear)&100&97&98\\
 SVM (quadratic)&100&98&98\\
 \hline
 \end{tabular}
-\caption{The different accuracies achieved by the classifiers when trained on 70\% of the data and tested and validated respectively on 15\% of the data.}
+\caption{The different accuracies achieved by the classifiers when trained on 70\% of the data and tested and validated respectively on 15\% of the data}
 \label{tab:ClasAccMachine}
 \end{table} 
 
