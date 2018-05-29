@@ -1,5 +1,33 @@
 \section{Network Fusion}
-To be able to combine iris and face verification, a combination of the results of the two networks can be made.  This is done by having two individual streams that are merged at their last \gls{fc} layer by concatenating the layers along their longest dimension. The merged layer can then be fed into other \gls{fc} layers and further to a classification layer. This can be done using a softmax layer after the \gls{fc} layer \citep{Eitel2015}. This should in theory increase the accuracy in ID verification in a potential instance where verification is required. The architecture used is shown in \autoref{fig:net_fusion}. The two \gls{fc} had 5020 neurons to have the same dimensions as the concatenated layer. To see if the new merged structure performs better than the iris and face \gls{cnn}s separately, the same hyper parameters are used as in \autoref{sec:cnn_iris_rec}.
+To be able to combine iris and face verification, a combination of the results of the two networks is made.  This is done by having two individual streams that are merged at their last \gls{fc} layer by concatenating the layers along their longest dimension. The merged layer can then be fed into other \gls{fc} layers and further to a classification layer. This is done using a softmax layer after the \gls{fc} layer \citep{Eitel2015}. This should in theory increase the accuracy in ID verification in a potential instance where verification is required. The architecture used is shown in \autoref{fig:net_fusion}. The two \gls{fc} has 5020 neurons. This is to have the same dimensions as the concatenated layer. To see if the new merged structure performs better than the iris and face \gls{cnn}s separately, the same hyper parameters are used as earlier in this chapter.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{merged_net_overview}
+	\caption{Overview of how the two networks are fused}
+	\label{fig:net_fusion}
+\end{figure}
+
+The parameters set for classification in the fused network are shown in \autoref{tab:merged_net}
+
+\begin{table}[h]
+	\centering
+	\caption{Parameters set for the classification in the fused network}
+	\label{tab:merged_net}
+	\begin{tabular}{lrrrr}
+		\textbf{Layer Type} & \textbf{Feature Map Size} & \textbf{Kernel/Pool Size} & \textbf{Activation} & \textbf{Other} \\ \hline
+		\multicolumn{5}{l}{Iris Recognition and Face Recognition Networks Outputs}                                        \\
+		\rowcolor{lightGrey}
+		Concatenate         &                           &                           &                     &                \\
+		Dense               & $5120$                    &                           & ReLU                &                \\
+		\rowcolor{lightGrey} 
+		Dropout             &                           &                           &                     & $0.5$          \\
+		Dense               & $5120$                    &                           & ReLU                &                \\
+		\rowcolor{lightGrey} 
+		Dropout             &                           &                           &                     & $0.5$          \\
+		Dense               & Amount of Classes         &                           &  Softmax            &               
+	\end{tabular}
+\end{table}
 
 %To be able to reuse as much as possible, the two databases used with the networks separately are also used in the fusion of the networks instead of using a multimodal database as presented in \autoref{cha:Research}. This means that a combination of the two databases is necessary as the data have not been collected by the same groups or from the same people. The databases does not have the same amount of classes, therefore the larger database is reduced also reducing the entire amount of usable data.
 
