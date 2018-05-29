@@ -38,7 +38,7 @@ However, even though literature suggests that chimeric databases are less adequa
 The database was created by combining iris classes arbitrarily with an face class for as many classes as there were classes available from both the iris and the face dataset. Before combining the datasets the classes with ten or less samples were discarded. The new samples were made by giving the iris image and the face image the same label. The new samples were then data augmented as described in \autoref{sec:cnn_iris_rec}
 
 \subsection{Results}
-The chimera database consists of 20640 samples across 91 classes. 70\% was used for training, 15\% for validation and 15\% for testing. The network was trained for 140 epochs and achieved a test accuracy of 81.17\%
+The data augmented chimeric database consists of 20640 samples across 91 classes. 70\% was used for training, 15\% for validation and 15\% for testing. The network was trained for 140 epochs and achieved a test accuracy of 81.17\%
 
 \begin{figure}[H]
 	\centering
@@ -58,7 +58,7 @@ The chimera database consists of 20640 samples across 91 classes. 70\% was used 
 	\label{fig:merged_graphs}
 \end{figure}
 
-\noindent As the merged \gls{cnn} using the chimera data performed worse by almost 20\% something was wrong. To investigate how the separate iris and face \gls{cnn}s would perform on the chimera data a second test was made. This was done by simply discarding either the iris or the face respectively from the generated sample. This produced the following result with the same 70, 15, 15 split.  The iris \gls{cnn} achieved 68.94\% accuracy on the test set, \autoref{fig:iris_cnn_68_graphs}. The VGG face \gls{cnn} achieved 77.78\% accuracy on the test set, \autoref{fig:vgg_77_graphs}. When all networks used the same data the merged network seems to outperform both the VGG face \gls{cnn} and the iris \gls{cnn} although they both achieved above 99\% accuracy when trained on the data before the it was fused to the chimera data.
+\noindent As the merged \gls{cnn} using the chimeric data performed worse by almost 20\% something was wrong. To investigate how the separate iris and face \gls{cnn}s would perform on the chimeric data a second test was made. This was done by simply discarding either the iris or the face respectively from the generated sample. This produced the following result with the same 70, 15, 15 split.  The iris \gls{cnn} achieved 68.94\% accuracy on the test set, \autoref{fig:iris_cnn_68_graphs}. The VGG face \gls{cnn} achieved 77.78\% accuracy on the test set, \autoref{fig:vgg_77_graphs}. When all networks used the same data the merged network seems to outperform both the VGG face \gls{cnn} and the iris \gls{cnn} although they both achieved above 99\% accuracy when trained on the data before the it was fused to the chimeric data.
 
 \begin{figure}[H]
 	\centering
@@ -74,7 +74,7 @@ The chimera database consists of 20640 samples across 91 classes. 70\% was used 
 		\caption{Iris \gls{cnn} loss progression through epochs}
 		\label{fig:iris_cnn_68_loss}
 	\end{subfigure}
-	\caption{Accuracy and loss progression for the iris \gls{cnn} trained on chimera data. Achieved 68.94\% accuracy on the test set}
+	\caption{Accuracy and loss progression for the iris \gls{cnn} trained on the chimeric data. Achieved 68.94\% accuracy on the test set}
 	\label{fig:iris_cnn_68_graphs}
 \end{figure}
 
@@ -93,7 +93,7 @@ The chimera database consists of 20640 samples across 91 classes. 70\% was used 
 		\caption{Face recognition \gls{cnn} loss progression through epochs}
 		\label{fig:vgg_77_loss}
 	\end{subfigure}
-	\caption{Accuracy and loss progression for the VGG face \gls{cnn} trained on chimera data. Achieved 77.78\% accuracy on the test set }
+	\caption{Accuracy and loss progression for the VGG face \gls{cnn} trained on the chimeric data. Achieved 77.78\% accuracy on the test set }
 	\label{fig:vgg_77_graphs}
 \end{figure}
 
