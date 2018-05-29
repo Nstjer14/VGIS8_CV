@@ -165,7 +165,8 @@ The results achieved with this network is an accuracy of $99.7\%$. This is achie
 	\caption{Accuracy and loss progression for the iris recognition \gls{cnn}.}
 	\label{fig:iris_graphs}
 \end{figure}
-\todo[inline]{Add bridge to face recognition - why are we going there now?}
+
+\noindent To try and improve the accuracy of the iris recognition the system can be made multimodal instead of unimodal. The second modality chosen is face, as stated in \autoref{ch:projecspec}. To make face recognition help improve iris recognition, a face recognition system must first be made.
 
 \section{Face Recognition}
 To make a face recognition \gls{cnn} an already well known model is used. The network is based on the VGG16 model, including the weights pre-trained on the ImageNet database with 2000 classes. The model is split into five blocks. The input size of the images are $64\times64\times3$ and are from the \gls{lfw} database. The network is made and well known for image classification, and with the pre-trained weights from ImageNet, it is a suitable solution for face recognition \citep{Simonyan2015}.
