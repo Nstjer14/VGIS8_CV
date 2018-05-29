@@ -1,1 +1,13 @@
-\chapter{Conclusion}
+\chapter{Conclusion}\label{ch:conclusion}\glsresetall
+Throughout the project, the work has been aimed at finding a solution to the problem statement; \\
+\textbf{How well can identity verification be performed on \gls{vl} smart phone images of iris and face, and to which extend can the performance be improved by information fusion?}
+
+To be able to perform identity verification on smart phone images of iris and face, several recognition solutions was made.
+
+Iris recognition was done in multiple ways. Firstly, different regular machine learning solutions was made. The best performance was using a polynomial kernel for \gls{svm}, with an accuracy of $98\%$ which did not meet the requirement set for the accuracy.
+Therefore, a deep learning solution was introduced. By using a \gls{cnn} with a total of 14 layers, it was possible to achieve an accuracy of $99.7\%$, which satisfied the requirement of at least $99\%$ accuracy. 
+Both the machine learning and deep learning solution used the Warsaw BioBase database, a database with close-up photos of irises captured with an Apple iPhone 5s.
+
+Face recognition was made using a pre-made image classification model, VGG16. This model is pre-trained on the ImageNet database with 2000 different classes, and the weights from this are used in the implementation of the model. The \gls{cnn} used the \gls{lfw} database and achieved an accuracy of $99.35\%$, which also satisfied the requirement of accuracy limit.
+
+A fusion of the two successful \gls{cnn}s was then made. For this network, the databases used with the two separate networks was combined into one database with a label for an iris and a face tying them together. This network achieved an accuracy of $81.17\%$, which is not better than any of the stand-alone networks.
