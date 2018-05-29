@@ -1,8 +1,9 @@
-\section{Convolutional Nerual Networks}\label{sec:cnn_theory}
+\section{Convolutional Nerual Networks}
+\label{sec:cnn_theory}
 This section describes what a \gls{cnn} is and what structure is used for creating the iris recognition \gls{cnn}. The section is based mainly on \cite{Karpathy2016a} and \cite{Nielsen2015}.
 
 \subsection{Convolution}
-A \gls{cnn} is a type of Nerual Network that is especially good for image recognition. Instead of the input being fully connected to a layer it operates by using a kernel instead. A kernel can be seen as a small window which moves through the input image. It performs an operation known as a convolution where the coefficients, also known as weights, of the kernel are multiplied with the pixel it is covering and summing the value. A 1D example of this is shown in \autoref{fig:kernel_convolution_example} where a kernel of size three with weights $\begin{bmatrix} 1 & 0 & -1 \end{bmatrix}$ is convolved through bottom rows which produces the top rows. Two other concepts are also shown in the example; stride and zero padding. Stride is the amount the kernel moves each time. The left example has a stride of one and the right example has a stride of two. Zero padding is when pixels with value $0$ are added at the edge of the image. This is done to ensure that the convolution can actually be made on all pixels, otherwise only two convolutions would be possible in the example with a stride of two. It also has the benefit of keeping the dimensions of the input image and output image the same when the stride is one, as convolution otherwise shrinks the image. 
+A \gls{cnn} is a type of Nerual Network that is especially good for image recognition. Instead of the input being fully connected it operates by using a kernel instead. A kernel can be seen as a small window which moves through the input image. It performs an operation known as a convolution where the coefficients, also known as weights, of the kernel are multiplied with the pixel it is covering and summing the value. A 1D example of this is shown in \autoref{fig:kernel_convolution_example} where a kernel of size three with weights $\begin{bmatrix} 1 & 0 & -1 \end{bmatrix}$ is convolved through bottom rows which produces the top rows. Two other concepts are also shown in the example; stride and zero padding. Stride is the amount the kernel moves each time. The left example has a stride of one and the right example has a stride of two. Zero padding is when pixels with value $0$ are added at the edge of the image. This is done to ensure that the convolution can actually be made on all pixels, otherwise only two convolutions would be possible in the example with a stride of two. It also has the benefit of keeping the dimensions of the input image and output image the same when the stride is one, as convolution otherwise shrinks the image. 
 
 \begin{figure}[h]
 	\centering
@@ -42,9 +43,9 @@ In other words the kernel learns to detect a feature that can be found in the im
 \caption{Example of a kernel in a \gls{cnn} \citep{Nielsen2015}}
 \label{fig:cnn_kernal_illustration}
 \end{figure}
-
+\clearpage
 \subsection{Pooling}
-Pooling is an operation often added after a convolutional layer. Like a convolution, a small window moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s, where the output is the value of the largest pixel in the current window. An example of maxpooling with a window of size $2\times2$ and stride two is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
+\todo{ser det her dumt ud?}Pooling is an operation often added after a convolutional layer. Like a convolution, a small window moves through the image, except it does not convolve but simply looks at the pixels in its current location and outputs a single pixel depending of the type of pooling used. Maxpooling is a common type of pooling used in \gls{cnn}s. An example of maxpooling with a window of size $2\times2$ and stride two is shown in \autoref{fig:maxpool_example}. This has the benefit of downscaling the spatial size of the image for faster computation and reducing overfitting.
 
 \begin{figure}[H]
 \centering
@@ -115,7 +116,7 @@ A more detailed description of the network is shown in \autoref{tab:iris_cnn}.
 
 \begin{table}[H]
 	\centering
-	\caption{Detailed description of the iris recognition network design and settings}
+	\caption{Detailed description of network design and settings}
 	\label{tab:iris_cnn}
 	\begin{tabular}{lrrrr}
 		\textbf{Layer Type}   & \textbf{Feature Map Size}  & \textbf{Kernel/Pool Size} & \textbf{Activation} & \textbf{Other} \\ \hline
@@ -165,11 +166,9 @@ The results achieved with this network is an accuracy of $99.7\%$. This is achie
 	\label{fig:iris_graphs}
 \end{figure}
 
-As stated in \autoref{ch:projecspec}, a face recognition method should be implemented in order to investigate what performance can be achieved for identity verification when using this method. In general \gls{cnn}s are commonly used for face recognition, therefore a face recognition network is implemented as described in \autoref{sec:faceimplement}. Furthermore, this is used for the implementation of the information fusion in order to investigate the increase in accuracy gained by a multimodal system.
-%This is done by making a face recognition network to combine with the iris recognition. 
+\noindent To try and improve the accuracy of the iris recognition the system can be made multimodal instead of unimodal. The second modality chosen is face, as stated in \autoref{ch:projecspec}. To make face recognition help improve iris recognition, a face recognition system must first be made.
 
 \section{Face Recognition}
-\label{sec:faceimplement}
 To make a face recognition \gls{cnn} an already well known model is used. The network is based on the VGG16 model, including the weights pre-trained on the ImageNet database with 2000 classes. The model is split into five blocks. The input size of the images are $64\times64\times3$ and are from the \gls{lfw} database. The network is made and well known for image classification, and with the pre-trained weights from ImageNet, it is a suitable solution for face recognition \citep{Simonyan2015}.
 An overview of the network is shown in \autoref{fig:vgg16} and a more detailed setup description is shown in \autoref{tab:vgg16}. The network gets an accuracy of $99.35\%$ on the \gls{lfw} database. \autoref{fig:vgg_graphs} shows the accuracy and loss progression.
 
