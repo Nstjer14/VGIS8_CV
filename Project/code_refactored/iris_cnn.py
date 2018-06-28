@@ -37,6 +37,14 @@ from sklearn.preprocessing import OneHotEncoder
 import cv2
 '''
 This module makes an iris cnn and trains is using pythonDatabase as a database.
+functionality:
+    loadIrisDatabase() = Loads the database and discards
+    resizeImagesToArray(database) = resizes images to the wanted size
+    exploreData(data,label_in) = used to plot the first data points
+    makePatches(dataframe,labels,PlotPatches=False) = makes 5 image patches from 1 image
+    onehotEncodingLabels(labels) = performs one hot encoding
+    splitDataFromDatabase() = splits the data into training, validation and testing.
+    
 '''
 
 #dataFrame = pd.read_pickle("pythonDatabase")
@@ -233,20 +241,6 @@ def getDataFromFusion ():
     '''
     return 0
 
-'''
-'''
-#%%
-'''
-x_train = train_X
-x_test = valid_X#test_iris_X # 
-y_train = train_label
-y_test = valid_label#test_label##
-
-
-
-
-
-'''
 
 def createIrisCnnArchitecture(train_data,number_of_classes):
     '''
@@ -306,8 +300,22 @@ def createIrisCnnArchitecture(train_data,number_of_classes):
     model = Model(iris_model_in,iris_out)
     return model
 
-def trainModel(cnn_model,x_Train,y_Train,Valid_X,Valid_Label):
-
+def trainModelWithVal(cnn_model,x_Train,y_Train,Valid_X,Valid_Label,Batch_size = 128,Epoch = 50):
+    '''
+    Trains the model with validation data that is provided (not using validation_split)
+    input:
+        cnn_model = the cnn model
+        x_Train = training data
+        y_Train = training labels
+        Valid_X = validation data
+        Valid_Label = validation labels
+        Batch_size = the batch size. it is by default set to 128
+        Epoch = the training epichs. It is by default set to 50
+        
+    output:
+        model = the trained model. Used for further training or testing
+        history = the history of the trained model. Used for plotting
+    '''
     model = cnn_model
     x_train = x_Train
     y_train = y_Train
@@ -328,8 +336,8 @@ def trainModel(cnn_model,x_Train,y_Train,Valid_X,Valid_Label):
     print("Shape of valid_X",valid_X.shape)
     print("Shape of valid_label",valid_label.shape)
     
-    batch_size = 128
-    epochs = 50
+    batch_size = Batch_size
+    epochs = Epoch
     
     learningrate = 1e-3
     adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
@@ -347,7 +355,71 @@ def trainModel(cnn_model,x_Train,y_Train,Valid_X,Valid_Label):
               validation_data=(valid_X,valid_label))
     return model,history
 
+def trainModelValsplit(cnn_model,x_Train,y_Train,Batch_size = 128,Epoch = 50):
+    '''
+    Trains the model with validation data that is provided (not using validation_split)
+    input:
+        cnn_model = the cnn model
+        x_Train = training data
+        y_Train = training labels
+        Valid_X = validation data
+        Valid_Label = validation labels
+        Batch_size = the batch size. it is by default set to 128
+        Epoch = the training epichs. It is by default set to 50
+        
+    output:
+        model = the trained model. Used for further training or testing
+        history = the history of the trained model. Used for plotting
+    '''    
+    model = cnn_model
+    x_train = x_Train
+    y_train = y_Train
+
+    
+    if type(x_train) is np.ndarray:
+        pass
+    else:
+        raise Exception('Training data is not a numpy array')
+    
+    if type(y_train) is np.ndarray:
+        pass
+    else:
+        raise Exception("Training label is not a numpy array")    
+    print("Shape of x_train",x_train.shape)
+    print("Shape of y_train",y_train.shape)
+    print("Shape of valid_X",valid_X.shape)
+    print("Shape of valid_label",valid_label.shape)
+    
+    batch_size = Batch_size
+    epochs = Epoch
+    
+    learningrate = 1e-3
+    adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
+    #model.compile(loss='categorical_crossentropy', optimizer=sgd)
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=adagrad,
+                  metrics=['accuracy'])
+    model.summary()
+
+    history = model.fit(x_train, y_train,
+              batch_size=batch_size,
+              epochs=epochs,
+              shuffle=True,
+              verbose=1,
+              validation_split = 0.2)
+    return model,history
+
 def evaluateModel(cnn_model,X_test,Y_test):
+    '''
+    Evaluates the given model. Used with data the the model has not been trained on.
+    Shows the loss and score.
+    
+    input:
+        cnn_model = the model that is being evaluated
+    
+    output:
+        score = a list containing the loss and the accuracy
+    '''
     model = cnn_model
     x_test = X_test
     y_test = Y_test
@@ -356,70 +428,109 @@ def evaluateModel(cnn_model,X_test,Y_test):
     print('Test accuracy:', score[1]*100)
     return score
 
-def saveModel(cnn_model,History,Score):
-    model = cnn_model
-    history = History
-    score = Score
+def plotAccuracy(History):
+    '''
+    Plots the accuracy of the training and validation of the model
+    
+    input:
+        History = the history of the model.
+    
+    output:
+        plt = the plt handle of the figure. Used for saving the plot
+    '''
+    fig1, ax_acc = plt.subplots()
+    plt.plot(History.history['acc'])
+    plt.plot(History.history['val_acc'])
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.title('Model - Accuracy')
+    plt.legend(['Training', 'Validation'], loc='lower right')
+    return plt
+
+def plotLoss(History):
+    '''
+    Plots the loss of the training and validation of the model
+    
+    input:
+        History = the history of the model.
+    
+    output:
+        plt = the plt handle of the figure. Used for saving the plot  
+    '''
+    fig2, ax_loss = plt.subplots()
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Model- Loss')
+    plt.legend(['Training', 'Validation'], loc='upper right')
+    plt.plot(History.history['loss'])
+    plt.plot(History.history['val_loss'])
+    plt.legend(['Training', 'Validation'], loc='lower right')
+    return plt
+
+def plotHistory(History):
+    '''
+    Plots the accuracy and validation of the training and validation of the model
+    
+    input:
+        History = the history of the model.
+    
+    output:
+        plt_acc = the plt handle of the accuracy figure. Used for saving the plot
+        plt_val = the plt handle of the validation figure. Used for saving the plot
+    '''    
+    plt_acc = plotAccuracy(History)
+    plt_val = plotLoss(History)
+    return plt_acc,plt_val
+
+def saveModel(model,score,acc_plt,val_plt,Model_name = 'unnamed'):
+    '''
+    Saves the model structure and weights so it can be reused. Also saves the 
+    training and validation accuracy and loss plots. They ares saved in folders
+    named "saved_models" and "saved_graphs" respectivaly. The naming convention
+    used is YYYYMMDD-HHMMSS_acc_XX_model_name.h5
+    
+    input:
+       cnn_model = the model that is saved
+       Score = the list of accuracy and validation scores from evaluateModel()
+       acc_plt = the training and validation accuracy plot
+       val_plt = the training and validation loss plot
+    '''
     
     save_dir = os.path.join(os.getcwd(), 'saved_models')
     pic_save_dir = os.path.join(os.getcwd(), 'saved_graphs')
     acc_round = str(round(score[1]*100,2))
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     namestamp = timestamp + 'acc_' + acc_round 
-    model_name = namestamp + '_iris_cnn_test.h5'
+    model_name = namestamp + '_'+Model_name+'.h5'
     
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
+    
+    if not os.path.isdir(pic_save_dir):
+        os.makedirs(pic_save_dir)
+    
     model_path = os.path.join(save_dir, model_name)
     model.save(model_path)
     print('Saved trained model at %s ' % model_path)
     
     
-    #%%
-    print(history)
-    fig1, ax_acc = plt.subplots()
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.title('Model - Accuracy')
-    plt.legend(['Training', 'Validation'], loc='lower right')
-    
-    if not os.path.isdir(pic_save_dir):
-        os.makedirs(pic_save_dir)
     pic_path = os.path.abspath(pic_save_dir)
-    plt.savefig(pic_path + '/'+namestamp+'acc.pdf')
-    print('Saved graphs at %s ' % pic_path)
-    
-    plt.show()
-    
-    # Loss
-    fig2, ax_loss = plt.subplots()
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Model- Loss')
-    plt.legend(['Training', 'Validation'], loc='upper right')
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.legend(['Training', 'Validation'], loc='lower right')
-    
-    if not os.path.isdir(pic_save_dir):
-        os.makedirs(pic_save_dir)
+    acc_plt.savefig(pic_path + '/'+model_name+'acc.pdf')
+    print('Saved accuracy plot at %s ' % pic_path)
+
     pic_path = os.path.abspath(pic_save_dir)
     print(pic_path)
-    plt.savefig(pic_path + '/'+namestamp+'loss.pdf')
-    print('Saved graphs at %s ' % pic_path)
+    val_plt.savefig(pic_path + '/'+model_name+'loss.pdf')
+    print('Saved loss plot at %s ' % pic_path)
     
-    plt.show()
-
 if __name__ == '__main__':
-    #dataFrame, label = loadIrisDatabase()
-    #imageVector = resizeImagesToArray(dataFrame)
-    #exploreData(imageVector,label)
-    #imageVector, label = makePatches(dataFrame,label)
+
     train_X,valid_X,train_label,valid_label,NuniqueClasses = splitDataFromDatabase()
     model = createIrisCnnArchitecture(train_X,NuniqueClasses)
-    #history = trainModel(model,train_X,train_label,valid_X,valid_label)
+    model,history = trainModelValsplit(model,train_X,train_label)
+    score = evaluateModel(model,valid_X,valid_label)
+    plt_acc,plt_val = plotHistory(history)
+    saveModel(model,score,plt_acc,plt_val,Model_name='iris_cnn')
     
     
     #exploreData(imageVector,label)
