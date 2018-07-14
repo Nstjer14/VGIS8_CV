@@ -68,6 +68,9 @@ def makePatches(data,labels,PlotPatches=False):
     '''
     X = data
     y = labels
+    
+    X = X.astype('float32') # Rescale it from 255 to 0-1.
+    X = X/255.
 
     batchImages = []
     batchLabels = []
@@ -150,59 +153,7 @@ def createFaceCnnArchitecture(train_data,number_of_classes):
     return model
 
 
-def trainModelWithVal(cnn_model,x_Train,y_Train,Valid_X,Valid_Label,Batch_size = 64,Epoch = 50):
-    '''
-    Trains the model with validation data that is provided (not using validation_split)
-    input:
-        cnn_model = the cnn model
-        x_Train = training data
-        y_Train = training labels
-        Valid_X = validation data
-        Valid_Label = validation labels
-        Batch_size = the batch size. it is by default set to 128
-        Epoch = the training epichs. It is by default set to 50
-        
-    output:
-        model = the trained model. Used for further training or testing
-        history = the history of the trained model. Used for plotting
-    '''
-    model = cnn_model
-    x_train = x_Train
-    y_train = y_Train
-    valid_X = Valid_X
-    valid_label = Valid_Label
 
-    
-    if type(x_train) is np.ndarray:
-        pass
-    else:
-        raise Exception('Training data is not a numpy array')
-    
-    if type(y_train) is np.ndarray:
-        pass
-    else:
-        raise Exception("Training label is not a numpy array")    
-    print("Shape of x_train",x_train.shape)
-    print("Shape of y_train",y_train.shape)
-    print("Shape of valid_X",valid_X.shape)
-    print("Shape of valid_label",valid_label.shape)
-    
-    batch_size = Batch_size
-    epochs = Epoch
-    
-    #learningrate = 1e-3
-    from keras.optimizers import SGD
-    sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
-
-    history = model.fit(x_train, y_train,
-              batch_size=batch_size,
-              epochs=epochs,
-              verbose=1,
-              shuffle=True,
-              validation_data=(valid_X,valid_label))
-    
-    return model,history
 
 
 def splitDataFromlfw():
@@ -218,7 +169,7 @@ def splitDataFromlfw():
     NuniqueClasses = len(np.unique(label))
     print('Number of classes:', NuniqueClasses)
 
-    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, test_size=0.2, random_state=13,stratify=label_onehot)
+    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, test_size=0.3,shuffle=True, random_state=13)
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
 
 
@@ -226,6 +177,9 @@ if __name__ == '__main__':
     train_X,valid_X,train_label,valid_label,NuniqueClasses = splitDataFromlfw()
 
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model, history = general_cnn.trainModelValsplit(model,train_X,train_label)
+    model, history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 64,Epoch = 50)
+    score = general_cnn.evaluateModel(model,valid_X,valid_label)
+    plt_acc,plt_val = general_cnn.plotHistory(history)
+    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')    
     #check_lfw_images(imageVector,label)
     pass

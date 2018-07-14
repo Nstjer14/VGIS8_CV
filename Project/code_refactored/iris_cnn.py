@@ -350,7 +350,7 @@ def trainModelWithVal(cnn_model,x_Train,y_Train,Valid_X,Valid_Label,Batch_size =
     batch_size = Batch_size
     epochs = Epoch
     
-    learningrate = 1e-3
+    learningrate = 1e-2
     adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
     #model.compile(loss='categorical_crossentropy', optimizer=sgd)
     model.compile(loss='categorical_crossentropy',
@@ -404,7 +404,7 @@ def trainModelValsplit(cnn_model,x_Train,y_Train,Batch_size = 128,Epoch = 50):
     batch_size = Batch_size
     epochs = Epoch
     
-    learningrate = 1e-3
+    learningrate = 1e-2
     adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
     #model.compile(loss='categorical_crossentropy', optimizer=sgd)
     model.compile(loss='categorical_crossentropy',
