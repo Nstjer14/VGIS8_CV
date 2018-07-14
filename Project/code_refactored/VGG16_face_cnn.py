@@ -1,6 +1,4 @@
 # VGG16 face recognition test
-
-
 from __future__ import print_function
 import numpy as np
 import os
@@ -24,103 +22,97 @@ from keras.models import Model
 import datetime
 import cv2
 import imagePatchGenerator5_module as patchGen
-import iris_face_merge_cnn_data_splitter as getData
-
+import iris_cnn as general_cnn
+#import iris_face_merge_cnn_data_splitter as getData
 #%%
 rd.seed(42)
 
-save_dir = os.path.join(os.getcwd(), 'saved_models')
-pic_save_dir = os.path.join(os.getcwd(), 'saved_graphs')
-model_name = 'face_cnn_test.h5'
-# To use LFW data before the chimera merge uncomment this section
-'''
-# load images for individuals w/ 10+ images and produce centered 64x64 images from orig. 250x250 images
-lfw_people = fetch_lfw_people(min_faces_per_person=10, 
-                              slice_ = (slice(61,189),slice(61,189)),
-                              resize=0.5, color = True)
+def load_lfw():
+    # load images for individuals w/ 10+ images and produce centered 64x64 images from orig. 250x250 images
+    lfw_people = fetch_lfw_people(min_faces_per_person=10, 
+                                  slice_ = (slice(61,189),slice(61,189)),
+                                  resize=0.5, color = True)
+    images = lfw_people.images
 
-#for name in lfw_people.target_names:
-#    print(name)
-
-# access the images
-X = lfw_people.images
-print("Original data shape: ", X.shape)
-test_image = X[1]
-plt.imshow(test_image.astype(np.uint8), interpolation='nearest')
-plt.axis('off')
-#import matplotlib.image as mpimg
-#image = mpimg.imread("chelsea-the-cat.png")
-#plt.imshow(image)
-
-
-
-# access the class labels
-y = lfw_people.target
-print("Original label shape: ",y.shape)
-
-#print(X)
-#print(y)
-
-#%%
-X = X.astype('float32') # Rescale it from 255 to 0-1.
-X = X/255.
-
-batchImages = []
-batchLabels = []
-for i in range(0,len(X)):
-    batchesInTupples = patchGen.imagePatchGenerator5(X[i])
-    for j in batchesInTupples:
-        #plt.imshow(j, cmap='gray')
-        batchImages.append(j)
-        batchLabels.append(y[i])
-        batchImages.append(cv2.flip(j,1)) # adding horisontal flip
-        batchLabels.append(y[i])
-batchImages = np.asarray(batchImages)
-batchLabels = np.asarray(batchLabels)
-
-#%%
-data = batchImages
-label = batchLabels
-
-
-
-# one hot encode
-enc_y = to_categorical(label)
-
-
-#Splitting data into train and test data
-train_X,test_X,train_y,test_y = train_test_split(data, enc_y, test_size=0.3)
-#print(train_X.shape)
-
-
-uniqueClasses=np.unique(y)
-NuniqueClasses=len(uniqueClasses)
-'''
-
-#To use LFW data before the chimera merge comment this section
-# start comment
-train_face_X =  getData.train_face_X
-train_label =  getData.train_label
-
-test_face_X =  getData.test_face_X
-test_label =  getData.test_label
-
-validation_face_X =  getData.validation_face_X
-validation_label =  getData.validation_label
- 
-NuniqueClasses = len(np.unique(getData.label))
-# end comment
-img_shape = train_face_X[0].shape
-print('The image shape is: {}'.format(img_shape))
-
-class_amount = NuniqueClasses
-print('The amount of classes is: {}'.format(class_amount))
-if __name__ == '__main__':
+    label = lfw_people.target
     
-    #%%
-    batch_size = 64
-    epochs = 50
-    num_class = 10
+    
+    return images, label
+    
+def check_lfw_images(lfw_people):
+    #for name in lfw_people.target_names:
+#    print(name)
+    
+    print("Original data shape: ", lfw_people.shape)
+    test_image = lfw_people[1]
+    plt.imshow(test_image.astype(np.uint8), interpolation='nearest')
+    plt.axis('off')
+    
+   # print("Original label shape: ",label.shape)
+    #import matplotlib.image as mpimg
+    #image = mpimg.imread("chelsea-the-cat.png")
+    #plt.imshow(image)
+
+def makePatches(data,labels,PlotPatches=False):
+    '''
+    makes 10 patches from one image. 5 from patchGen.imagePatchGenerator5()
+    and those are flipped so 5 are normal and 5 are horisontaly flipped.
+    input:
+        dataframe = a Pandas dataframe from loadIrisDatabase()
+        labels = the labels from loadIrisDatabase()
+    
+    output:
+        imageVector = all the patches that are generated in a numpy array
+        label = the labels all the patches in a list type
+        
+    '''
+    X = data
+    y = labels
+
+    batchImages = []
+    batchLabels = []
+    for i in range(0,len(X)):
+        batchesInTupples = patchGen.imagePatchGenerator5(X[i])
+        for j in batchesInTupples:
+            #plt.imshow(j, cmap='gray')
+            batchImages.append(j)
+            batchLabels.append(y[i])
+            batchImages.append(cv2.flip(j,1)) # adding horisontal flip
+            batchLabels.append(y[i])
+    batchImages = np.asarray(batchImages)
+    batchLabels = np.asarray(batchLabels)
+    print('Training data shape after reshape : ', batchImages.shape)
+    return batchImages, batchLabels
+    
+
+
+def categoricalOnehotEncodingLabels(labels):
+    '''
+    This takes labels in a list form and returns it in a one hot encoded array
+    input:
+        labels = labels in a list form
+        
+    output:
+        enc_y = the labels in a one hot encoded fashion
+    '''
+    enc_y = to_categorical(labels)
+    return enc_y
+
+def createFaceCnnArchitecture(train_data,number_of_classes):
+    '''
+    This creates the model for CNN for face recognition. To remove the outer layer model.layers.pop() can be used 
+    input:
+        train_data = the training data. Used to get the shape of the data for the input layer
+        number_of_classes = the number of classes for classification used for the last layer  layer
+    
+    output:
+        model= the architecture of the VGG16 face CNN model.
+    '''
+    #batch_size = 64
+    #epochs = 50
+    img_shape = train_data[0].shape
+    num_class = number_of_classes
+
     #Get back the convolutional part of a VGG network trained on ImageNet
     model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
     model_vgg16_conv.summary()
@@ -132,12 +124,13 @@ if __name__ == '__main__':
     output_vgg16_conv = model_vgg16_conv(input)
     
     #Add the fully-connected layers 
-    x = Flatten(name='flatten')(output_vgg16_conv)
-    x = Dense(4096, activation='relu', name='fc1')(x)
-    x = Dropout(0.5)(x)
-    x = Dense(4096, activation='relu', name='fc2')(x)
-    x = Dropout(0.5)(x)
-    x = Dense(class_amount, activation='softmax', name='predictions')(x)
+    vgg_flat = Flatten(name='flatten')(output_vgg16_conv)
+    face_dense_1 = Dense(4096, activation='relu', name='fc1')(vgg_flat)
+    face_dense_1_drop = Dropout(0.5)(face_dense_1)
+    face_dense_2 = Dense(4096, activation='relu', name='fc2')(face_dense_1_drop)
+    face_dense_2_drop = Dropout(0.5)(face_dense_2)
+    output_layer = Dense(num_class, activation='softmax', name='predictions')(face_dense_2_drop)
+    model = Model(input=input, output=output_layer)
     '''
     model = model_vgg16_conv
     model.layers.pop()
@@ -145,93 +138,94 @@ if __name__ == '__main__':
     model.layers[-1].outbound_nodes = []
     model.add(Dense(num_class, activation='softmax'))
     '''
-    #%%
-    #Create your own model 
-    model = Model(input=input, output=x)
     
     #In the summary, weights and layers from VGG part will be hidden, but they will be fit during the training
     model.summary()
     #for layer in model.layers[:10]:
     #    layer.trainable = False
         
+    #from keras.optimizers import SGD
+    #sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
+    #model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+
+
+def trainModelWithVal(cnn_model,x_Train,y_Train,Valid_X,Valid_Label,Batch_size = 64,Epoch = 50):
+    '''
+    Trains the model with validation data that is provided (not using validation_split)
+    input:
+        cnn_model = the cnn model
+        x_Train = training data
+        y_Train = training labels
+        Valid_X = validation data
+        Valid_Label = validation labels
+        Batch_size = the batch size. it is by default set to 128
+        Epoch = the training epichs. It is by default set to 50
+        
+    output:
+        model = the trained model. Used for further training or testing
+        history = the history of the trained model. Used for plotting
+    '''
+    model = cnn_model
+    x_train = x_Train
+    y_train = y_Train
+    valid_X = Valid_X
+    valid_label = Valid_Label
+
+    
+    if type(x_train) is np.ndarray:
+        pass
+    else:
+        raise Exception('Training data is not a numpy array')
+    
+    if type(y_train) is np.ndarray:
+        pass
+    else:
+        raise Exception("Training label is not a numpy array")    
+    print("Shape of x_train",x_train.shape)
+    print("Shape of y_train",y_train.shape)
+    print("Shape of valid_X",valid_X.shape)
+    print("Shape of valid_label",valid_label.shape)
+    
+    batch_size = Batch_size
+    epochs = Epoch
+    
+    #learningrate = 1e-3
     from keras.optimizers import SGD
     sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
-    
-    #learningrate = 1e-3
-    #adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
-    #model.compile(loss='categorical_crossentropy',
-    #              optimizer=adagrad,
-    #              metrics=['accuracy'])
-    
-    history = model.fit(train_face_X, train_label,
+
+    history = model.fit(x_train, y_train,
               batch_size=batch_size,
               epochs=epochs,
               verbose=1,
               shuffle=True,
-              validation_data=(validation_face_X,validation_label))
+              validation_data=(valid_X,valid_label))
     
-    score = model.evaluate(test_face_X, test_label, verbose=0)
-    print('Test loss:', score[0])
-    print('Test accuracy:', score[1]*100)
-    
-    
-    
-    #%%
-    
-    acc_round = str(round(score[1]*100,2))
-    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    namestamp = timestamp + 'acc_' + acc_round 
-    model_name = namestamp + '_VGG16_face.h5'
-    
-    if not os.path.isdir(save_dir):
-        os.makedirs(save_dir)
-    model_path = os.path.join(save_dir, model_name)
-    model.save(model_path)
-    print('Saved trained model at %s ' % model_path)
-    
-    
-    #%%
-    print(history)
-    fig1, ax_acc = plt.subplots()
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.title('Model - Accuracy')
-    plt.legend(['Training', 'Validation'], loc='lower right')
-    
-    if not os.path.isdir(pic_save_dir):
-        os.makedirs(pic_save_dir)
-    pic_path = os.path.abspath(pic_save_dir)
-    plt.savefig(pic_path + '/'+model_name+'acc.pdf')
-    print('Saved graphs at %s ' % pic_path)
-    
-    plt.show()
-    
-    # Loss
-    fig2, ax_loss = plt.subplots()
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Model- Loss')
-    plt.legend(['Training', 'Validation'], loc='upper right')
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.legend(['Training', 'Validation'], loc='lower right')
-    
-    if not os.path.isdir(pic_save_dir):
-        os.makedirs(pic_save_dir)
-    pic_path = os.path.abspath(pic_save_dir)
-    print(pic_path)
-    plt.savefig(pic_path + '/'+model_name+'loss.pdf')
-    print('Saved graphs at %s ' % pic_path)
-    
-    plt.show()
-    
-    
-    
-    
-    
-    
-    
-    
+    return model,history
+
+
+def splitDataFromlfw():
+    '''
+    This gets the data from the labeled faces in the wild (lfw), performs the nesecary operations and splits it.
+    It returns train and validation data
+    '''
+    lfw_people,label =load_lfw()
+    check_lfw_images(lfw_people)
+    lfw_people_patches, label = makePatches(lfw_people,label)
+    check_lfw_images(lfw_people_patches)
+    label_onehot = categoricalOnehotEncodingLabels(label)
+    NuniqueClasses = len(np.unique(label))
+    print('Number of classes:', NuniqueClasses)
+
+    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, test_size=0.2, random_state=13,stratify=label_onehot)
+    return train_X,valid_X,train_label,valid_label,NuniqueClasses
+
+
+if __name__ == '__main__':
+    train_X,valid_X,train_label,valid_label,NuniqueClasses = splitDataFromlfw()
+
+    model = createFaceCnnArchitecture(train_X,NuniqueClasses)
+    model, history = general_cnn.trainModelValsplit(model,train_X,train_label)
+    #check_lfw_images(imageVector,label)
+    pass

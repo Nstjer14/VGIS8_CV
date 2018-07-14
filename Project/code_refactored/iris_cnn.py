@@ -154,11 +154,19 @@ def makePatches(dataframe,labels,PlotPatches=False):
         label = the labels all the patches in a list type
         
     '''
-    dataFrame = dataframe
-    label = labels
-    resized_image = []
-    for image in dataFrame.image:
-        resized_image.append(cv2.resize(image, (64, 64)))
+    if (isinstance(dataframe,type(pd.DataFrame()))==True):
+        dataFrame = dataframe
+        label = labels
+        resized_image = []
+        for image in dataFrame.image:
+            resized_image.append(cv2.resize(image, (64, 64)))
+    else:
+        dataFrame = dataframe
+        label = labels
+        resized_image = []
+        for image in dataFrame:
+            resized_image.append(cv2.resize(image[1], (64, 64)))
+            
     
     batchImages = []
     batchLabels = []
@@ -173,6 +181,9 @@ def makePatches(dataframe,labels,PlotPatches=False):
             
     reshapeDims = batchImages[1].shape
     imageVector = np.asarray(batchImages)
+    #plt.figure(figsize=[8,imageVector.shape[1]])
+    #plt.imshow(imageVector[:,:,0], cmap='gray')
+
     imageVector = imageVector.reshape(imageVector.shape[0],1,58,58) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
     #imageVector = imageVector.reshape(imageVector.shape[0],1,64,512) # format it from (64,512) to (64,512,1) since it is an image with only 1 channel
     imageVector = imageVector.astype('float32') # Rescale it from 255 to 0-1.
@@ -387,8 +398,8 @@ def trainModelValsplit(cnn_model,x_Train,y_Train,Batch_size = 128,Epoch = 50):
         raise Exception("Training label is not a numpy array")    
     print("Shape of x_train",x_train.shape)
     print("Shape of y_train",y_train.shape)
-    print("Shape of valid_X",valid_X.shape)
-    print("Shape of valid_label",valid_label.shape)
+    #print("Shape of valid_X",valid_X.shape)
+    #print("Shape of valid_label",valid_label.shape)
     
     batch_size = Batch_size
     epochs = Epoch
