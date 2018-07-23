@@ -22,7 +22,7 @@ from keras.models import Model
 import datetime
 import cv2
 import imagePatchGenerator5_module as patchGen
-import iris_cnn as general_cnn
+import general_cnn_functions as general_cnn
 #import iris_face_merge_cnn_data_splitter as getData
 #%%
 rd.seed(42)
