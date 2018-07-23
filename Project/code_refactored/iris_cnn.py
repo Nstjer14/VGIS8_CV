@@ -144,7 +144,7 @@ def exploreData(data,label_in):
 
 
 
-def splitDataFromDatabase():
+def splitDataFromDatabase(Test_size = 0.2):
     '''
     This gets the data from the pythonDatabase, performs the nesecary operations and splits it.
     It returns train and validation data
@@ -158,9 +158,12 @@ def splitDataFromDatabase():
     NuniqueClasses = len(np.unique(label))
     print('Number of classes:', NuniqueClasses)
 
-    train_X,valid_X,train_label,valid_label = train_test_split(imageVector, label_onehot, test_size=0.2, random_state=13)
+    train_X,valid_X,train_label,valid_label = train_test_split(imageVector, label_onehot, test_size=Test_size, random_state=13)
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
 
+def valFromTestSplit(Test_X,Test_label,Test_size = 0.5):
+	test_X,valid_X,test_label,valid_label = train_test_split(Test_X, Test_label,test_size=Test_size, random_state=13)
+	return test_X,valid_X,test_label,valid_label
 
 def createIrisCnnArchitecture(train_data,number_of_classes):
     '''
@@ -221,15 +224,31 @@ def createIrisCnnArchitecture(train_data,number_of_classes):
     return model
 
 
-    
-if __name__ == '__main__':
-
-    train_X,valid_X,train_label,valid_label,NuniqueClasses = splitDataFromDatabase()
+def NineNineIrisAcc():
+    '''
+    The settingts to get 99% accuracy with iris cnn with using a 0.2 validation split. The training split is by default 0.2.
+    '''
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase()
     model = createIrisCnnArchitecture(train_X,NuniqueClasses)
-    model,history = general_cnn.trainModelValsplit(model,train_X,train_label)
-    score = general_cnn.evaluateModel(model,valid_X,valid_label)
+    model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 128,Epoch = 50,Learningrate = 1e-2)
+    score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='iris_cnn')
+
+def ValSplitIrisAcc():
+    '''
+    The settings to get 99% with using validation and test data from a real split. The training data is 0.6 and the test validation is 50/50
+    '''
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase(Test_size = 0.4)
+    test_X,valid_X,test_label,valid_label = valFromTestSplit(test_X,test_label,Test_size = 0.5)
+    model = createIrisCnnArchitecture(train_X,NuniqueClasses)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 128,Epoch = 50,Learningrate = 1e-2)
+    score = general_cnn.evaluateModel(model,test_X,test_label)
+    plt_acc,plt_val = general_cnn.plotHistory(history)
+    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='iris_cnn')
+    
+if __name__ == '__main__':
+    ValSplitIrisAcc()
     
     
     #exploreData(imageVector,label)

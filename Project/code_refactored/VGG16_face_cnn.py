@@ -23,6 +23,7 @@ import datetime
 import cv2
 import imagePatchGenerator5_module as patchGen
 import general_cnn_functions as general_cnn
+import iris_cnn as cnn_functions
 #import iris_face_merge_cnn_data_splitter as getData
 #%%
 rd.seed(42)
@@ -169,17 +170,29 @@ def splitDataFromlfw():
     NuniqueClasses = len(np.unique(label))
     print('Number of classes:', NuniqueClasses)
 
-    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, test_size=0.3,shuffle=True, random_state=13)
+    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, test_size=0.4,shuffle=True, random_state=13)
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
 
-
-if __name__ == '__main__':
-    train_X,valid_X,train_label,valid_label,NuniqueClasses = splitDataFromlfw()
-
+def ValSplitIrisAcc():
+    '''
+    The settings to get 99% with using validation and test data from a real split. The training data is 0.6 and the test validation is 50/50
+    '''
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw()
+    test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model, history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 64,Epoch = 50)
-    score = general_cnn.evaluateModel(model,valid_X,valid_label)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 64,Epoch = 50,Learningrate = 1e-2)
+    score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')    
-    #check_lfw_images(imageVector,label)
+
+def trainWithoutVal():
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw()
+    model = createFaceCnnArchitecture(train_X,NuniqueClasses)
+    model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
+    score = general_cnn.evaluateModel(model,test_X,test_label)
+    plt_acc,plt_val = general_cnn.plotHistory(history)
+    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')        
+if __name__ == '__main__':
+    #ValSplitIrisAcc()
+    trainWithoutVal()
     pass
