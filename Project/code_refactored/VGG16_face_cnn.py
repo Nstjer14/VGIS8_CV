@@ -174,9 +174,7 @@ def splitDataFromlfw():
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
 
 def ValSplitIrisAcc():
-    '''
-    The settings to get 99% with using validation and test data from a real split. The training data is 0.6 and the test validation is 50/50
-    '''
+
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw()
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
@@ -186,6 +184,9 @@ def ValSplitIrisAcc():
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')    
 
 def trainWithoutVal():
+    '''
+    These settings with achieve 96,8% accuracy for face. It is done with using the automatic validation split, and not on the real validation data
+    '''
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw()
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
     model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
