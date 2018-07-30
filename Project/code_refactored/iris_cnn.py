@@ -83,7 +83,7 @@ def loadIrisDatabase():
     discardList = []
     minNumOfImages = 10
     for iris_name,value in counts.items():
-        if value<=minNumOfImages:
+        if value<minNumOfImages:
             discardList.append(iris_name)
     dataFrame = dataFrame[~dataFrame['label'].isin(discardList)]
     print("Classes' with less than %.f images discarded in total are %.f : " % (minNumOfImages,len(discardList)),discardList)
