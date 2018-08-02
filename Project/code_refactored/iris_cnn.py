@@ -287,6 +287,9 @@ def ValSplitIrisAcc():
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='iris_cnn')
     
 def ChimericIrisAcc():
+    '''
+    This setting got 99.43 test accuracy using vadlidation and test data from chimeric data set. The training data is 0.6 and the test validation is 50/50
+    '''
     dataFrame, label = chimericLoadDataAndLabels()
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase(dataFrame, label,Test_size = 0.4)
     test_X,valid_X,test_label,valid_label = valFromTestSplit(test_X,test_label,Test_size = 0.5)
