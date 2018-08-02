@@ -24,6 +24,9 @@ import cv2
 import imagePatchGenerator5_module as patchGen
 import general_cnn_functions as general_cnn
 import iris_cnn as cnn_functions
+import fusion_data_creater as chimerc_data_module
+import pandas as pd
+
 #import iris_face_merge_cnn_data_splitter as getData
 #%%
 rd.seed(42)
@@ -153,7 +156,41 @@ def createFaceCnnArchitecture(train_data,number_of_classes):
     #model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
+def loadChimericDatabase():
+    '''
+    loads the chimeric database from the chimeric database module
+    output:
+        chimeric_database = the chimeric database containing the iris, face, and labels
+    '''
+    chimeric_database = chimerc_data_module.getChimericDatabase()
+    return chimeric_database
 
+def extractFaceFromChimeric():
+    '''
+    extracts the face part of the chimeric database and renames it to fit the iris panda frame
+    
+    output:
+        chimeric_iris_only = panda dataframe containing iris images from the chimeric database and their corresponding iris label
+    '''
+    chimeric_database = loadChimericDatabase()
+    chimeric_face_only = pd.DataFrame({'image':chimeric_database['face_image'],'label':chimeric_database['face_label']})
+    return chimeric_face_only
+
+def chimericLoadDataAndLabels():
+    '''
+    Gets the chimeric database base and returns it into variables that the other iris methods use.
+    
+    output:
+        dataFrame = The database with iris images and labels from the chimeric database
+        label = The labels extracted from dataFrame in a list type
+        
+    '''
+    dataFrame = extractFaceFromChimeric()
+    label = dataFrame.label
+    label = label.tolist() # The list coming from dataFrame is already in the correct format.
+    label = np.asarray(label)
+    label = label.astype(int)
+    return dataFrame, label
 
 
 
@@ -195,5 +232,7 @@ def trainWithoutVal():
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')        
 if __name__ == '__main__':
     #ValSplitIrisAcc()
-    trainWithoutVal()
+    #trainWithoutVal()
+    a,b = chimericLoadDataAndLabels()
+    lfw_people,label =load_lfw()
     pass

@@ -108,7 +108,6 @@ def extractIrisFromChimeric():
         chimeric_iris_only = panda dataframe containing iris images from the chimeric database and their corresponding iris label
     '''
     chimeric_database = loadChimericDatabase()
-    chimeric_database = loadChimericDatabase()
     chimeric_iris_only = pd.DataFrame({'image':chimeric_database['iris_image'],'label':chimeric_database['iris_label']})
     return chimeric_iris_only
 
