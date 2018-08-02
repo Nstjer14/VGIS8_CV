@@ -5,8 +5,6 @@ from matplotlib.pyplot import imshow, pause
 from sklearn.utils import shuffle
 import numpy as np
 
-
-
 def loadDatabases():
     iris_data, iris_label = iris_cnn_methods.loadIrisDatabase()
     face_data, face_label = face_cnn_methods.load_lfw()
@@ -26,49 +24,6 @@ def lowestNumberOfImages(dataframe1,dataframe2):
     
     return num_images   
 
-
-'''
-def getChimericDataframe():
-    iris_data, iris_label, face_data, face_label = loadDatabases()
-    iris_data = iris_data.drop(['full_path','image_number','featureVector'],axis=1)
-    unique_iris = set(iris_label)
-    unique_iris = list(unique_iris)
-    unique_face = set(face_label)
-    unique_face = list(unique_face)
-    
-    dataFrame_face = pd.DataFrame({'image':list(face_data),'label':face_label})
-    fusionData = []
-    numberOfClasses = min(len(unique_iris),len(unique_face))
-    for i in range(0,numberOfClasses):
-        current_label =  unique_iris[i]
-        face_label = unique_face[i]
-        #print('current_label: ',current_label)
-        #print('i:',i)
-        iris_temp = iris_data[iris_data['label']==unique_iris[i]]
-        iris_temp = iris_temp.reset_index()
-    #    for iris in iris_temp.image:
-    #        plt.figure(figsize=[20,12])
-    #        plt.gca().set_title(current_label)
-    #        plt.imshow(iris, cmap='gray')
-            
-        face_temp =dataFrame_face[dataFrame_face['label']==unique_face[i]]
-        face_temp = face_temp.reset_index()
-    #    for face in face_temp.image:
-    #        plt.figure()
-    #        plt.gca().set_title(face_label)
-    #        plt.imshow(face.astype(np.uint8))
-        number_of_samples = lowestNumberOfImages(iris_temp,face_temp)
-        #print('n samples: ',number_of_samples)
-
-        for j in range(0,number_of_samples):
-            #print('i that becomes class', i)
-            #print('j', j)
-            fusionData.append({'iris':iris_temp.image[j],'face':face_temp.image[j],'label':i,'iris_label':current_label,'face_label':face_label})
-    
-    fusionDataframe = pd.DataFrame(fusionData)
-    return fusionDataframe
-    pass
-'''
 def listOfUnique(label):
     '''
     input:
@@ -183,7 +138,7 @@ def getChimericDatabase():
     return chimeric_dataframe
 if __name__ == '__main__':
     #a = getChimericDataframe()
-
+    chimeric_dataframe = getChimericDatabase()
 
     
     

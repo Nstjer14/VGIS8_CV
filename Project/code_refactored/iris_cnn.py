@@ -17,7 +17,7 @@ import random as rd
 from keras.preprocessing.image import ImageDataGenerator
 import imagePatchGenerator5_module as patchGen
 import general_cnn_functions as general_cnn
-#import iris_face_merge_cnn_data_splitter as getData
+import fusion_data_creater as chimerc_data_module
 from sklearn.utils import shuffle
 import datetime
 rd.seed(42)
@@ -91,6 +91,41 @@ def loadIrisDatabase():
     label = label.tolist() # The list coming from dataFrame is already in the correct format.
     return dataFrame, label
 
+def loadChimericDatabase():
+    '''
+    loads the chimeric database from the chimeric database module
+    output:
+        chimeric_database = the chimeric database containing the iris, face, and labels
+    '''
+    chimeric_database = chimerc_data_module.getChimericDatabase()
+    return chimeric_database
+
+def extractIrisFromChimeric():
+    '''
+    extracts the iris part of the chimeric database and renames it to fit the iris panda frame
+    
+    output:
+        chimeric_iris_only = panda dataframe containing iris images from the chimeric database and their corresponding iris label
+    '''
+    chimeric_database = loadChimericDatabase()
+    chimeric_database = loadChimericDatabase()
+    chimeric_iris_only = pd.DataFrame({'image':chimeric_database['iris_image'],'label':chimeric_database['iris_label']})
+    return chimeric_iris_only
+
+def chimericLoadDataAndLabels():
+    '''
+    Gets the chimeric database base and returns it into variables that the other iris methods use.
+    
+    output:
+        dataFrame = The database with iris images and labels from the chimeric database
+        label = The labels extracted from dataFrame in a list type
+        
+    '''
+    dataFrame = extractIrisFromChimeric()
+    label = dataFrame.label
+    label = label.tolist() # The list coming from dataFrame is already in the correct format.
+    return dataFrame, label
+
 def resizeImagesToArray(database):
     '''
     Resizes the images from a Pandas array to a numpy array.
@@ -144,12 +179,12 @@ def exploreData(data,label_in):
 
 
 
-def splitDataFromDatabase(Test_size = 0.2):
+def splitDataFromDatabase(dataFrame,label, Test_size = 0.2):
     '''
     This gets the data from the pythonDatabase, performs the nesecary operations and splits it.
     It returns train and validation data
     '''
-    dataFrame, label = loadIrisDatabase()
+    #dataFrame, label = loadIrisDatabase()
     imageVector = resizeImagesToArray(dataFrame)
     exploreData(imageVector,label)
     imageVector, label = general_cnn.makePatches(dataFrame,label)
@@ -160,6 +195,8 @@ def splitDataFromDatabase(Test_size = 0.2):
 
     train_X,valid_X,train_label,valid_label = train_test_split(imageVector, label_onehot, test_size=Test_size, random_state=13)
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
+
+
 
 def valFromTestSplit(Test_X,Test_label,Test_size = 0.5):
 	test_X,valid_X,test_label,valid_label = train_test_split(Test_X, Test_label,test_size=Test_size, random_state=13)
@@ -228,7 +265,8 @@ def NineNineIrisAcc():
     '''
     The settingts to get 99% accuracy with iris cnn with using a 0.2 validation split. The training split is by default 0.2.
     '''
-    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase()
+    dataFrame, label = loadIrisDatabase()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase(dataFrame, label)
     model = createIrisCnnArchitecture(train_X,NuniqueClasses)
     model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 128,Epoch = 50,Learningrate = 1e-2)
     score = general_cnn.evaluateModel(model,test_X,test_label)
@@ -239,7 +277,8 @@ def ValSplitIrisAcc():
     '''
     The settings to get 99% with using validation and test data from a real split. The training data is 0.6 and the test validation is 50/50
     '''
-    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase(Test_size = 0.4)
+    dataFrame, label = loadIrisDatabase()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase(dataFrame, label,Test_size = 0.4)
     test_X,valid_X,test_label,valid_label = valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createIrisCnnArchitecture(train_X,NuniqueClasses)
     model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 128,Epoch = 50,Learningrate = 1e-2)
@@ -247,10 +286,18 @@ def ValSplitIrisAcc():
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='iris_cnn')
     
+def ChimericIrisAcc():
+    dataFrame, label = chimericLoadDataAndLabels()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromDatabase(dataFrame, label,Test_size = 0.4)
+    test_X,valid_X,test_label,valid_label = valFromTestSplit(test_X,test_label,Test_size = 0.5)
+    model = createIrisCnnArchitecture(train_X,NuniqueClasses)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 128,Epoch = 50,Learningrate = 1e-2)
+    score = general_cnn.evaluateModel(model,test_X,test_label)
+    plt_acc,plt_val = general_cnn.plotHistory(history)
+    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_iris_cnn')
+    
 if __name__ == '__main__':
-    ValSplitIrisAcc()
-    
-    
-    #exploreData(imageVector,label)
+    #ValSplitIrisAcc()
+    ChimericIrisAcc()
 
     pass
