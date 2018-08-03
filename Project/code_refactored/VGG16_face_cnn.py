@@ -211,7 +211,7 @@ def splitDataFromlfw(lfw_people,label):
     check_lfw_images(lfw_people)
     lfw_people_patches, label = makePatches(lfw_people,label)
     check_lfw_images(lfw_people_patches)
-    label_onehot = categoricalOnehotEncodingLabels(label)
+    label_onehot = general_cnn.onehotEncodingLabels(label)#categoricalOnehotEncodingLabels(label)
     NuniqueClasses = len(np.unique(label))
     print('Number of classes:', NuniqueClasses)
 
@@ -245,7 +245,7 @@ def chimericFaceCnnWithVal():
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 64,Epoch = 50,Learningrate = 1e-2)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-2)
     score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')        
