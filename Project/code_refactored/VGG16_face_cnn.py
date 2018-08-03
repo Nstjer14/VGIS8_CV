@@ -60,7 +60,8 @@ def check_lfw_images(lfw_people):
 def makePatches(data,labels,PlotPatches=False):
     '''
     makes 10 patches from one image. 5 from patchGen.imagePatchGenerator5()
-    and those are flipped so 5 are normal and 5 are horisontaly flipped.
+    and those are flipped so 5 are normal and 5 are horisontaly flipped. The images are also scaled to the 0-1 range
+    
     input:
         dataframe = a Pandas dataframe from loadIrisDatabase()
         labels = the labels from loadIrisDatabase()
@@ -115,8 +116,7 @@ def createFaceCnnArchitecture(train_data,number_of_classes):
     output:
         model= the architecture of the VGG16 face CNN model.
     '''
-    #batch_size = 64
-    #epochs = 50
+
     img_shape = train_data[0].shape
     num_class = number_of_classes
 
@@ -124,7 +124,6 @@ def createFaceCnnArchitecture(train_data,number_of_classes):
     model_vgg16_conv = VGG16(weights='imagenet', include_top=False)
     model_vgg16_conv.summary()
     
-    #Create your own input format (here 3x200x200)
     input = Input(shape=img_shape,name = 'image_input')
     
     #Use the generated model 
@@ -181,25 +180,34 @@ def chimericLoadDataAndLabels():
     Gets the chimeric database base and returns it into variables that the other iris methods use.
     
     output:
-        dataFrame = The database with iris images and labels from the chimeric database
-        label = The labels extracted from dataFrame in a list type
+        face_images_nparray = The database with face images and labels from the chimeric database in a numpy array
+        label = The face labels extracted from the chimericdataframe in a list type
         
     '''
     dataFrame = extractFaceFromChimeric()
+    
+    face_images_series = dataFrame.image # Trick to get it to have the correct shape. First extract the images from the panda frame as a series, then convert to list form and then convert to numpy array.
+    face_images_list = face_images_series.tolist()
+    face_images_nparray = np.asarray(face_images_list) 
+    
     label = dataFrame.label
     label = label.tolist() # The list coming from dataFrame is already in the correct format.
     label = np.asarray(label)
     label = label.astype(int)
-    return dataFrame, label
+    return face_images_nparray, label
 
 
 
-def splitDataFromlfw():
+def splitDataFromlfw(lfw_people,label):
     '''
     This gets the data from the labeled faces in the wild (lfw), performs the nesecary operations and splits it.
     It returns train and validation data
+    
+    input:
+        lfw_people = face images in a numpy array
+        label = labels in a list fort
     '''
-    lfw_people,label =load_lfw()
+    
     check_lfw_images(lfw_people)
     lfw_people_patches, label = makePatches(lfw_people,label)
     check_lfw_images(lfw_people_patches)
@@ -211,8 +219,8 @@ def splitDataFromlfw():
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
 
 def ValSplitIrisAcc():
-
-    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw()
+    lfw_people,label = load_lfw()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
     model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 64,Epoch = 50,Learningrate = 1e-2)
@@ -224,15 +232,26 @@ def trainWithoutVal():
     '''
     These settings with achieve 96,8% accuracy for face. It is done with using the automatic validation split, and not on the real validation data
     '''
-    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw()
+    lfw_people,label = load_lfw()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
     model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
     score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
-    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')        
+    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')      
+    
+def chimericFaceCnnWithVal():
+    lfw_people,label = chimericLoadDataAndLabels()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
+    test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
+    model = createFaceCnnArchitecture(train_X,NuniqueClasses)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 64,Epoch = 50,Learningrate = 1e-2)
+    score = general_cnn.evaluateModel(model,test_X,test_label)
+    plt_acc,plt_val = general_cnn.plotHistory(history)
+    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')        
+    
 if __name__ == '__main__':
     #ValSplitIrisAcc()
     #trainWithoutVal()
-    a,b = chimericLoadDataAndLabels()
-    lfw_people,label =load_lfw()
+    chimericFaceCnnWithVal()
     pass
