@@ -25,7 +25,11 @@ import imagePatchGenerator5_module as patchGen
 import general_cnn_functions as general_cnn
 import iris_cnn as cnn_functions
 import fusion_data_creater as chimerc_data_module
+import chimeric_iris_face_fusion_net as fusion_net
+
 import pandas as pd
+from sklearn.utils import shuffle
+
 
 #import iris_face_merge_cnn_data_splitter as getData
 #%%
@@ -196,7 +200,26 @@ def chimericLoadDataAndLabels():
     label = label.astype(int)
     return face_images_nparray, label
 
-
+def shuffleData(lfw_people,label):
+    '''
+    This combines the face and labels into a dataframe to shuffle it and then splits it back up into
+    their respective numpy arrays. This is to ensure a correct suffleing of the data. It also returns the merged dataframe
+    input:
+        face_images = the face images in a numpy array
+        chimeric_label = the chimeric labels in a list form
+        
+    output:
+        face_img = the shuffled face images in a numpy array
+        label = the shuffled chimeric labels in a list
+        df = all of above in a dataframe
+    '''
+    df = pd.DataFrame({'face_image':list(lfw_people),'face_label':label})
+    df = shuffle(df)
+    label = df['face_label']
+    label = label.tolist()
+    face_img = df['face_image'].values
+    face_img = fusion_net.pandaObjectToNumpy(face_img)
+    return face_img,label
 
 def splitDataFromlfw(lfw_people,label):
     '''
@@ -211,7 +234,9 @@ def splitDataFromlfw(lfw_people,label):
     check_lfw_images(lfw_people)
     lfw_people_patches, label = makePatches(lfw_people,label)
     check_lfw_images(lfw_people_patches)
-    label_onehot = general_cnn.onehotEncodingLabels(label)#categoricalOnehotEncodingLabels(label)
+    lfw_people_patches,label  = shuffleData(lfw_people_patches,label)
+    #label_onehot = categoricalOnehotEncodingLabels(label) ##
+    label_onehot = general_cnn.onehotEncodingLabels(label) 
     NuniqueClasses = len(np.unique(label))
     print('Number of classes:', NuniqueClasses)
 
@@ -228,11 +253,13 @@ def ValSplitIrisAcc():
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')    
 
-def trainWithoutVal():
+def trainWithoutVal(lfw_people = False,label = False, default = True):
     '''
     These settings with achieve 96,8% accuracy for face. It is done with using the automatic validation split, and not on the real validation data
     '''
-    lfw_people,label = load_lfw()
+    if default==True:
+        lfw_people,label = load_lfw()
+    
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
     model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
@@ -245,13 +272,24 @@ def chimericFaceCnnWithVal():
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-2)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 64,Epoch = 50,Learningrate = 1e-3)
     score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')        
     
+def chimericFaceCnnWithOutVal():
+    lfw_people,label = chimericLoadDataAndLabels()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
+    model = createFaceCnnArchitecture(train_X,NuniqueClasses)
+    model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 60,Epoch = 50,Learningrate = 1e-2)
+    score = general_cnn.evaluateModel(model,test_X,test_label)
+    plt_acc,plt_val = general_cnn.plotHistory(history)
+    general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')      
+    
 if __name__ == '__main__':
     #ValSplitIrisAcc()
-    #trainWithoutVal()
-    chimericFaceCnnWithVal()
+    #lfw_people,label = chimericLoadDataAndLabels()
+    #trainWithoutVal(lfw_people,label,default=False)
+    #chimericFaceCnnWithVal()
+    chimericFaceCnnWithOutVal()
     pass
