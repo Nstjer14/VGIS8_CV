@@ -2,12 +2,12 @@ import general_cnn_functions as general_cnn
 import iris_cnn as iris_cnn_methods
 import VGG16_face_cnn as face_cnn_methods
 import fusion_data_creater as chimerc_data_module
-
 from keras.layers.merge import Concatenate
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras.models import Model
+import keras
 
 import pandas as pd
 from sklearn.utils import shuffle
@@ -169,17 +169,62 @@ def splitChimericData(Test_size = 0.2):
     train_iris_X =  pandaObjectToNumpy(train_X['iris_image'].values)
     train_face_X =  pandaObjectToNumpy(train_X['face_image'].values)
     
-    test_iris_X =  pandaObjectToNumpy(train_X['iris_image'].values)
-    test_face_X =  pandaObjectToNumpy(train_X['face_image'].values)
+    test_iris_X =  pandaObjectToNumpy(test_X['iris_image'].values)
+    test_face_X =  pandaObjectToNumpy(test_X['face_image'].values)
     
-    validation_iris_X =  pandaObjectToNumpy(train_X['iris_image'].values)
-    validation_face_X =  pandaObjectToNumpy(train_X['face_image'].values)
+    validation_iris_X =  pandaObjectToNumpy(valid_X['iris_image'].values)
+    validation_face_X =  pandaObjectToNumpy(valid_X['face_image'].values)
     
     return train_iris_X,train_face_X, test_iris_X, test_face_X, validation_iris_X, validation_face_X, train_label, test_label, valid_label, NuniqueClasses
 
-    
-    
+        
 
+
+def trainingFusionNet(fusion_net,train_iris_X,train_face_X,train_label,validation_iris_X,validation_face_X,validation_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3):
+    '''
+    Trains the model with validation data that is provided (not using validation_split)
+    input:
+        cnn_model = the cnn model
+        x_Train = training data
+        y_Train = training labels
+        Valid_X = validation data
+        Valid_Label = validation labels
+        Batch_size = the batch size. it is by default set to 128
+        Epoch = the training epichs. It is by default set to 50
+        
+    output:
+        model = the trained model. Used for further training or testing
+        history = the history of the trained model. Used for plotting
+    '''
+    model = fusion_net
+  
+    print("Shape of train_iris_X",train_iris_X.shape)
+    print("Shape of train_face_X",train_face_X.shape)
+    print("Shape of train_label",train_label.shape)
+
+    print("Shape of validation_iris_X",validation_iris_X.shape)
+    print("Shape of validation_face_X",validation_face_X.shape)
+    print("Shape of valid_label",valid_label.shape)
+    
+    batch_size = Batch_size
+    epochs = Epoch
+    
+    learningrate = Learningrate
+    adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=adagrad,
+                  metrics=['accuracy'])
+    model.summary()
+    
+    history = model.fit([train_iris_X, train_face_X],
+                     train_label,
+                     batch_size=batch_size,
+                     epochs=epochs,
+                     verbose=1,
+                     shuffle=True,
+                     validation_data = ([validation_iris_X, validation_face_X],validation_label))
+    
+    return model,history
 
 if __name__ == '__main__':
     chimeric_dataframe, chimeric_label = prepareChimericData()
@@ -187,10 +232,10 @@ if __name__ == '__main__':
 
 
     chimeric_fusion_model = createChimericCnnArchitecture(train_face_X,train_iris_X,number_of_classes)
-    chimeric_fusion_model,history = general_cnn.trainModelWithVal(chimeric_fusion_model,[train_iris_X, train_face_X],train_label,[validation_iris_X, validation_face_X],valid_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
-    score = general_cnn.evaluateModel(chimeric_fusion_model,[test_iris_X, test_face_X],test_label)
-    plt_acc,plt_val = general_cnn.plotHistory(history)
-    general_cnn.saveModel(chimeric_fusion_model,score,plt_acc,plt_val,Model_name='chimeric_fusion_cnn')     
+    chimeric_fusion_model,history = trainingFusionNet(chimeric_fusion_model,train_iris_X,train_face_X,train_label,validation_iris_X,validation_face_X,valid_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
+    #score = general_cnn.evaluateModel(chimeric_fusion_model,[test_iris_X, test_face_X],test_label)
+    #plt_acc,plt_val = general_cnn.plotHistory(history)
+    #general_cnn.saveModel(chimeric_fusion_model,score,plt_acc,plt_val,Model_name='chimeric_fusion_cnn')     
     
 
     

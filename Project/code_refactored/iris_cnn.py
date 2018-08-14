@@ -24,7 +24,6 @@ rd.seed(42)
 
 #%%
 import matplotlib.pyplot as plt
-import load_images_2_python
 import pandas as pd
 from collections import Counter
 import numpy as np
