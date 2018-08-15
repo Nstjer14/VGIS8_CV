@@ -63,12 +63,14 @@ def makePatches(dataframe,labels,PlotPatches=False):
         resized_image = []
         for image in dataFrame.image:
             resized_image.append(cv2.resize(image, (64, 64)))
+        print("Makes patches of iris images from dataframe containing a image collumn")
     else:
         dataFrame = dataframe
         label = labels
         resized_image = []
         for image in dataFrame:
             resized_image.append(cv2.resize(image[1], (64, 64)))
+        print("Makes patches of face images from a numpy array")
             
     
     batchImages = []
