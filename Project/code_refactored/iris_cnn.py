@@ -197,7 +197,7 @@ def splitDataFromDatabase(dataFrame,label, Test_size = 0.2):
 
 
 def valFromTestSplit(Test_X,Test_label,Test_size = 0.5):
-	test_X,valid_X,test_label,valid_label = train_test_split(Test_X, Test_label,test_size=Test_size, random_state=13)
+	test_X,valid_X,test_label,valid_label = train_test_split(Test_X, Test_label,stratify = Test_label,test_size=Test_size, random_state=13)
 	return test_X,valid_X,test_label,valid_label
 
 def createIrisCnnArchitecture(train_data,number_of_classes):

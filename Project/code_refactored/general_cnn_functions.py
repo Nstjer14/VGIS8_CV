@@ -160,10 +160,12 @@ def trainModelWithVal(cnn_model,x_Train,y_Train,Valid_X,Valid_Label,Batch_size =
     epochs = Epoch
     
     learningrate = Learningrate
-    adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
+    #adagrad = keras.optimizers.Adagrad(lr=learningrate, epsilon=None, decay=0.0005)
     #model.compile(loss='categorical_crossentropy', optimizer=sgd)
+    sgd = keras.optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+
     model.compile(loss='categorical_crossentropy',
-                  optimizer=adagrad,
+                  optimizer=sgd,
                   metrics=['accuracy'])
     model.summary()
     

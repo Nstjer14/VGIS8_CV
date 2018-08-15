@@ -240,7 +240,7 @@ def splitDataFromlfw(lfw_people,label):
     NuniqueClasses = len(np.unique(label))
     print('Number of classes:', NuniqueClasses)
 
-    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, test_size=0.4,shuffle=True, random_state=13)
+    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, stratify = label_onehot, test_size=0.4,shuffle=True, random_state=13)
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
 
 def ValSplitIrisAcc():
@@ -248,7 +248,7 @@ def ValSplitIrisAcc():
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 64,Epoch = 50,Learningrate = 1e-2)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
     score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')    
@@ -281,15 +281,15 @@ def chimericFaceCnnWithOutVal():
     lfw_people,label = chimericLoadDataAndLabels()
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 60,Epoch = 50,Learningrate = 1e-2)
+    model,history = general_cnn.trainModelValsplit(model,train_X,train_label,Batch_size = 32,Epoch = 20,Learningrate = 1e-3)
     score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')      
     
 if __name__ == '__main__':
-    #ValSplitIrisAcc()
+    ValSplitIrisAcc()
     #lfw_people,label = chimericLoadDataAndLabels()
     #trainWithoutVal(lfw_people,label,default=False)
-    #chimericFaceCnnWithVal()
-    chimericFaceCnnWithOutVal()
+    chimericFaceCnnWithVal()
+    #chimericFaceCnnWithOutVal()
     pass
