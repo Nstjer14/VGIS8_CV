@@ -36,7 +36,12 @@ from sklearn.utils import shuffle
 rd.seed(42)
 
 def load_lfw():
-    # load images for individuals w/ 10+ images and produce centered 64x64 images from orig. 250x250 images
+    '''
+    load images for individuals w/ 10+ images and produce centered 64x64 images from orig. 250x250 images
+    output:
+        images = lfw database in a numpy array
+        label = labes of the lfw database in a list
+    '''
     lfw_people = fetch_lfw_people(min_faces_per_person=10, 
                                   slice_ = (slice(61,189),slice(61,189)),
                                   resize=0.5, color = True)
@@ -48,18 +53,17 @@ def load_lfw():
     return images, label
     
 def check_lfw_images(lfw_people):
-    #for name in lfw_people.target_names:
-#    print(name)
+    '''
+    Prints the shape of the lfw database and prints the first image.
+    input:
+        lfw_people = the lfw database in a numpy array
+    '''
     
     print("Original data shape: ", lfw_people.shape)
     test_image = lfw_people[1]
     plt.imshow(test_image.astype(np.uint8), interpolation='nearest')
     plt.axis('off')
     
-   # print("Original label shape: ",label.shape)
-    #import matplotlib.image as mpimg
-    #image = mpimg.imread("chelsea-the-cat.png")
-    #plt.imshow(image)
 
 def makePatches(data,labels,PlotPatches=False):
     '''
@@ -67,12 +71,12 @@ def makePatches(data,labels,PlotPatches=False):
     and those are flipped so 5 are normal and 5 are horisontaly flipped. The images are also scaled to the 0-1 range
     
     input:
-        dataframe = a Pandas dataframe from loadIrisDatabase()
-        labels = the labels from loadIrisDatabase()
+        data = a numpy array from the face database
+        labels = the labels from the face database
     
     output:
-        imageVector = all the patches that are generated in a numpy array
-        label = the labels all the patches in a list type
+        batchImages = all the patches that are generated in a numpy array
+        batchLabels = the labels all the patches in a list type
         
     '''
     X = data
@@ -100,7 +104,8 @@ def makePatches(data,labels,PlotPatches=False):
 
 def categoricalOnehotEncodingLabels(labels):
     '''
-    This takes labels in a list form and returns it in a one hot encoded array
+    This takes labels in a list form and returns it in a one hot encoded array. Requires that no values are missing,
+    e.g. all integers from 0-10 so that class 9 or 8 is not missing. 
     input:
         labels = labels in a list form
         
@@ -135,11 +140,11 @@ def createFaceCnnArchitecture(train_data,number_of_classes):
     
     #Add the fully-connected layers 
     vgg_flat = Flatten(name='flatten')(output_vgg16_conv)
-    face_dense_1 = Dense(4096, activation='relu', name='fc1')(vgg_flat)
+    face_dense_1 = Dense(4096, activation='relu', name='vgg_fc1')(vgg_flat)
     face_dense_1_drop = Dropout(0.5)(face_dense_1)
-    face_dense_2 = Dense(4096, activation='relu', name='fc2')(face_dense_1_drop)
+    face_dense_2 = Dense(4096, activation='relu', name='vgg_fc2')(face_dense_1_drop)
     face_dense_2_drop = Dropout(0.5)(face_dense_2)
-    output_layer = Dense(num_class, activation='softmax', name='predictions')(face_dense_2_drop)
+    output_layer = Dense(num_class, activation='softmax', name='vgg_predictions')(face_dense_2_drop)
     model = Model(input=input, output=output_layer)
     '''
     model = model_vgg16_conv

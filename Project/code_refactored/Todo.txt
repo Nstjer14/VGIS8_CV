@@ -1,0 +1,7 @@
+1. Check if how the "old" chimeric script performs with the new chimeric data. Look at how the validation/training graphs behave.
+
+2. Try to get the new chimeric network to get accuracies as the old one. 
+
+3. Check how the single networks perform with the fusion data
+
+4. Try different settings for the fusion network

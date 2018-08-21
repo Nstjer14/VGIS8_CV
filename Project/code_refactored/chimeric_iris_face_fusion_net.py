@@ -78,13 +78,15 @@ def createChimericCnnArchitecture(face_data,iris_data,number_of_classes):
 
 def createChimericCnnArchitectureFromOldScript(face_data,iris_data,number_of_classes):
     '''
-    This creates the model for CNN for face recognition. To remove the outer layer model.layers.pop() can be used 
+    This creates the model for fusion net by using code from the "old" script. The difference here is
+    that it creates face and iris network and merges them instead of importing them and popping of the layers.
     input:
-        train_data = the training data. Used to get the shape of the data for the input layer
+        face_data = the training data for the face part. Used to get the shape of the data for the input layer
+        iris_data = the training data for the iris part. Used to get the shape of the data for the input layer
         number_of_classes = the number of classes for classification used for the last layer  layer
     
     output:
-        model= the architecture of the VGG16 face CNN model.
+        model= the architecture of the chimeric fusion net.
     '''
     
     input_shape = iris_data[0].shape
@@ -199,6 +201,8 @@ def shuffleChimericData(iris_images,face_images,chimeric_label):
     iris_img = pandaObjectToNumpy(iris_img)
     face_img = df['face_image'].values
     face_img = pandaObjectToNumpy(face_img)
+    
+    print('Chimeric data has been shuffled by shuffleChimericData()')
     return iris_img,face_img,label, df
 
 def loadChimericDataInArrays():
@@ -231,7 +235,7 @@ def prepareChimericData():
     '''
     iris_imageVector, lfw_people, chimeric_label = loadChimericDataInArrays()
     temp_label = chimeric_label
-    iris_imageVector_workaround = pd.DataFrame({'image':list(iris_imageVector)})
+    iris_imageVector_workaround = pd.DataFrame({'image':list(iris_imageVector)}) # This is a workaround because general_cnn.makePatches needs a panda frame with the iris images being in a collumn named image
     iris_imageVector_patches, chimeric_label_patches = general_cnn.makePatches(iris_imageVector_workaround,chimeric_label)
     lfw_people_patches, temp_label_patches = face_cnn_methods.makePatches(lfw_people,temp_label)
     iris_img,face_img,chimeric_label, chimeric_dataframe = shuffleChimericData(iris_imageVector_patches,lfw_people_patches,chimeric_label_patches)
@@ -293,12 +297,15 @@ def trainingFusionNet(fusion_net,train_iris_X,train_face_X,train_label,validatio
     Trains the model with validation data that is provided (not using validation_split)
     input:
         cnn_model = the cnn model
-        x_Train = training data
-        y_Train = training labels
-        Valid_X = validation data
-        Valid_Label = validation labels
+        train_iris_X = training data for iris part
+        train_face_X = training data for face part
+        train_label = labels of the training data
+        validation_iris_X = validation data for iris part
+        validation_face_X = validation data for face part
+        validation_label = labels of the validation set
         Batch_size = the batch size. it is by default set to 128
         Epoch = the training epichs. It is by default set to 50
+        Learningrate = the learning rate of the compiler. It is by default set to 1e-3
         
     output:
         model = the trained model. Used for further training or testing
@@ -336,10 +343,10 @@ def trainingFusionNet(fusion_net,train_iris_X,train_face_X,train_label,validatio
     
     return model,history
 
-if __name__ == '__main__':
-    chimeric_dataframe, chimeric_label = prepareChimericData()
-    train_iris_X,train_face_X, test_iris_X, test_face_X, validation_iris_X, validation_face_X, train_label, test_label, valid_label, number_of_classes = splitChimericData()
 
+def fusionNetWithValidation():
+    
+    train_iris_X,train_face_X, test_iris_X, test_face_X, validation_iris_X, validation_face_X, train_label, test_label, valid_label, number_of_classes = splitChimericData()
     chimeric_fusion_model = createChimericCnnArchitecture(train_face_X,train_iris_X,number_of_classes)
     #chimeric_fusion_model = createChimericCnnArchitectureFromOldScript(train_face_X,train_iris_X,number_of_classes)
     chimeric_fusion_model,history = trainingFusionNet(chimeric_fusion_model,train_iris_X,train_face_X,train_label,validation_iris_X,validation_face_X,valid_label,Batch_size = 16,Epoch = 35,Learningrate = 1e-3)
@@ -347,6 +354,9 @@ if __name__ == '__main__':
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(chimeric_fusion_model,score,plt_acc,plt_val,Model_name='chimeric_fusion_cnn')     
     
+    
+if __name__ == '__main__':
+    fusionNetWithValidation()
 
     
     pass

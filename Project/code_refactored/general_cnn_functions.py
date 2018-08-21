@@ -1,15 +1,3 @@
-'''
-This module makes an iris cnn and trains is using pythonDatabase as a database.
-functionality:
-    loadIrisDatabase() = Loads the database and discards
-    resizeImagesToArray(database) = resizes images to the wanted size
-    exploreData(data,label_in) = used to plot the first data points
-    makePatches(dataframe,labels,PlotPatches=False) = makes 5 image patches from 1 image
-    onehotEncodingLabels(labels) = performs one hot encoding
-    splitDataFromDatabase() = splits the data into training, validation and testing.
-    
-'''
-
 from __future__ import print_function
 import keras
 from keras.datasets import mnist

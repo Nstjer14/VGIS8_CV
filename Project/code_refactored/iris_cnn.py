@@ -1,10 +1,3 @@
-'''Trains a simple convnet on the MNIST dataset.
-
-Gets to 99.25% test accuracy after 12 epochs
-(there is still a lot of margin for parameter tuning).
-16 seconds per epoch on a GRID K520 GPU.
-'''
-
 from __future__ import print_function
 import keras
 from keras.datasets import mnist
@@ -221,40 +214,50 @@ def createIrisCnnArchitecture(train_data,number_of_classes):
                      activation='relu',
                      input_shape=input_shape,
                      data_format='channels_first',
-                     padding = "same")(iris_model_in)
+                     padding = "same",
+                     name = 'iris_conv1')(iris_model_in)
     
-    max1 = MaxPooling2D(pool_size=(2, 2),data_format='channels_first')(conv1)
+    max1 = MaxPooling2D(pool_size=(2, 2),data_format='channels_first',
+                     name = 'iris_max1')(conv1)
     
     conv2 = Conv2D(32,
                      kernel_size=(5, 5),
                      activation='relu',
                      padding = "same",
-                     data_format='channels_first')(max1)
+                     data_format='channels_first',
+                     name = 'iris_conv2')(max1)
     
-    max2 = MaxPooling2D(pool_size=(2, 2),data_format='channels_first')(conv2)
+    max2 = MaxPooling2D(pool_size=(2, 2),data_format='channels_first',
+                     name = 'iris_max2')(conv2)
     
     conv3 = Conv2D(64,
                      kernel_size=(5, 5),
                      activation='relu',
                      padding = "same",
-                     data_format='channels_first')(max2)
+                     data_format='channels_first',
+                     name = 'iris_conv3')(max2)
     
-    max3 = MaxPooling2D(pool_size=(2, 2),data_format='channels_first')(conv3)
+    max3 = MaxPooling2D(pool_size=(2, 2),data_format='channels_first',
+                     name = 'iris_max3')(conv3)
     
     conv4 = Conv2D(256,
                      kernel_size=(5, 5),
                      activation='relu',
                      padding = "same",
-                     data_format='channels_first')(max3)
+                     data_format='channels_first',
+                     name = 'iris_conv4')(max3)
     
     
     flat = Flatten()(conv4)
-    dense1 = Dense(1024, activation='relu')(flat)
+    dense1 = Dense(1024, activation='relu',
+                     name = 'iris_fc1')(flat)
     drop1 = Dropout(0.5)(dense1)
-    dense2 = Dense(1024, activation='relu')(drop1)
+    dense2 = Dense(1024, activation='relu',
+                     name = 'iris_fc2')(drop1)
     drop2 = Dropout(0.5)(dense2)
     
-    iris_out = Dense(num_classes, activation='softmax')(drop2)
+    iris_out = Dense(num_classes, activation='softmax',
+                     name = 'iris_classification')(drop2)
     model = Model(iris_model_in,iris_out)
     return model
 
