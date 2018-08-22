@@ -253,7 +253,7 @@ def ValSplitIrisAcc():
     train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 32,Epoch = 50,Learningrate = 1e-3)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 32,Epoch = 20,Learningrate = 1e-2)
     score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='face_cnn')    
@@ -292,7 +292,7 @@ def chimericFaceCnnWithOutVal():
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')      
     
 if __name__ == '__main__':
-    ValSplitIrisAcc()
+    #ValSplitIrisAcc()
     #lfw_people,label = chimericLoadDataAndLabels()
     #trainWithoutVal(lfw_people,label,default=False)
     chimericFaceCnnWithVal()

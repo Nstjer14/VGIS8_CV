@@ -133,9 +133,9 @@ face_model = Model(input=input_vgg16, output=face_out)
 #%% Merged CNN
 
 merged_layer = Concatenate()([iris_out, face_out])
-fc1_merged = Dense((1024*2), activation='relu',name = 'merged_fc1')(merged_layer)
+fc1_merged = Dense((5120), activation='relu',name = 'merged_fc1')(merged_layer)
 drop1 = Dropout(0.5)(fc1_merged)
-fc2_merged = Dense((1024*2), activation='relu',name = 'merged_fc2')(drop1)
+fc2_merged = Dense((5120), activation='relu',name = 'merged_fc2')(drop1)
 drop2 = Dropout(0.5)(fc2_merged)
 
 output_merged = Dense(num_classes, activation='softmax')(drop2)
