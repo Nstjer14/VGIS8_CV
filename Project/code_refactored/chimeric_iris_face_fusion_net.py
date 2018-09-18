@@ -67,11 +67,13 @@ def createChimericCnnArchitecture(face_data,iris_data,number_of_classes):
     drop1 = Dropout(0.5)(fc1_merged)
     fc2_merged = Dense((5120), activation='relu',name = 'merged_fc2')(drop1)
     drop2 = Dropout(0.5)(fc2_merged)
-    fc3_merged = Dense((5120), activation='relu',name = 'merged_fc3')(drop2)
-    drop3 = Dropout(0.5)(fc3_merged)
-    fc4_merged = Dense((5120), activation='relu',name = 'merged_fc4')(drop3)
-    drop4 = Dropout(0.5)(fc4_merged)    
-    output_merged = Dense(number_of_classes, activation='softmax')(drop4)
+    #fc3_merged = Dense((5120), activation='relu',name = 'merged_fc3')(drop2)
+    #drop3 = Dropout(0.5)(fc3_merged)
+    #fc4_merged = Dense((5120), activation='relu',name = 'merged_fc4')(drop3)
+    #drop4 = Dropout(0.5)(fc4_merged)
+    #fc5_merged = Dense((5120), activation='relu',name = 'merged_fc5')(drop4)
+    #drop5 = Dropout(0.5)(fc5_merged)      
+    output_merged = Dense(number_of_classes, activation='softmax')(drop2)
     
     input_vgg16 = face_cnn.layers[0].input
     iris_model_in = iris_cnn.layers[0].input
@@ -352,7 +354,7 @@ def fusionNetWithValidation():
     train_iris_X,train_face_X, test_iris_X, test_face_X, validation_iris_X, validation_face_X, train_label, test_label, valid_label, number_of_classes = splitChimericData()
     chimeric_fusion_model = createChimericCnnArchitecture(train_face_X,train_iris_X,number_of_classes)
     #chimeric_fusion_model = createChimericCnnArchitectureFromOldScript(train_face_X,train_iris_X,number_of_classes)
-    chimeric_fusion_model,history = trainingFusionNet(chimeric_fusion_model,train_iris_X,train_face_X,train_label,validation_iris_X,validation_face_X,valid_label,Batch_size = 128,Epoch = 50,Learningrate = 1e-3)
+    chimeric_fusion_model,history = trainingFusionNet(chimeric_fusion_model,train_iris_X,train_face_X,train_label,validation_iris_X,validation_face_X,valid_label,Batch_size = 128,Epoch = 200,Learningrate = 1e-3)
     score = general_cnn.evaluateModel(chimeric_fusion_model,[test_iris_X, test_face_X],test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(chimeric_fusion_model,score,plt_acc,plt_val,Model_name='chimeric_fusion_cnn')     

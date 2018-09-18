@@ -195,9 +195,12 @@ def chimericLoadDataAndLabels():
     '''
     dataFrame = extractFaceFromChimeric()
     
+    
     face_images_series = dataFrame.image # Trick to get it to have the correct shape. First extract the images from the panda frame as a series, then convert to list form and then convert to numpy array.
     face_images_list = face_images_series.tolist()
     face_images_nparray = np.asarray(face_images_list) 
+    
+    #face_images_nparray = fusion_net.pandaObjectToNumpy(dataFrame.image.values)
     
     label = dataFrame.label
     label = label.tolist() # The list coming from dataFrame is already in the correct format.
@@ -226,7 +229,7 @@ def shuffleData(lfw_people,label):
     face_img = fusion_net.pandaObjectToNumpy(face_img)
     return face_img,label
 
-def splitDataFromlfw(lfw_people,label):
+def splitDataFromlfw(lfw_people,label,Test_size=0.2):
     '''
     This gets the data from the labeled faces in the wild (lfw), performs the nesecary operations and splits it.
     It returns train and validation data
@@ -242,15 +245,20 @@ def splitDataFromlfw(lfw_people,label):
     lfw_people_patches,label  = shuffleData(lfw_people_patches,label)
     #label_onehot = categoricalOnehotEncodingLabels(label) ##
     label_onehot = general_cnn.onehotEncodingLabels(label) 
+    
+
     NuniqueClasses = len(np.unique(label))
     print('Number of classes:', NuniqueClasses)
 
-    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, stratify = label_onehot, test_size=0.4,shuffle=True, random_state=13)
+    train_X,valid_X,train_label,valid_label = train_test_split(lfw_people_patches, label_onehot, stratify = label_onehot, test_size=Test_size,shuffle=True, random_state=13)
     return train_X,valid_X,train_label,valid_label,NuniqueClasses
 
-def ValSplitIrisAcc():
+def trainWithVal():
+    '''
+    These settings with achieve 98.41% accuracy for face. It is done using validation data. It should be 20% validation, 20% testing data and 60% training.
+    '''
     lfw_people,label = load_lfw()
-    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label,Test_size=0.4)
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
     model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 32,Epoch = 20,Learningrate = 1e-2)
@@ -274,10 +282,11 @@ def trainWithoutVal(lfw_people = False,label = False, default = True):
     
 def chimericFaceCnnWithVal():
     lfw_people,label = chimericLoadDataAndLabels()
-    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label)
+    #train_iris_X,train_X, test_iris_X, test_X, validation_iris_X, valid_X, train_label, test_label, valid_label, NuniqueClasses = fusion_net.splitChimericData()
+    train_X,test_X,train_label,test_label,NuniqueClasses = splitDataFromlfw(lfw_people,label,Test_size= 0.4)
     test_X,valid_X,test_label,valid_label = cnn_functions.valFromTestSplit(test_X,test_label,Test_size = 0.5)
     model = createFaceCnnArchitecture(train_X,NuniqueClasses)
-    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 64,Epoch = 50,Learningrate = 1e-3)
+    model,history = general_cnn.trainModelWithVal(model,train_X,train_label,valid_X,valid_label,Batch_size = 32,Epoch = 20,Learningrate = 1e-2)
     score = general_cnn.evaluateModel(model,test_X,test_label)
     plt_acc,plt_val = general_cnn.plotHistory(history)
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')        
@@ -292,7 +301,7 @@ def chimericFaceCnnWithOutVal():
     general_cnn.saveModel(model,score,plt_acc,plt_val,Model_name='chimeric_face_cnn')      
     
 if __name__ == '__main__':
-    #ValSplitIrisAcc()
+    #trainWithVal()
     #lfw_people,label = chimericLoadDataAndLabels()
     #trainWithoutVal(lfw_people,label,default=False)
     chimericFaceCnnWithVal()
